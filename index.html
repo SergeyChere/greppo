@@ -1,0 +1,827 @@
+<title>Greppo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: a terminal window — pet + status rail, fixed-height console, input. Committed dark "terminal" identity. */
+  :root{
+    --bg:#0a0e13; --panel:#111823; --panel2:#0e141d; --edge:#1e2a38;
+    --fg:#d6e2ea; --dim:#8395a6; --green:#6ee787; --amber:#ffd86b;
+    --blue:#8fd0ff; --pink:#ff9fb0; --lock:#9ad1ff;
+    color-scheme: dark;
+    --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:radial-gradient(1200px 600px at 50% -10%, #11202e 0%, var(--bg) 60%);
+    color:var(--fg); font-family:var(--mono); margin:0; min-height:100%;
+    padding-block:24px;
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+  .wrap{max-width:900px;margin:0 auto;position:relative;}
+  .title{display:flex;align-items:baseline;gap:12px;margin:0 2px 14px;flex-wrap:wrap;}
+  .title h1{font-size:26px;font-weight:700;letter-spacing:.5px;margin:0;}
+  .title .sub{font-size:13px;color:var(--dim);}
+
+  .intro{display:flex;justify-content:center;padding:28px 10px;}
+  .intro .card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:26px 22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);}
+  .intro .big{font-size:30px;font-weight:700;letter-spacing:1px;}
+  .intro .petbig{white-space:pre;line-height:1.12;font-size:16px;color:var(--amber);margin:12px 0;}
+  .intro p{color:var(--dim);font-size:14px;margin:6px 0 14px;}
+  .intro input{width:100%;background:var(--panel2);border:1px solid var(--edge);border-radius:10px;color:var(--fg);font-family:var(--mono);font-size:16px;padding:11px 12px;outline:none;text-align:center;}
+  .intro input:focus{border-color:var(--blue);}
+  .intro button{margin-top:14px;width:100%;font-family:var(--mono);font-size:15px;font-weight:700;color:#06240f;background:var(--green);border:none;border-radius:10px;padding:12px;cursor:pointer;}
+  .intro button:hover{filter:brightness(1.07);}
+
+  .win{border:1px solid var(--edge);border-radius:14px;overflow:hidden;background:var(--panel);box-shadow:0 18px 50px rgba(0,0,0,.45);}
+  .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel2);border-bottom:1px solid var(--edge);}
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .d1{background:#ff5f57;}.d2{background:#febc2e;}.d3{background:#28c840;}
+  .bar .name{margin-left:8px;font-size:12.5px;color:var(--dim);}
+  .body{display:flex;flex-wrap:wrap;align-items:stretch;}
+  .rail{flex:1 1 240px;min-width:0;padding:14px 16px;border-right:1px solid var(--edge);display:flex;flex-direction:column;gap:10px;}
+  .pet{white-space:pre;line-height:1.12;font-size:15px;color:var(--fg);min-height:120px;}
+  .stage{font-size:11.5px;color:var(--amber);}
+  .lvl{font-size:12.5px;color:var(--dim);}
+  .lock{font-size:24px;letter-spacing:6px;font-weight:700;color:var(--lock);transition:transform .18s ease;}
+  .say{font-size:13px;line-height:1.5;color:var(--fg);min-height:40px;transition:opacity .15s;}
+  .say b{color:var(--amber);font-weight:700;}
+  .check{font-size:12.5px;line-height:1.6;color:var(--dim);}
+  .check b{color:var(--fg);font-weight:500;}
+  .check .ok{color:var(--green);}
+  .check .q{color:var(--blue);}
+  .check .kw{color:var(--amber);font-weight:500;}
+  .mast{font-size:11.5px;color:var(--dim);line-height:1.5;border-top:1px solid var(--edge);padding-top:8px;}
+  .mast .s{color:var(--amber);}
+  .main{flex:2 1 360px;min-width:0;display:flex;flex-direction:column;}
+  .term{background:var(--panel2);padding:14px 16px;font-size:14px;line-height:1.55;height:300px;flex:none;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+  .term .ps{color:var(--green);} .term .er{color:var(--pink);} .term .ok{color:var(--amber);} .term .hi{color:var(--blue);} .term .spk{color:var(--amber);} .term .dim{color:var(--dim);}
+  .inrow{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--edge);background:var(--panel);}
+  .inrow .ps{color:var(--green);font-size:13px;white-space:nowrap;}
+  #in{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--fg);font-family:var(--mono);font-size:14px;}
+  #in::placeholder{color:#546273;}
+  .hintbar{font-size:11.5px;color:var(--dim);padding:6px 14px 10px;background:var(--panel);}
+  .btns{display:flex;gap:8px;margin:12px 2px 0;flex-wrap:wrap;}
+  .btns button{font-family:var(--mono);font-size:12.5px;color:var(--fg);background:var(--panel);border:1px solid var(--edge);border-radius:9px;padding:7px 12px;cursor:pointer;}
+  .btns button:hover{border-color:#2d3f52;background:#132030;}
+  .btns button:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+  .foot{margin:12px 2px 0;font-size:12px;color:var(--dim);line-height:1.5;}
+  .matrix{position:absolute;inset:0;background:#040806;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;}
+  .matrix canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.5;}
+  .matrix .story{position:relative;text-align:center;padding:20px;max-width:92%;}
+  .matrix .mxt{font-size:24px;font-weight:700;color:#8dffb0;letter-spacing:3px;margin-bottom:14px;text-shadow:0 0 14px rgba(110,231,135,.75);}
+  .matrix .mxl{font-size:15px;color:#d8ffe6;margin:7px 0;text-shadow:0 0 8px rgba(110,231,135,.5);}
+  .matrix .mxbtn{position:relative;margin-top:20px;font-family:var(--mono);font-size:14px;font-weight:700;color:#06240f;background:#6ee787;border:none;border-radius:10px;padding:11px 22px;cursor:pointer;z-index:21;}
+  .matrix .mxbtn:hover{filter:brightness(1.08);}
+  .book{position:absolute;inset:0;background:linear-gradient(180deg,#0b1a12,#060d0a);border-radius:14px;z-index:22;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;}
+  .book canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.26;}
+  .book .bookart,.book .booktext,.book .bookdots,.book .booknav{position:relative;z-index:1;}
+  .book .bookart{white-space:pre;line-height:1.15;font-size:16px;color:#9dffbd;min-height:120px;margin-bottom:10px;text-shadow:0 0 10px rgba(110,231,135,.5);}
+  .book .booktext{max-width:560px;font-size:16px;line-height:1.6;color:#eafff1;min-height:78px;}
+  .book .booktext b{color:var(--amber);}
+  .book .bookdots{margin:16px 0 12px;color:#3f6b52;font-size:15px;letter-spacing:4px;}
+  .book .booknav{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+  .book .booknav button{font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 16px;cursor:pointer;border:1px solid #27496b;background:#102a1c;color:#d8ffe6;}
+  .book .booknav #bookNext{background:#6ee787;color:#06240f;border:none;}
+  .book .booknav button:hover{filter:brightness(1.08);}
+  .confirm{position:absolute;inset:0;background:rgba(4,8,6,.82);border-radius:14px;z-index:30;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .confirm .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:22px;max-width:360px;text-align:center;}
+  .confirm p{margin:0 0 16px;color:var(--fg);font-size:15px;line-height:1.5;}
+  .confirm .row{display:flex;gap:10px;justify-content:center;}
+  .confirm button{font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid var(--edge);background:var(--panel2);color:var(--fg);}
+  .confirm #cfYes{background:var(--pink);color:#3a0d13;border:none;}
+  @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);}.term{height:250px;}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+
+<div class="wrap">
+  <div class="title"><h1>Greppo</h1><span class="sub">learn the Linux terminal — 3 levels, one evolving pet</span></div>
+
+  <div class="intro" id="intro" hidden>
+    <div class="card">
+      <div class="big">Greppo</div>
+      <pre class="petbig" id="introPet"></pre>
+      <p>Hi there! What's your name?</p>
+      <input id="nameIn" maxlength="12" placeholder="your name" autocomplete="off" spellcheck="false" aria-label="your name">
+      <button id="startBtn">Start playing</button>
+    </div>
+  </div>
+
+  <div class="win" id="win" hidden>
+    <div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="name" id="barName">greppo</span></div>
+    <div class="body">
+      <div class="rail">
+        <pre class="pet" id="pet"></pre>
+        <div class="stage" id="stage"></div>
+        <div class="lvl" id="lvl"></div>
+        <div class="lock" id="lock"></div>
+        <div class="say" id="say"></div>
+        <div class="check" id="check"></div>
+        <div class="mast" id="mastery" hidden></div>
+      </div>
+      <div class="main">
+        <div class="term" id="term"></div>
+        <div class="inrow">
+          <span class="ps" id="ps">~$</span>
+          <input id="in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type a command, then press Enter" aria-label="terminal command input">
+        </div>
+        <div class="hintbar">Press <b>Enter</b> to run &nbsp;·&nbsp; <b>&uarr;</b> last command &nbsp;·&nbsp; <b>Tab</b> completes a name &nbsp;·&nbsp; <b>Home/End</b> jump to start/end of the line &nbsp;·&nbsp; don't type the ( ) brackets</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btns" id="btns" hidden>
+    <button id="bSound">Sound: on</button>
+    <button id="bHint">Hint</button>
+    <button id="bMode">Sandbox</button>
+    <button id="bStory">Story</button>
+    <button id="bHome">Back to start</button>
+    <button id="bReset">Reset progress</button>
+  </div>
+  <p class="foot">Safe practice terminal — nothing on a real computer can be changed. First you learn a command, then Greppo asks you to type it from memory. Collect the glowing letters and spell the secret word to make your pet evolve.</p>
+
+  <div class="matrix" id="mx" hidden>
+    <canvas id="mxc"></canvas>
+    <div class="story" id="mxs"></div>
+    <button class="mxbtn" id="mxGo">Continue ▶</button>
+  </div>
+
+  <div class="book" id="book" hidden>
+    <canvas id="bookRain"></canvas>
+    <pre class="bookart" id="bookArt"></pre>
+    <div class="booktext" id="bookText"></div>
+    <div class="bookdots" id="bookDots"></div>
+    <div class="booknav">
+      <button id="bookBack">◀ Back</button>
+      <button id="bookSkip">Skip</button>
+      <button id="bookNext">Next ▶</button>
+    </div>
+  </div>
+
+  <div class="confirm" id="confirm" hidden>
+    <div class="card">
+      <p>Reset all progress and start over from the beginning?</p>
+      <div class="row"><button id="cfCancel">Cancel</button><button id="cfYes">Reset</button></div>
+    </div>
+  </div>
+</div>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script>
+(function(){
+  var USER='player';
+  function sani(s){s=(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');return s.slice(0,12)||'player';}
+
+  function D(n,c){return{t:'d',name:n,ch:c||{},parent:null};}
+  function F(n,c){return{t:'f',name:n,content:c||'',parent:null};}
+  function link(d){for(var k in d.ch){d.ch[k].parent=d;if(d.ch[k].t==='d')link(d.ch[k]);}return d;}
+  function seed(){
+    var root=D('',{});
+    var home=D(USER,{
+      'welcome.txt':F('welcome.txt','Hi! Read notes with cat\nPeek in folders, find the hidden letters'),
+      'games':D('games',{'secret.txt':F('secret.txt','You read a note! Clue: visit the box folder'),'arcade':D('arcade',{'highscore.txt':F('highscore.txt','Top score: 9000')})}),
+      'pictures':D('pictures',{'beach.txt':F('beach.txt','A sunny beach photo')}),
+      'box':D('box',{'clue.txt':F('clue.txt','Clue: the treasure is at ~/treasure.txt'),'mystery.txt':F('mystery.txt','Secret! Try these fun commands: meow  dance  fortune  rainbow\nHidden files start with a dot. Try: ls -a'),'toys':D('toys',{'ball.txt':F('ball.txt','A bouncy ball'),'robot-toy.txt':F('robot-toy.txt','A shiny robot toy')})}),
+      'notes':D('notes',{'diary.txt':F('diary.txt','Dear diary, today I met greppo the pet')}),
+      '.secret':F('.secret','You found a hidden file! Names that start with a dot are hidden.\nType meow to hear something!'),
+      'treasure.txt':F('treasure.txt','TREASURE FOUND! You are a real terminal explorer!')
+    });
+    root.ch={'home':D('home',{})};
+    root.ch.home.ch[USER]=home;
+    link(root);
+    return {root:root,home:home};
+  }
+  var W,root,home,cwd;
+  function newWorld(){W=seed();root=W.root;home=W.home;cwd=home;}
+
+  function abspath(n){var p=[];for(var c=n;c&&c.parent;c=c.parent)p.unshift(c.name);return '/'+p.join('/');}
+  function HOME(){return '/home/'+USER;}
+  function norm(p){if(p[0]==='~')p=HOME()+p.slice(1);var parts=p.split('/').filter(function(x){return x.length;});return '/'+parts.join('/');}
+  function fromAbs(p){p=norm(p);if(p==='/')return root;var cur=root,ps=p.split('/').filter(function(x){return x.length;});for(var i=0;i<ps.length;i++){if(cur.t!=='d'||!cur.ch[ps[i]])return null;cur=cur.ch[ps[i]];}return cur;}
+  function resolve(path){var cur,p=path;if(p[0]==='~'){cur=home;p=p.slice(1);if(p[0]==='/')p=p.slice(1);}else if(p[0]==='/'){cur=root;p=p.slice(1);}else cur=cwd;var ps=p.split('/').filter(function(x){return x.length;});for(var i=0;i<ps.length;i++){if(ps[i]==='.')continue;if(ps[i]==='..'){if(cur.parent)cur=cur.parent;continue;}if(cur.t!=='d'||!cur.ch[ps[i]])return null;cur=cur.ch[ps[i]];}return cur;}
+  function keys(d){return Object.keys(d.ch).sort();}
+  function parentOf(path,nameBox){var p=path.replace(/\/+$/,'');var i=p.lastIndexOf('/');if(i<0){nameBox.n=p;return cwd;}nameBox.n=p.slice(i+1);var dp=p.slice(0,i);return resolve(dp.length?dp:'/');}
+
+  var st={cmd:'',args:[],cwdAbs:'',catAbs:null,out:''};
+  function prompt(){var p=abspath(cwd),hp=HOME();if(p.indexOf(hp)===0)p='~'+p.slice(hp.length);return USER+'@greppo:'+(p||'/')+'$';}
+  var lines=[];
+  function pr(h){lines.push(h);if(lines.length>180)lines.shift();var t=document.getElementById('term');t.innerHTML=lines.join('\n');t.scrollTop=t.scrollHeight;}
+  function clearTerm(){lines=[];document.getElementById('term').innerHTML='';}
+  function esc(s){return(s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function matchGlob(name,pat){var re='^'+pat.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*')+'$';return new RegExp(re).test(name);}
+  function listAll(dir,base,acc){var ks=keys(dir);for(var i=0;i<ks.length;i++){var ch=dir.ch[ks[i]];var pth=base+'/'+ks[i];acc.push({node:ch,path:pth});if(ch.t==='d')listAll(ch,pth,acc);}return acc;}
+
+  var HELP=
+    '<span class="hi">What each command does</span> (don\'t type the ( ) brackets):\n'+
+    '  pwd        print working directory \u2014 shows where you are\n'+
+    '  ls         list the files and folders here\n'+
+    '  cd games   change directory \u2014 go into the folder games\n'+
+    '  cd ..      go up one folder\n'+
+    '  cd ~       go to your home folder\n'+
+    '  cat file   show what is inside a file\n'+
+    '  tree       show all folders as a tree\n'+
+    '  mkdir name make a new folder\n'+
+    '  touch name make a new empty file\n'+
+    '  echo hi    print text   ( echo hi > note.txt writes it into a file )\n'+
+    '  cp a b     copy file a to b\n'+
+    '  mv a b     move or rename a to b\n'+
+    '  rm file    remove \u2014 delete   ( rm -r folder deletes a folder )\n'+
+    '  find name  search for a file by its name\n'+
+    '  grep word  search for a word inside files\n'+
+    '  clear      clear the screen\n'+
+    '<span class="dim">A name like welcome.txt has a name (welcome) and an extension (.txt) that means it is a text file.\n'+
+    'Keys: Enter runs a command. Up arrow shows your last command. Tab finishes a name.\n'+
+    'Type symbols to learn > >> ~ .. . *   ·   type games to play a mini-game.</span>';
+
+  function exec(line){
+    var tl=line.trim();
+    if(ttt){if(/^(stop|quit|exit)$/i.test(tl)){ttt=null;pr('Game over. Back to the terminal!');return;}if(/^[a-cA-C][1-3]$/.test(tl)){tttMove(tl);return;}}
+    if(bs){if(/^(stop|quit|exit)$/i.test(tl)){bs=null;pr('Game over. Back to the terminal!');return;}var bfm=/^flag\s+([a-eA-E][1-5])$/.exec(tl);if(bfm){bsFlag(bfm[1]);return;}if(/^[a-eA-E][1-5]$/.test(tl)){bsFire(tl);return;}}
+    if(sud){if(/^(stop|quit|exit)$/i.test(tl)){sud=null;pr('Game over. Back to the terminal!');return;}var cl=('abcdef').slice(0,sud.N),smm=new RegExp('^(['+cl+cl.toUpperCase()+'])([1-'+sud.N+'])\\s+([1-'+sud.N+'])$').exec(tl);if(smm){sudPlace(smm[1],smm[2],smm[3]);return;}}
+    var parts=tl.split(/\s+/).filter(function(x){return x.length;});
+    if(!parts.length)return;
+    var cmd=parts[0],a=parts.slice(1);
+    st={cmd:cmd,args:a,cwdAbs:abspath(cwd),catAbs:null,out:''};
+    petMood('think',12);
+    if(pendingWord){
+      if(line.trim().toUpperCase()===pendingWord){doLevelUp();return;}
+      pr('<span class="er">Not quite! Read the glowing letters on the left and type that word.</span>');sfx('error');return;
+    }
+    function O(h){st.out+=(h+'\n');pr(h);}
+    if(cmd==='help'){O(HELP);return done();}
+    if(cmd==='clear'){clearTerm();return done();}
+    if(cmd==='pwd'){O(abspath(cwd));return done();}
+    if(cmd==='ls'){
+      var tgt=null,glob=null,showAll=false;for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('a')>=0)showAll=true;}else{if(a[i].indexOf('*')>=0)glob=a[i];else tgt=a[i];}}
+      function vis(k){return showAll||k[0]!=='.';}
+      var d=tgt?resolve(tgt):cwd;
+      if(glob){var dd=cwd,g=glob;if(glob.indexOf('/')>=0){var nb={};dd=parentOf(glob,nb);g=nb.n;}if(!dd){O('<span class="er">ls: no such folder</span>');return done();}O(keys(dd).filter(function(k){return vis(k)&&matchGlob(k,g);}).map(function(k){return dd.ch[k].t==='d'?k+'/':k;}).join('  ')||'(nothing matches)');return done();}
+      if(!d){O('<span class="er">ls: '+esc(tgt)+': no such file or folder</span>');return done();}
+      if(d.t==='f'){O(d.name);return done();}
+      O(keys(d).filter(vis).map(function(k){return d.ch[k].t==='d'?k+'/':k;}).join('  ')||'(empty)');return done();
+    }
+    if(cmd==='cd'){var t=a[0]||'~',d=resolve(t);if(!d){O('<span class="er">cd: '+esc(t)+': no such folder</span>');return done();}if(d.t!=='d'){O('<span class="er">cd: '+esc(t)+' is a file</span>');return done();}cwd=d;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();return done();}
+    if(cmd==='cat'){if(!a.length){O('cat: which file? e.g. cat welcome.txt');return done();}var f=resolve(a[0]);if(!f){O('<span class="er">cat: '+esc(a[0])+': no such file</span>');return done();}if(f.t!=='f'){O('<span class="er">cat: '+esc(a[0])+' is a folder</span>');return done();}st.catAbs=abspath(f);O(esc(f.content));if(f.name==='mystery.txt'||f.name==='.secret')sfx('meow');return done();}
+    if(cmd==='tree'){var o=['.'];(function rec(d,pre){var ks=keys(d);ks.forEach(function(k,i){var last=i+1===ks.length;o.push(pre+(last?'`-- ':'|-- ')+k+(d.ch[k].t==='d'?'/':''));if(d.ch[k].t==='d')rec(d.ch[k],pre+(last?'    ':'|   '));});})(cwd,'');O(esc(o.join('\n')));return done();}
+    if(cmd==='mkdir'){if(!a.length){O('mkdir: name? e.g. mkdir den');return done();}var nb={},par=parentOf(a[0],nb);if(!par){O('<span class="er">mkdir: bad path</span>');return done();}if(par.ch[nb.n]){O('<span class="er">mkdir: '+esc(nb.n)+' already exists</span>');return done();}par.ch[nb.n]=D(nb.n,{});par.ch[nb.n].parent=par;return done();}
+    if(cmd==='touch'){if(!a.length){O('touch: name? e.g. touch bowl.txt');return done();}var nb={},par=parentOf(a[0],nb);if(!par){O('<span class="er">touch: bad path</span>');return done();}if(!par.ch[nb.n]){par.ch[nb.n]=F(nb.n,'');par.ch[nb.n].parent=par;}return done();}
+    if(cmd==='echo'){var gt=a.indexOf('>'),ap=a.indexOf('>>');var r=gt<0?ap:gt,append=gt<0&&ap>=0;if(r<0){O(a.join(' '));return done();}var txt=a.slice(0,r).join(' '),fn=a[r+1];if(!fn){O('echo: file after >?');return done();}var nb={},par=parentOf(fn,nb);if(!par){O('<span class="er">echo: bad path</span>');return done();}if(!par.ch[nb.n]){par.ch[nb.n]=F(nb.n,'');par.ch[nb.n].parent=par;}var f=par.ch[nb.n];f.content=append?(f.content+txt+'\n'):(txt+'\n');return done();}
+    if(cmd==='cp'){if(a.length<2){O('cp: cp <from> <to>');return done();}var s=resolve(a[0]);if(!s||s.t!=='f'){O('<span class="er">cp: can only copy a file</span>');return done();}var dd=resolve(a[1]),nm;if(dd&&dd.t==='d'){nm=s.name;}else{var nb={};dd=parentOf(a[1],nb);nm=nb.n;}if(!dd){O('<span class="er">cp: bad path</span>');return done();}dd.ch[nm]=F(nm,s.content);dd.ch[nm].parent=dd;return done();}
+    if(cmd==='mv'){if(a.length<2){O('mv: mv <from> <to>');return done();}var s=resolve(a[0]);if(!s||!s.parent){O('<span class="er">mv: '+esc(a[0])+': not found</span>');return done();}var dd=resolve(a[1]),nm;if(dd&&dd.t==='d'){nm=s.name;}else{var nb={};dd=parentOf(a[1],nb);nm=nb.n;}if(!dd){O('<span class="er">mv: bad path</span>');return done();}if(dd.ch[nm]){O('<span class="er">mv: '+esc(nm)+' already exists</span>');return done();}delete s.parent.ch[s.name];s.name=nm;s.parent=dd;dd.ch[nm]=s;return done();}
+    if(cmd==='rm'){var rec=false,ts=[];for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('r')>=0)rec=true;}else ts.push(a[i]);}if(!ts.length){O('rm: what to remove?');return done();}for(var j=0;j<ts.length;j++){var n=resolve(ts[j]);if(!n){O('<span class="er">rm: '+esc(ts[j])+': not found</span>');continue;}if(n===cwd||!n.parent){O('<span class="er">rm: step out first</span>');continue;}if(n.t==='d'&&keys(n).length&&!rec){O('<span class="er">rm: '+esc(n.name)+' is a full folder. Use rm -r '+esc(ts[j])+'</span>');continue;}delete n.parent.ch[n.name];}return done();}
+    if(cmd==='find'){if(!a.length){O('find: find <name>');return done();}var all=listAll(cwd,abspath(cwd),[]),hits=all.filter(function(e){return a[0].indexOf('*')>=0?matchGlob(e.node.name,a[0]):e.node.name===a[0];});if(!hits.length){O('(not found)');}else hits.forEach(function(e){O(e.path);});return done();}
+    if(cmd==='grep'){if(a.length<1){O('grep: grep <word> [file]');return done();}var word=a[0];var files=[];if(a[1]){var f=resolve(a[1]);if(f&&f.t==='f')files.push({node:f,path:abspath(f)});}else{files=listAll(cwd,abspath(cwd),[]).filter(function(e){return e.node.t==='f';});}var any=false;files.forEach(function(e){e.node.content.split('\n').forEach(function(ln){if(ln.toLowerCase().indexOf(word.toLowerCase())>=0){any=true;O('<span class="hi">'+esc(e.path)+'</span>: '+esc(ln));}});});if(!any)O('(no matches)');return done();}
+    if(funCmd(cmd,a,O))return done();
+    O('<span class="er">'+esc(cmd)+': command not found \u2014 type help. Tip: try meow, dance, fortune or rainbow!</span>');sfx('error');
+  }
+
+  var FORTUNES=['A great adventure is near!','You will find a hidden treasure.','Press on, explorer!','Robots make good friends.','Curiosity makes you strong.','Today is a great day to learn.'];
+  var SANDBOX_CMDS={meow:1,woof:1,dance:1,hello:1,hi:1,hey:1,greppo:1,pet:1,fortune:1,rainbow:1,sudo:1,magic:1,xyzzy:1,abracadabra:1,secret:1,eggs:1,ttt:1,tictactoe:1,battleship:1,bs:1,sudoku:1,games:1};
+  function funCmd(cmd,a,O){
+    if(SANDBOX_CMDS[cmd]&&P.mode!=='sandbox'){O('<span class="hi">That\'s a Sandbox toy!</span> Finish your quest task first, or press the <b>Sandbox</b> button (or type sandbox) to play and explore.');return true;}
+    switch(cmd){
+      case 'meow': sfx('meow');flashPet('happy',40);O('<span class="hi"> /\\_/\\\n( o.o )\n  > ^ <   Meow!</span>');return true;
+      case 'woof': sfx('meow');flashPet('happy',40);O('<span class="hi">  __\n (___()*>   Woof!</span>');return true;
+      case 'dance': flashPet('happy',120);sfx('win');O('<span class="spk">\u266a   \\(^o^)/   ~   \\(^o^)/   \u266a   Greppo is dancing!</span>');return true;
+      case 'hello': case 'hi': case 'hey': sfx('ding');flashPet('happy',40);O('<span class="hi">Greppo waves at you! Hi '+esc(P.name||'friend')+'!</span>');return true;
+      case 'greppo': case 'pet': sfx('ding');flashPet('happy',60);O('<span class="hi">Greppo jumps with joy!</span>');return true;
+      case 'fortune': sfx('letter');O('<span class="ok">\u2728 '+FORTUNES[Math.floor(Math.random()*FORTUNES.length)]+'</span>');return true;
+      case 'rainbow': sfx('win');O('<span style="color:#ff5f57">\u2588</span><span style="color:#febc2e">\u2588</span><span style="color:#ffd86b">\u2588</span><span style="color:#28c840">\u2588</span><span style="color:#8fd0ff">\u2588</span><span style="color:#b794ff">\u2588</span>  a rainbow!');return true;
+      case 'sudo': sfx('ding');O('<span class="ok">Nice try! You already have all the powers you need here.</span>');return true;
+      case 'magic': case 'xyzzy': case 'abracadabra': sfx('letter');sparkleLine();O('<span class="ok">Sparkles fly... did something change?</span>');return true;
+      case 'secret': case 'eggs': O('<span class="dim">Hidden files start with a dot. Try: ls -a</span>');return true;
+      case 'sandbox': setMode('sandbox');return true;
+      case 'quest': case 'story': setMode('quest');return true;
+      case 'play': case 'again': replay();return true;
+      case 'ttt': case 'tictactoe': tttStart(O);return true;
+      case 'battleship': case 'bs': bsStart(O);return true;
+      case 'sudoku': sudStart(O,a[0]&&/easy/i.test(a[0]));return true;
+      case 'symbols': case 'operators': O(SYMBOLS);return true;
+      case 'games': O('<span class="hi">Mini-games:</span> type <b>ttt</b> to play tic-tac-toe against Greppo!');return true;
+    }
+    return false;
+  }
+
+  var SYMBOLS=
+    '<span class="hi">Special symbols</span> (don\'t type the ( ) brackets):\n'+
+    '  >    send text INTO a new file   ( echo hi > note.txt )\n'+
+    '  >>   ADD text to the end of a file   ( echo more >> note.txt )\n'+
+    '  ~    your home folder   ( cd ~ goes home )\n'+
+    '  ..   the folder one step up   ( cd .. )\n'+
+    '  .    the folder you are in right now\n'+
+    '  *    means "anything"   ( ls *.txt = all text files )\n'+
+    '  -    starts a flag, an extra option   ( rm -r folder )';
+
+  var STIPS={
+    mkdir:['Nice folder! Put a file inside it with touch.','Try a folder inside a folder: mkdir city, then mkdir city/park.'],
+    touch:['A new file! Write something in it: echo hello > yourfile.txt.','Read a file back with cat.'],
+    echo:['You wrote to a file! Read it with cat.','Add another line with >> instead of >.'],
+    cd:['Type pwd to see where you are. cd ~ takes you home.','Go up a folder with cd ..'],
+    cat:['Psst: find hidden files with ls -a, then cat .secret.'],
+    rm:['Careful with rm! On a real computer it is forever. Here it is safe.'],
+    ls:['See hidden files with ls -a.'],
+    tree:['tree shows the whole map at once.'],
+    _:['Try something weird and see what happens!','Fun to try: meow, dance, rainbow, fortune, ttt.','Make a silly folder: mkdir dinosaurs.','Type symbols to learn > >> ~ .. . *']
+  };
+  function sandboxTip(cmd){if(P.mode!=='sandbox')return;var arr=STIPS[cmd]||STIPS._;say('<b>Greppo:</b> '+arr[Math.floor(Math.random()*arr.length)]);}
+
+  var ttt=null;
+  function tttCellChar(c){return c===' '?'.':c;}
+  function tttDraw(){var b=ttt.b;pr('<span class="hi">    a   b   c</span>\n 1  '+tttCellChar(b[0])+' | '+tttCellChar(b[1])+' | '+tttCellChar(b[2])+'\n   ---+---+---\n 2  '+tttCellChar(b[3])+' | '+tttCellChar(b[4])+' | '+tttCellChar(b[5])+'\n   ---+---+---\n 3  '+tttCellChar(b[6])+' | '+tttCellChar(b[7])+' | '+tttCellChar(b[8]));}
+  function tttWin(b,p){var L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(var i=0;i<L.length;i++){if(b[L[i][0]]===p&&b[L[i][1]]===p&&b[L[i][2]]===p)return true;}return false;}
+  function tttAI(b){function fw(p){for(var i=0;i<9;i++){if(b[i]===' '){b[i]=p;var w=tttWin(b,p);b[i]=' ';if(w)return i;}}return -1;}var m=fw('O');if(m<0)m=fw('X');if(m<0&&b[4]===' ')m=4;if(m<0){var free=[];for(var i=0;i<9;i++)if(b[i]===' ')free.push(i);m=free.length?free[Math.floor(Math.random()*free.length)]:-1;}return m;}
+  function tttStart(O){ttt={b:[' ',' ',' ',' ',' ',' ',' ',' ',' ']};(O||pr)('<span class="ok">Tic-tac-toe!</span> You are X. Type a cell like <b>a1</b>, <b>b2</b>, <b>c3</b>. (Type stop to quit.)');tttDraw();}
+  function tttMove(cell){
+    var c=cell.toLowerCase(),col='abc'.indexOf(c[0]),row=parseInt(c[1],10)-1,i=row*3+col;
+    if(col<0||row<0||row>2){pr('<span class="er">Use a cell like a1, b2, c3</span>');return;}
+    if(ttt.b[i]!==' '){pr('<span class="er">That cell is taken, pick another</span>');return;}
+    ttt.b[i]='X';
+    if(tttWin(ttt.b,'X')){tttDraw();pr('<span class="ok">You WIN! ⭐ Type ttt to play again.</span>');sfx('fanfare');flashPet('happy',120);ttt=null;return;}
+    if(ttt.b.indexOf(' ')<0){tttDraw();pr('<span class="ok">It\'s a draw! Type ttt to play again.</span>');ttt=null;return;}
+    var m=tttAI(ttt.b);if(m>=0)ttt.b[m]='O';sfx('click');
+    if(tttWin(ttt.b,'O')){tttDraw();pr('<span class="hi">Greppo wins this one! Type ttt to try again.</span>');sfx('error');ttt=null;return;}
+    if(ttt.b.indexOf(' ')<0){tttDraw();pr('<span class="ok">It\'s a draw! Type ttt to play again.</span>');ttt=null;return;}
+    tttDraw();pr('Your turn (X). Type a cell.');
+  }
+
+  function sandboxBanner(){
+    if(grown)return '<span class="ok">⭐ Quest complete! Free play as much as you like.</span>';
+    return '<span class="q">▶ Quest waiting</span>: Level '+(P.lvl+1)+', lesson '+(P.lesson+1)+'. I am a <b>'+STAGE_NAMES[stageIndex()]+'</b> — type <b>quest</b> to help me grow!';
+  }
+  function nudgeQuest(){if(grown)return;flashPet('think',24);pr('<span class="hi">Greppo:</span> I miss our quest! Type <b>quest</b> to keep growing me.');say('<b>Greppo:</b> our quest is waiting! Type <b>quest</b> to come back and help me evolve.');}
+
+  var bs=null;
+  function bsBoard(){
+    var b={fired:[],ship:[],flag:[]};for(var i=0;i<25;i++){b.fired[i]=false;b.flag[i]=false;}
+    var occ={};
+    [3,2,2].forEach(function(len){for(var tr=0;tr<300;tr++){var h=Math.random()<0.5,r=Math.floor(Math.random()*5),c=Math.floor(Math.random()*5),cells=[],ok=true;for(var k=0;k<len;k++){var rr=r+(h?0:k),cc=c+(h?k:0);if(rr>4||cc>4){ok=false;break;}var idx=rr*5+cc;if(occ[idx]){ok=false;break;}cells.push(idx);}if(ok){cells.forEach(function(x){occ[x]=true;b.ship.push(x);});return;}}});
+    return b;
+  }
+  function bsStart(O){bs={enemy:bsBoard(),you:bsBoard(),hunt:[]};(O||pr)('<span class="ok">Battleship vs Greppo!</span> You both have 3 hidden ships. Sink Greppo\'s fleet before it sinks yours. Fire at a square like <b>b3</b> (a-e, 1-5). Not sure a square is safe? Mark it: <b>flag b3</b>. (Type stop to quit.)');bsDraw();}
+  function bsChar(b,i,enemy){if(b.fired[i])return b.ship.indexOf(i)>=0?'X':'o';if(enemy&&b.flag[i])return 'P';if(!enemy&&b.ship.indexOf(i)>=0)return '#';return '.';}
+  function bsDraw(){
+    var e=['  GREPPO\'S SEA (fire here)','    a b c d e'],y=['  YOUR SEA','    a b c d e'];
+    for(var r=0;r<5;r++){var er=(r+1)+'  ',yr=(r+1)+'  ';for(var c=0;c<5;c++){var i=r*5+c;er+=bsChar(bs.enemy,i,true)+' ';yr+=bsChar(bs.you,i,false)+' ';}e.push(er);y.push(yr);}
+    pr('<span class="hi">'+e.join('\n')+'</span>\n<span class="dim">'+y.join('\n')+'\nX hit   o miss   P your flag   # your ship</span>');
+  }
+  function bsLeft(b){return b.ship.filter(function(x){return !b.fired[x];}).length;}
+  function bsFlag(cell){var c=cell.toLowerCase(),col='abcde'.indexOf(c[0]),row=parseInt(c[1],10)-1,i=row*5+col;if(col<0)return;bs.enemy.flag[i]=!bs.enemy.flag[i];sfx('click');bsDraw();pr(bs.enemy.flag[i]?'Flag placed. You think there is no ship there.':'Flag removed.');}
+  function bsAI(){var b=bs.you,i;if(bs.hunt.length){i=bs.hunt.pop();if(b.fired[i])return bsAI();}else{var free=[];for(var k=0;k<25;k++)if(!b.fired[k])free.push(k);if(!free.length)return false;i=free[Math.floor(Math.random()*free.length)];}b.fired[i]=true;var hit=b.ship.indexOf(i)>=0;if(hit){var r=Math.floor(i/5),c=i%5;[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(function(p){if(p[0]>=0&&p[0]<5&&p[1]>=0&&p[1]<5){var j=p[0]*5+p[1];if(!b.fired[j])bs.hunt.push(j);}});}return hit;}
+  function bsFire(cell){
+    var c=cell.toLowerCase(),col='abcde'.indexOf(c[0]),row=parseInt(c[1],10)-1,i=row*5+col;
+    if(col<0){pr('<span class="er">Use a square like b3</span>');return;}
+    if(bs.enemy.fired[i]){pr('<span class="er">You already fired there</span>');return;}
+    bs.enemy.fired[i]=true;var hit=bs.enemy.ship.indexOf(i)>=0;sfx(hit?'ding':'click');
+    if(bsLeft(bs.enemy)===0){bsDraw();pr('<span class="ok">You sank Greppo\'s whole fleet — you WIN! ⭐ Type bs to play again.</span>');sfx('fanfare');flashPet('happy',120);bs=null;return;}
+    var aiHit=bsAI();
+    if(bsLeft(bs.you)===0){bsDraw();pr('<span class="hi">Greppo sank your fleet this time! Type bs to try again.</span>');sfx('error');bs=null;return;}
+    bsDraw();
+    pr((hit?'<span class="ok">Hit!</span>':'Miss.')+' Greppo fired back and '+(aiHit?'<span class="er">hit your ship!</span>':'missed.')+' Your turn.');
+  }
+
+  var sud=null;
+  function sRange(n){var a=[];for(var i=0;i<n;i++)a.push(i);return a;}
+  function sShuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function sudGen(R,C){
+    var N=R*C;
+    function pat(r,c){return (C*(r%R)+Math.floor(r/R)+c)%N;}
+    var rows=[];sShuffle(sRange(C)).forEach(function(b){sShuffle(sRange(R)).forEach(function(r){rows.push(b*R+r);});});
+    var cols=[];sShuffle(sRange(R)).forEach(function(b){sShuffle(sRange(C)).forEach(function(c){cols.push(b*C+c);});});
+    var nums=sShuffle(sRange(N)).map(function(x){return x+1;});
+    var sol=[];for(var r=0;r<N;r++)for(var c=0;c<N;c++)sol.push(nums[pat(rows[r],cols[c])]);
+    return {sol:sol,N:N};
+  }
+  function sudStart(O,easy){
+    var g=easy?sudGen(2,2):sudGen(2,3);
+    var N=g.N,cells=N*N,clues=Math.round(cells*(easy?0.5:0.4));
+    var idx=sShuffle(sRange(cells)),give=[];for(var k=0;k<cells;k++)give.push(0);
+    for(var m=0;m<clues;m++)give[idx[m]]=g.sol[idx[m]];
+    sud={sol:g.sol,cur:give.slice(),given:give.map(function(x){return x!==0;}),N:N};
+    var cl='abcdef'.slice(0,N);
+    (O||pr)('<span class="ok">Sudoku '+N+'x'+N+'!</span> Fill every row, column and box with 1-'+N+'. Type a cell and a number like <b>'+cl[0]+'1 1</b> (columns '+cl[0]+'-'+cl[N-1]+', rows 1-'+N+'). Want an easier one? Type <b>sudoku easy</b>. (Type stop to quit.)');
+    sudDraw();
+  }
+  function sudDraw(){var N=sud.N,cl='abcdef'.slice(0,N),o=['    '+cl.split('').join(' ')];for(var r=0;r<N;r++){var row=(r+1)+'  ';for(var c=0;c<N;c++){var i=r*N+c;row+=(sud.cur[i]?sud.cur[i]:'.')+' ';}o.push(row);}pr('<span class="hi">'+o.join('\n')+'</span>');}
+  function sudPlace(colCh,rowCh,valCh){var N=sud.N,col='abcdef'.indexOf(colCh.toLowerCase()),row=parseInt(rowCh,10)-1,val=parseInt(valCh,10),i=row*N+col;if(col<0||col>=N||row<0||row>=N){pr('<span class="er">Use a cell inside the board</span>');return;}if(val<1||val>N){pr('<span class="er">Use a number 1-'+N+'</span>');return;}if(sud.given[i]){pr('<span class="er">That number is already given, pick another cell</span>');return;}if(val===sud.sol[i]){sud.cur[i]=val;sfx('ding');sudDraw();if(sud.cur.every(function(x,j){return x===sud.sol[j];})){pr('<span class="ok">Solved it — you WIN! ⭐ Type sudoku to play again.</span>');sfx('fanfare');flashPet('happy',120);sud=null;return;}pr('Nice! Keep going.');}else{sfx('error');pr('<span class="er">Hmm, '+val+" doesn't fit there. Try a different number.</span>");}}
+
+  function isCmd(n){return function(s){return s.cmd===n;};}
+  function cwdIs(p){return function(s){return s.cwdAbs===norm(p);};}
+  function goInto(p){return function(s){return s.cmd==='cd'&&s.cwdAbs===norm(p);};}
+  function cdUp(){return function(s){return s.cmd==='cd'&&s.args[0]==='..';};}
+  function cdHomeCmd(){return function(s){return s.cmd==='cd'&&(s.args.length===0||s.args[0]==='~');};}
+  function catIs(p){return function(s){return s.catAbs===norm(p);};}
+  function exists(p){return function(s){return !!fromAbs(norm(p));};}
+  function gone(p){return function(s){return !fromAbs(norm(p));};}
+  function fileHas(p,sub){return function(s){var n=fromAbs(norm(p));return n&&n.t==='f'&&n.content.indexOf(sub)>=0;};}
+  function outHas(n,sub){return function(s){return s.cmd===n&&s.out.toLowerCase().indexOf(sub.toLowerCase())>=0;};}
+
+  function T(d,c){return{d:d,c:c};}
+  function Q(q,cmd,c){return{q:q,cmd:cmd,c:c};}
+
+  var LEVELS=[
+    {word:'ROBOT',lessons:[
+      {teach:'pwd + ls \u2014 look around',slots:[0],tasks:[
+        T('Where am I? Type <b>pwd</b> \u2014 print working directory.',isCmd('pwd')),
+        T('What is here? Type <b>ls</b> \u2014 list files and folders.',isCmd('ls')),
+        Q('Which command shows where you are? Type it.','pwd',isCmd('pwd'))]},
+      {teach:'cd \u2014 move between folders',slots:[1],tasks:[
+        T('Go into the folder games. Type <b>cd games</b> \u2014 change directory.',goInto('~/games')),
+        T('Go up one folder. Type <b>cd ..</b>',cdUp()),
+        Q('Go into the folder pictures.','cd pictures',goInto('~/pictures')),
+        Q('Which command takes you to your home folder? Type it.','cd ~',cdHomeCmd())]},
+      {teach:'cat \u2014 read files',slots:[2],tasks:[
+        T('Read the file welcome.txt. Type <b>cat welcome.txt</b>. The .txt means it is a text file.',catIs('~/welcome.txt')),
+        Q('Read the file games/secret.txt','cat games/secret.txt',catIs('~/games/secret.txt')),
+        Q('Which command reads a file? Use it to read box/clue.txt','cat box/clue.txt',catIs('~/box/clue.txt'))]},
+      {teach:'tree + paths',slots:[3],tasks:[
+        T('See all folders as a tree. Use the command <b>tree</b>',isCmd('tree')),
+        Q('Go into the folder box, then into toys.','cd box/toys',goInto('~/box/toys')),
+        Q('Which one-word command shows the whole tree? Type it.','tree',isCmd('tree'))]},
+      {teach:'Checkpoint \u2014 answer from memory',checkpoint:true,slots:[4],tasks:[
+        Q('Show where you are.','pwd',isCmd('pwd')),
+        Q('List everything here.','ls',isCmd('ls')),
+        Q('Go into the folder games.','cd games',goInto('~/games')),
+        Q('Now go back to your home folder.','cd ~',cdHomeCmd()),
+        Q('Read the file welcome.txt','cat welcome.txt',catIs('~/welcome.txt')),
+        Q('Show all folders as a tree.','tree',isCmd('tree'))]}
+    ]},
+    {word:'LINUX',lessons:[
+      {teach:'mkdir + touch \u2014 make things',slots:[0],tasks:[
+        T('Make a new folder called den. Type <b>mkdir den</b> \u2014 make directory.',exists('~/den')),
+        T('Make an empty file inside it. Use <b>touch den/bowl.txt</b> \u2014 touch makes an empty file',exists('~/den/bowl.txt')),
+        Q('Make a new folder called toys','mkdir toys',exists('~/toys'))]},
+      {teach:'echo > \u2014 write into files',slots:[1],tasks:[
+        T('Write a word into a file. Use <b>echo food > den/bowl.txt</b> \u2014 the > sends the word into the file',fileHas('~/den/bowl.txt','food')),
+        Q('Add the word <span class="kw">yummy</span> to the end of den/bowl.txt. Use >> to keep the old text','echo yummy >> den/bowl.txt',fileHas('~/den/bowl.txt','yummy')),
+        Q('Create a new file hello.txt with the word <span class="kw">hi</span> inside. Use echo with > to make the file','echo hi > hello.txt',fileHas('~/hello.txt','hi'))]},
+      {teach:'cp + mv \u2014 copy and rename',slots:[2],tasks:[
+        T('Copy the bowl. Type <b>cp den/bowl.txt den/bowl2.txt</b> \u2014 copy.',exists('~/den/bowl2.txt')),
+        Q('Rename den/bowl2.txt to den/spare.txt','mv den/bowl2.txt den/spare.txt',function(s){return gone('~/den/bowl2.txt')(s)&&exists('~/den/spare.txt')(s);}),
+        Q('Go into the folder den (an old skill!).','cd den',goInto('~/den'))]},
+      {teach:'rm + flags \u2014 delete, be careful',slots:[3],tasks:[
+        T('Delete the spare file. Use <b>rm ~/den/spare.txt</b> \u2014 rm removes a file',gone('~/den/spare.txt')),
+        T('A flag is an extra option that starts with a dash -. To delete a whole folder, add the flag -r. Use <b>rm -r ~/den/toys</b>',gone('~/den/toys')),
+        Q('Now delete the folder <span class="kw">toys</span> in your home, using the same -r flag','rm -r ~/toys',gone('~/toys')),
+        Q('Which command deletes things? Delete the file ~/hello.txt','rm ~/hello.txt',gone('~/hello.txt'))]},
+      {teach:'Checkpoint \u2014 answer from memory',checkpoint:true,slots:[4],tasks:[
+        Q('Make a new folder called test.','mkdir test',exists('~/test')),
+        Q('Make a file called test/a.txt','touch test/a.txt',exists('~/test/a.txt')),
+        Q('Write the word ok into test/a.txt','echo ok > test/a.txt',fileHas('~/test/a.txt','ok')),
+        Q('Copy test/a.txt to test/b.txt','cp test/a.txt test/b.txt',exists('~/test/b.txt')),
+        Q('Rename test/b.txt to test/c.txt','mv test/b.txt test/c.txt',function(s){return gone('~/test/b.txt')(s)&&exists('~/test/c.txt')(s);}),
+        Q('Delete the whole folder test.','rm -r test',gone('~/test'))]}
+    ]},
+    {word:'PILOT',lessons:[
+      {teach:'find \u2014 search by name',slots:[0],tasks:[
+        T('Search for a file by name. Use <b>find ball.txt</b>',outHas('find','ball.txt')),
+        Q('Find the file robot-toy.txt','find robot-toy.txt',outHas('find','robot-toy.txt')),
+        Q('Which command finds a file by its name? Find ball.txt','find ball.txt',outHas('find','ball.txt'))]},
+      {teach:'grep \u2014 search inside files',slots:[1],tasks:[
+        T('Search for a word inside files. Use <b>grep greppo notes/diary.txt</b>',outHas('grep','greppo')),
+        Q('Search everywhere for the word treasure.','grep treasure',outHas('grep','treasure')),
+        Q('Which command searches inside files? Search for the word pet.','grep pet',outHas('grep','pet'))]},
+      {teach:'* the star (wildcards)',slots:[2],tasks:[
+        T('List only text files. Type <b>ls *.txt</b> \u2014 the star means "anything".',function(s){return s.cmd==='ls'&&s.args.join('').indexOf('*')>=0;}),
+        Q('Find files with toy in the name, using the star.','find *toy*',function(s){return s.cmd==='find'&&s.args.join('').indexOf('*')>=0&&s.out.indexOf('toy')>=0;}),
+        Q('Go into the folder box, then toys (an old skill!).','cd box/toys',goInto('~/box/toys'))]},
+      {teach:'Mix \u2014 old and new together',slots:[3],tasks:[
+        Q('Show where you are.','pwd',isCmd('pwd')),
+        Q('Make a new folder called logs.','mkdir logs',exists('~/logs')),
+        Q('Search for the word pet.','grep pet',outHas('grep','pet'))]},
+      {teach:'Final checkpoint \u2014 the big quest',checkpoint:true,slots:[4],tasks:[
+        Q('Show where you are.','pwd',isCmd('pwd')),
+        Q('Find the file robot-toy.txt','find robot-toy.txt',outHas('find','robot-toy.txt')),
+        Q('Go into the folder box, then toys.','cd box/toys',goInto('~/box/toys')),
+        Q('Read the file robot-toy.txt','cat robot-toy.txt',catIs('~/box/toys/robot-toy.txt')),
+        Q('Go back to your home folder.','cd ~',cdHomeCmd()),
+        Q('Open the treasure: read ~/treasure.txt','cat ~/treasure.txt',catIs('~/treasure.txt'))]}
+    ]}
+  ];
+
+  var REVIEWQ={
+    pwd:Q('Review: show where you are.','pwd',isCmd('pwd')),
+    ls:Q('Review: list everything here.','ls',isCmd('ls')),
+    cd:Q('Review: go into the folder games.','cd games',goInto('~/games')),
+    cat:Q('Review: read ~/welcome.txt','cat ~/welcome.txt',catIs('~/welcome.txt')),
+    tree:Q('Review: show the whole tree.','tree',isCmd('tree')),
+    mkdir:Q('Review: make a folder ~/review.','mkdir ~/review',exists('~/review')),
+    touch:Q('Review: make a file ~/review-note.txt','touch ~/review-note.txt',exists('~/review-note.txt')),
+    echo:Q('Review: write hi into ~/review-note.txt','echo hi > ~/review-note.txt',fileHas('~/review-note.txt','hi')),
+    cp:Q('Review: copy ~/welcome.txt to ~/welcome2.txt','cp ~/welcome.txt ~/welcome2.txt',exists('~/welcome2.txt')),
+    mv:Q('Review: rename ~/welcome2.txt to ~/renamed.txt','mv ~/welcome2.txt ~/renamed.txt',exists('~/renamed.txt')),
+    rm:Q('Review: delete ~/renamed.txt','rm ~/renamed.txt',gone('~/renamed.txt')),
+    find:Q('Review: find ball.txt','find ball.txt',outHas('find','ball.txt')),
+    grep:Q('Review: search for the word treasure.','grep treasure',outHas('grep','treasure'))
+  };
+  var MORDER=['pwd','ls','cd','cat','tree','mkdir','touch','echo','cp','mv','rm','find','grep'];
+  var CMDS=['pwd','ls','cd','cat','tree','mkdir','touch','echo','cp','mv','rm','find','grep','clear','help'];
+  var STAGE_NAMES=['Egg','Hatchling','Junior','Champion','MEGA'];
+  var WORDPOOL=['ROBOT','LINUX','PILOT','SPACE','LASER','MAGIC','TIGER','PIXEL','NINJA','COMET','DRONE','POWER','BRAVE','CLOUD','SOLAR','ROCKY','SUPER','FROST'];
+  function pickWords(){var p=WORDPOOL.slice(),out=[];for(var i=0;i<3;i++){var j=Math.floor(Math.random()*p.length);out.push(p.splice(j,1)[0]);}return out;}
+  function wordFor(l){return (P.words&&P.words[l])||LEVELS[l].word;}
+
+  var PAGES=[
+    {art:['    *    .    *','  .    *   \u00b7   *','     \u00b7    *    .'].join('\n'),
+     text:'Long ago, inside every computer, lived tiny creatures made of light.'},
+    {art:['   .--.','  / -- \\',' |  ~~  |','  \\    /',"   '--'"].join('\n'),
+     text:'The bravest one slept inside a glowing egg. Its name was <b>Greppo</b>.'},
+    {art:['   R      O','       B','   O      T','   ? ? ?'].join('\n'),
+     text:'One day a glitch swept through the system and scattered Greppo\u2019s power into secret <b>letters</b>, hidden deep in the folders.'},
+    {art:['   .--.','  / x  \\',' |  ~~  |','  \\    /',"   '--'",'    . . .'].join('\n'),
+     text:'Without them, Greppo cannot wake, cannot grow, and cannot find its way home.'},
+    {art:[' .----------.',' | > _      |',' |          |',"  '----------'"].join('\n'),
+     text:'But a new Explorer has arrived \u2014 <b>{name}</b>! A few magic words, called <b>commands</b>, can search the whole system.'},
+    {art:['   \\.^./',' .-""""-.','( ^    ^ )',"  '-....-'",' /^    ^\\'].join('\n'),
+     text:'Learn each command, prove you remember it, and watch Greppo <b>evolve</b> from egg to a mighty Pilot. Ready? Let\u2019s go!'}
+  ];
+  var bookIdx=0,bookOnDone=null;
+  function renderBook(){
+    var p=PAGES[bookIdx],name=P.name||'friend';
+    document.getElementById('bookArt').textContent=p.art;
+    document.getElementById('bookText').innerHTML=p.text.replace('{name}',esc(name));
+    var dots='';for(var i=0;i<PAGES.length;i++)dots+=(i===bookIdx?'\u25cf':'\u25cb')+' ';
+    document.getElementById('bookDots').textContent=dots.trim();
+    document.getElementById('bookBack').style.visibility=bookIdx>0?'visible':'hidden';
+    document.getElementById('bookNext').textContent=(bookIdx===PAGES.length-1)?'Start \u25b6':'Next \u25b6';
+  }
+  function showBook(onDone){bookOnDone=onDone;bookIdx=0;document.getElementById('book').hidden=false;renderBook();var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;if(!reduce)rainStart('bookRain','book');}
+  function bookFinish(){rainStop();document.getElementById('book').hidden=true;var f=bookOnDone;bookOnDone=null;if(f)f();}
+  function bookNext(){sfx('click');if(bookIdx<PAGES.length-1){bookIdx++;renderBook();}else bookFinish();}
+  function bookBack(){sfx('click');if(bookIdx>0){bookIdx--;renderBook();}}
+
+  var STORY=[
+    {t:'A SIGNAL FROM INSIDE',l:['Deep inside this computer a data-egg sleeps...','Its name is Greppo.','Explore the folders and wake it up!']},
+    {t:'GREPPO AWAKENS',l:['The data-egg cracks open!','Greppo hatched and evolved into a Hatchling.','Help it BUILD a den inside the system.']},
+    {t:'THE DEEP SYSTEM',l:['Greppo evolved again \u2014 it is stronger now!','Far below hides the lost Treasure Core.','Only a true Pilot can find it. Search and fly!']},
+    {t:'MISSION COMPLETE',l:['You reached the Treasure Core!','Greppo reached its MEGA form!','{name}, you are a Terminal Explorer!']}
+  ];
+  var mxRAF=null,mxDone=null;
+  function rainStart(cvId,ovId){
+    var cv=document.getElementById(cvId),ov=document.getElementById(ovId);
+    var w=cv.width=ov.clientWidth||600,h=cv.height=ov.clientHeight||400,ctx=cv.getContext('2d');
+    var fs=16,cols=Math.max(1,Math.floor(w/fs)),y=[];for(var i=0;i<cols;i++)y[i]=Math.floor(Math.random()*-20);
+    var chars=('01<>[]{}/|=+*$#abcdefghijklmnopqrstuvwxyz').split('');
+    function draw(){
+      ctx.fillStyle='rgba(4,8,6,0.18)';ctx.fillRect(0,0,w,h);
+      ctx.font=fs+'px monospace';
+      for(var i=0;i<cols;i++){
+        var x=i*fs,yy=y[i]*fs;
+        ctx.fillStyle='#9dffbd';ctx.fillText(chars[Math.floor(Math.random()*chars.length)],x,yy);
+        ctx.fillStyle='#1f7a3a';ctx.fillText(chars[Math.floor(Math.random()*chars.length)],x,yy-fs);
+        if(yy>h&&Math.random()>0.975)y[i]=0;else y[i]++;
+      }
+      mxRAF=requestAnimationFrame(draw);
+    }
+    draw();
+  }
+  function rainStop(){if(mxRAF)cancelAnimationFrame(mxRAF);mxRAF=null;}
+  function showMatrix(story,onDone){
+    var ov=document.getElementById('mx');ov.hidden=false;
+    var name=P.name||'friend';
+    var ls=story.l.map(function(s){return s.replace('{name}',name);});
+    document.getElementById('mxs').innerHTML='<div class="mxt">'+esc(story.t)+'</div>'+ls.map(function(s){return '<div class="mxl">'+esc(s)+'</div>';}).join('');
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(!reduce)rainStart('mxc','mx');
+    mxDone=function(){rainStop();ov.hidden=true;var f=onDone;onDone=null;mxDone=null;if(f)f();};
+  }
+
+  var P={name:'',user:'',lvl:0,lesson:0,task:0,found:[[],[],[]],mastery:{},review:{},words:null,runs:0,mode:'quest',muted:false,seenIntro:false};
+  try{var sv=JSON.parse(localStorage.getItem('greppo_web_v4'));if(sv){P=sv;}}catch(e){}
+  if(!P.found)P.found=[[],[],[]];
+  if(!P.mastery)P.mastery={};
+  if(!P.review)P.review={};
+  if(!P.mode)P.mode='quest';
+  function save(){try{localStorage.setItem('greppo_web_v4',JSON.stringify(P));}catch(e){}}
+  var pendingWord=null,grown=false,curTasks=[],hintUsed=false;
+
+  function curLevel(){return LEVELS[P.lvl];}
+  function curLesson(){return curLevel()?curLevel().lessons[P.lesson]:null;}
+  function cmdOf(task){var m=/<b>([^<]+)<\/b>/.exec(task.d||'');return m?m[1].trim():'';}
+  function baseOf(task){var full=task.q?(task.cmd||''):cmdOf(task);return full.trim().split(/\s+/)[0];}
+  function stageIndex(){if(grown)return 4;if(P.lvl===0&&(P.found[0]||[]).length<5)return 0;return (P.lvl===0?1:P.lvl===1?2:3);}
+
+  function buildTasks(ls){
+    if(!ls)return [];
+    var t=ls.tasks.slice();
+    if(ls.checkpoint){var added=0;for(var i=0;i<MORDER.length;i++){var b=MORDER[i];if(P.review[b]&&REVIEWQ[b]&&added<3){t.push(REVIEWQ[b]);added++;}}}
+    return t;
+  }
+
+  function renderLock(){var lv=curLevel();if(!lv){document.getElementById('lock').textContent='';return;}var w=wordFor(P.lvl),fnd=P.found[P.lvl]||[];var s=[];for(var i=0;i<w.length;i++)s.push(fnd.indexOf(i)>=0?w[i]:'_');document.getElementById('lock').textContent=s.join(' ');}
+  function renderChecklist(){
+    var el=document.getElementById('check');if(!curTasks.length){el.innerHTML='';return;}
+    var h='';
+    for(var i=0;i<curTasks.length;i++){
+      var t=curTasks[i],dn=i<P.task;
+      var label=t.q?('<span class="q">?</span> '+t.q):t.d;
+      h+=(dn?'<span class="ok">[x] </span><span class="ok">'+label+'</span>':'[ ] '+label)+'<br>';
+    }
+    el.innerHTML=h;
+  }
+  function renderHead(){var lv=curLevel();document.getElementById('lvl').textContent=lv?('Level '+(P.lvl+1)+' of 3   ·   lesson '+(P.lesson+1)+' of 5'):'All done!';}
+  function renderStage(){document.getElementById('stage').textContent='Stage: '+STAGE_NAMES[stageIndex()];}
+  function renderMastery(){
+    var el=document.getElementById('mastery');var any=false,h='learned: ';
+    for(var i=0;i<MORDER.length;i++){var b=MORDER[i];if(b in P.mastery){any=true;h+=b+' '+(P.mastery[b]>=2?'<span class="s">\u2605\u2605</span>':'<span class="s">\u2605</span>')+'   ';}}
+    if(any){el.hidden=false;el.innerHTML=h;}else el.hidden=true;
+  }
+  var sayTO=null;
+  function say(t){var el=document.getElementById('say');el.style.opacity='0';clearTimeout(sayTO);sayTO=setTimeout(function(){el.innerHTML=t;el.style.opacity='1';},120);}
+
+  function startLesson(){
+    P.task=0;hintUsed=false;curTasks=buildTasks(curLesson());
+    renderChecklist();renderHead();renderLock();renderMastery();renderStage();
+    var ls=curLesson();if(!ls)return;
+    if(ls.checkpoint){
+      cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();
+      clearTerm();
+      pr('<span class="ok">Checkpoint!</span> Answer each question on the left by typing <b>one</b> command, then press Enter. Do them one at a time, top to bottom.');
+      say('<b>Checkpoint:</b> answer the first question by typing one command, then Enter.');
+    } else say('<b>New skill:</b> '+ls.teach+'. Follow the steps \u2192');
+  }
+  function done(){checkTask();save();}
+  function sparkleLine(){pr('<span class="spk">   \u2728  \u00b7  \u2b50  \u00b7  \u2728  \u00b7  \u2b50  \u00b7  \u2728</span>');}
+  function checkTask(){
+    if(P.mode==='sandbox')return;
+    if(P.task>=curTasks.length)return;
+    var t=curTasks[P.task];
+    if(t.c(st)){
+      var b=baseOf(t),lvl=t.q?2:1;
+      if(b){if(!(b in P.mastery)||P.mastery[b]<lvl)P.mastery[b]=lvl;if(t.q){if(hintUsed)P.review[b]=1;else delete P.review[b];}}
+      renderMastery();
+      P.task++;hintUsed=false;sfx('ding');flashPet('happy');renderChecklist();
+      if(P.task>=curTasks.length)awardLetters();else say(t.q?'Correct! Next question \u2192':'Nice! Next step \u2192');
+    }
+  }
+  function awardLetters(){
+    var lv=curLevel(),ls=curLesson();
+    ls.slots.forEach(function(idx){if(P.found[P.lvl].indexOf(idx)<0)P.found[P.lvl].push(idx);});
+    renderLock();flashLock();sparkleLine();
+    sfx(ls.checkpoint?'win':'letter');
+    if(P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('\u2728 You found every letter! Read the glowing word on the left and type it in, then press Enter!');}
+    else{say(ls.checkpoint?'\u2b50 Checkpoint passed! You earned a letter!':'\u2b50 Lesson done! You earned a letter!');P.lesson++;startLesson();}
+    save();
+  }
+  function doLevelUp(){
+    pendingWord=null;sfx('fanfare');flashPet('happy',120);
+    if(P.lvl<LEVELS.length-1){
+      var nl=P.lvl+1;
+      showMatrix(STORY[nl],function(){P.lvl=nl;P.lesson=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();inp.focus();});
+    }else{
+      grown=true;
+      showMatrix(STORY[3],function(){renderStage();document.getElementById('lvl').textContent='Graduated! \u2b50';say('\u2691 You did it, '+esc(P.name||'')+'! Greppo reached its MEGA form!');pr('<span class="ok">\u2691 DIPLOMA: '+esc(P.name||'Explorer')+' \u2014 Terminal Explorer! \u2691</span>');sparkleLine();pr('<span class="hi">Type <b>play</b> to start a brand-new quest with new secret words and beat your time! Or type <b>sandbox</b> to free-play.</span>');inp.focus();});
+    }
+    save();
+  }
+
+  function setMode(m){
+    P.mode=m;save();
+    var b=document.getElementById('bMode');
+    if(m==='sandbox'){
+      document.getElementById('check').innerHTML=sandboxBanner();
+      if(b)b.textContent='Back to quest';
+      sbActions=0;
+      pr('<span class="ok">Sandbox mode!</span> Free play — try ANY command and see what happens. Make folders, break things, hunt for secrets.');
+      pr('<span class="hi">Games:</span>  ttt (tic-tac-toe)   ·   bs (battleship vs Greppo, use flag b3)   ·   sudoku (or sudoku easy)\n<span class="hi">Fun:</span>    meow  woof  dance  rainbow  fortune  magic   ·   ls -a finds hidden files   ·   symbols explains > >> ~ .. . *');
+      pr('Type <span class="hi">quest</span> (or press the button) to go back to the story.');
+      say('<b>Sandbox:</b> explore freely! Nothing can go wrong. Type quest when you want to grow me more.');
+    }else{
+      if(b)b.textContent='Sandbox';
+      renderChecklist();
+      pr('<span class="ok">Back to the quest!</span> Your progress is safe.');
+      var t=curTasks[P.task];say(t?('Next → '+(t.q?t.q:t.d)):'Keep going!');
+    }
+    document.getElementById('in').focus();
+  }
+  function replay(){
+    P.lvl=0;P.lesson=0;P.task=0;P.found=[[],[],[]];grown=false;pendingWord=null;P.mode='quest';
+    P.words=pickWords();P.runs=(P.runs||0)+1;
+    newWorld();clearTerm();
+    document.getElementById('ps').textContent=prompt();
+    var b=document.getElementById('bMode');if(b)b.textContent='Sandbox';
+    startLesson();
+    pr('<span class="ok">✦ New quest #'+P.runs+'!</span> New secret words are hidden. Can you do it faster this time?');
+    save();document.getElementById('in').focus();
+  }
+
+  var actx=null;
+  function sfx(kind){if(P.muted)return;try{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();var now=actx.currentTime;function tone(f,t0,dur,type,vol){var o=actx.createOscillator(),g=actx.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,now+t0);g.gain.linearRampToValueAtTime(vol||0.14,now+t0+0.01);g.gain.exponentialRampToValueAtTime(0.0001,now+t0+dur);o.connect(g);g.connect(actx.destination);o.start(now+t0);o.stop(now+t0+dur+0.02);}
+    if(kind==='key')tone(180,0,0.02,'square',0.03);
+    else if(kind==='click')tone(240,0,0.04,'square',0.05);
+    else if(kind==='ding')tone(880,0,0.12,'sine',0.14);
+    else if(kind==='letter'){tone(660,0,0.1,'sine',0.14);tone(990,0.1,0.14,'sine',0.14);}
+    else if(kind==='win'){[660,880,1047].forEach(function(f,i){tone(f,i*0.1,0.16,'triangle',0.15);});}
+    else if(kind==='meow'){tone(760,0,0.12,'sine',0.12);tone(520,0.1,0.18,'sine',0.12);}
+    else if(kind==='error')tone(150,0,0.16,'sawtooth',0.1);
+    else if(kind==='fanfare'){
+      [[392,0],[523,0.13],[659,0.26],[784,0.39],[659,0.54],[784,0.66]].forEach(function(p){tone(p[0],p[1],0.16,'triangle',0.16);});
+      tone(1047,0.82,0.55,'triangle',0.18);tone(1319,0.82,0.55,'triangle',0.14);tone(784,0.82,0.55,'triangle',0.12);
+      tone(196,0.82,0.55,'sine',0.12);
+    }
+  }catch(e){}}
+
+  var frame=0,mood='idle',moodUntil=0,blinkUntil=0,nextBlink=30,spark=0,act=0,actUntil=0,nextAct=50;
+  function flashPet(m,dur){mood=m;moodUntil=frame+(dur||28);if(m==='happy')spark=frame+24;}
+  function petMood(m,d){flashPet(m,d);}
+  function flashLock(){var el=document.getElementById('lock');el.style.transform='scale(1.4)';setTimeout(function(){el.style.transform='scale(1)';},200);}
+  function sway(){return ['',' ','  ',' '][(frame>>2)%4];}
+  function eggStr(big){
+    var fnd=(P.found[0]||[]).length;
+    var z=['','z','z z','z z z'][(frame>>3)%4];
+    var s=big?'':sway();
+    var e1=fnd>1?'/\\':'--', e2=fnd>3?'\\/':'~~';
+    return s+'   .--.   '+z+'\n'+s+'  / '+e1+' \\\n'+s+' |  '+e2+'  |\n'+s+' |      |\n'+s+'  \\    /\n'+s+"   '--'";
+  }
+  function petStr(big){
+    var stage=stageIndex();
+    if(stage===0)return eggStr(big);
+    var blink=frame<blinkUntil,wave=(act==='wave'),wag=(act==='wag'),look=(act==='look'),spin=(act==='spin');
+    var eyes=mood==='happy'?'^  ^':mood==='think'?'o  o':blink?'-  -':look?((frame>>1)%2?'o o ':' o o'):'o  o';
+    var mo=mood==='happy'?'\\oo/':mood==='think'?' -- ':' \\/ ';
+    var sp=(spark>frame)?'  \u2727 \u00b7 \u2727':(mood==='happy'?'   \u2665':'');
+    var s=big?'':sway();
+    var hop=(act==='hop')?'':' ';
+    var feet=wag?((frame>>1)%2?'  v    ^':'  ^    v'):'  ^    ^';
+    if(spin)return s+'\n'+s+'   .oo.\n'+s+'  ( ~~ )  *spin*\n'+s+"   '--'";
+    if(stage===1)return s+sp+'\n'+s+hop+'.-""-.\n'+s+hop+'( '+eyes+' )\n'+s+hop+'(  '+mo+' )\n'+s+hop+" '-..-'";
+    if(stage===2)return s+sp+'\n'+s+'  .-""-.\n'+s+'  ( '+eyes+' )\n'+s+'  (  '+mo+' )\n'+s+"   '-..-'\n"+s+(wave?'  \\    /':feet);
+    if(stage===3)return s+sp+'\n'+s+(wave?'  \\.^./':'   .^.')+'\n'+s+' .-""""-.\n'+s+'( '+eyes+'  )\n'+s+'(   '+mo+'  )\n'+s+" '-....-'\n"+s+(wave?' \\      /':feet);
+    return s+sp+'\n'+s+'  \\.^./\n'+s+' .-""""-.\n'+s+'( '+eyes+'  )\n'+s+'(  '+mo+'  )\n'+s+" '-....-'\n"+s+feet+'  \u2691';
+  }
+  function tick(){
+    frame++;
+    if(moodUntil&&frame>=moodUntil){mood='idle';moodUntil=0;}
+    if(frame>=nextBlink){blinkUntil=frame+2;nextBlink=frame+25+Math.floor(Math.random()*55);}
+    if(act&&frame>=actUntil)act=0;
+    if(!act&&frame>=nextAct){var A=['wave','hop','look','wag','look','wag'];act=(Math.random()<0.08?'spin':A[Math.floor(Math.random()*A.length)]);actUntil=frame+(act==='spin'?8:12);nextAct=frame+40+Math.floor(Math.random()*60);}
+    var pe=document.getElementById('pet');if(pe)pe.textContent=petStr(false);
+    var ip=document.getElementById('introPet');if(ip&&!document.getElementById('intro').hidden)ip.textContent=eggStr(true);
+  }
+
+  var hist=[],histIdx=-1,sbActions=0;
+  function runCommand(v){sfx('click');pr('<span class="ps">'+esc(prompt())+'</span> '+esc(v));if(v.trim()){hist.push(v);if(hist.length>60)hist.shift();exec(v);if(P.mode==='sandbox'&&!ttt&&!bs&&!sud){sbActions++;if(sbActions%5===0&&!grown)nudgeQuest();else sandboxTip(st.cmd);}}histIdx=-1;var i2=document.getElementById('in');i2.value='';i2.focus();}
+  function doTab(){
+    var v=inp.value,sp=v.lastIndexOf(' ');
+    var head=sp>=0?v.slice(0,sp+1):'',tok=sp>=0?v.slice(sp+1):v;
+    if(sp<0){var cm=CMDS.filter(function(c){return c.indexOf(tok)===0;});if(cm.length===1)inp.value=cm[0]+' ';else if(cm.length>1)pr('<span class="dim">'+cm.join('  ')+'</span>');return;}
+    var slash=tok.lastIndexOf('/'),dp=slash>=0?tok.slice(0,slash+1):'',pre=slash>=0?tok.slice(slash+1):tok;
+    var dir=dp?resolve(dp.replace(/\/$/,'')||'/'):cwd;
+    if(!dir||dir.t!=='d')return;
+    var ks=keys(dir).filter(function(k){return k.indexOf(pre)===0;});
+    if(ks.length===1){var only=dir.ch[ks[0]];inp.value=head+dp+ks[0]+(only.t==='d'?'/':' ');}
+    else if(ks.length>1){pr('<span class="dim">'+ks.map(function(k){return dir.ch[k].t==='d'?k+'/':k;}).join('  ')+'</span>');var cp=ks[0];for(var i=1;i<ks.length;i++){while(ks[i].indexOf(cp)!==0)cp=cp.slice(0,-1);}inp.value=head+dp+cp;}
+  }
+
+  var inp=document.getElementById('in');
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Tab'){e.preventDefault();doTab();return;}
+    if(e.key==='ArrowUp'){e.preventDefault();if(hist.length){histIdx=(histIdx<0?hist.length:histIdx)-1;if(histIdx<0)histIdx=0;this.value=hist[histIdx];}return;}
+    if(e.key==='ArrowDown'){e.preventDefault();if(histIdx>=0){histIdx++;if(histIdx>=hist.length){histIdx=-1;this.value='';}else this.value=hist[histIdx];}return;}
+    if(e.key&&e.key.length===1)sfx('key');
+    if(e.key!=='Enter')return;
+    var v=this.value;this.value='';runCommand(v);
+  });
+  document.getElementById('bSound').addEventListener('click',function(){P.muted=!P.muted;this.textContent='Sound: '+(P.muted?'off':'on');if(!P.muted)sfx('ding');save();});
+  document.getElementById('bHint').addEventListener('click',function(){if(pendingWord){say('<b>Hint:</b> read the glowing letters and type that word.');return;}var t=curTasks[P.task];if(t){hintUsed=true;if(t.q)say('<b>Hint:</b> the command is <b>'+esc(t.cmd)+'</b>');else say('<b>Hint:</b> '+t.d);}});
+  document.getElementById('bHome').addEventListener('click',function(){cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();clearTerm();flashPet('happy');sfx('ding');pr('<span class="ok">Back at the start.</span> You are home now (~). Nothing was lost \u2014 keep going!');var t=curTasks[P.task];if(t)say('You are back home. Next \u2192 '+(t.q?t.q:t.d));else say('You are back home.');inp.focus();});
+  document.getElementById('bReset').addEventListener('click',function(){document.getElementById('confirm').hidden=false;});
+  document.getElementById('cfCancel').addEventListener('click',function(){document.getElementById('confirm').hidden=true;});
+  document.getElementById('cfYes').addEventListener('click',function(){document.getElementById('confirm').hidden=true;P={name:'',user:'',lvl:0,lesson:0,task:0,found:[[],[],[]],mastery:{},review:{},muted:P.muted,seenIntro:false};pendingWord=null;grown=false;hist=[];save();showIntro();});
+  document.getElementById('mxGo').addEventListener('click',function(){if(mxDone)mxDone();});
+  document.getElementById('bookNext').addEventListener('click',bookNext);
+  document.getElementById('bookBack').addEventListener('click',bookBack);
+  document.getElementById('bookSkip').addEventListener('click',bookFinish);
+  document.getElementById('bStory').addEventListener('click',function(){showBook(function(){inp.focus();});});
+  document.getElementById('bMode').addEventListener('click',function(){setMode(P.mode==='sandbox'?'quest':'sandbox');});
+
+  function showIntro(){
+    document.getElementById('win').hidden=true;
+    document.getElementById('btns').hidden=true;
+    document.getElementById('intro').hidden=false;
+    document.getElementById('introPet').textContent=eggStr(true);
+    var ni=document.getElementById('nameIn');ni.value='';setTimeout(function(){ni.focus();},50);
+  }
+  function startGame(){
+    USER=P.user;newWorld();P.mode='quest';
+    var bm=document.getElementById('bMode');if(bm)bm.textContent='Sandbox';
+    document.getElementById('intro').hidden=true;
+    document.getElementById('win').hidden=false;
+    document.getElementById('btns').hidden=false;
+    document.getElementById('bSound').textContent='Sound: '+(P.muted?'off':'on');
+    document.getElementById('barName').textContent=USER+'@greppo';
+    document.getElementById('ps').textContent=prompt();
+    if((P.found[2]||[]).length>=5)grown=true;
+    startLesson();
+    if(P.found[P.lvl]&&curLevel()&&P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('Read the glowing word on the left and type it in!');}
+    pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');
+    if(!P.seenIntro && P.lvl===0 && P.lesson===0 && (P.found[0]||[]).length===0){P.seenIntro=true;save();showBook(function(){inp.focus();});}
+    else inp.focus();
+  }
+  function commitName(){var raw=document.getElementById('nameIn').value.trim();P.name=raw||'friend';P.user=sani(raw);P.words=pickWords();P.mode='quest';save();startGame();}
+  document.getElementById('startBtn').addEventListener('click',commitName);
+  document.getElementById('nameIn').addEventListener('keydown',function(e){if(e.key==='Enter')commitName();});
+
+  if(P.name&&P.user){startGame();}else{showIntro();}
+  setInterval(tick,120);
+})();
+</script>
