@@ -108,7 +108,21 @@ try {
     found[6] = [0,1,2,3];                     // slice: last letter comes from its checkpoint
     const { ctx, page } = await freshPage(browser, seed({ lvl: 6, lesson: 4, found }));
     const r = run(page);
-    await r('cut -c1-3 library/colors.txt'); await r('cut -f1 library/scores.txt'); await r('nl library/poem.txt'); await r('cal');
+    // tasks may be random variants, so reveal each one's command via the Hint
+    // ladder (which is deterministic) and type that.
+    async function solveCurrent() {
+      let say = '';
+      for (let i = 0; i < 3; i++) {
+        await page.click('#bHint'); await page.waitForTimeout(150);
+        say = await page.evaluate(() => document.getElementById('say').innerText);
+        // single-word commands reveal the answer on the first press ("Hint: use
+        // the X command"); multi-word ones only at "Hint 3 of 3: type …".
+        if (/Hint 3 of 3: type /.test(say) || /^Hint: use the \S+ command/.test(say)) break;
+      }
+      const m = say.match(/Hint 3 of 3: type\s+(.+)$/) || say.match(/^Hint: use the (\S+) command/);
+      if (m) await r(m[1].trim());
+    }
+    for (let i = 0; i < 4; i++) await solveCurrent();   // slice checkpoint has 4 tasks
     const lock = await page.evaluate(() => document.getElementById('lock').textContent);
     ok(lock.replace(/\s/g, '') === 'LASER', 'checkpoint awards the final letter (word complete)');
     await r('LASER');
