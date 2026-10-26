@@ -175,6 +175,24 @@ try {
     ok(/Level 4 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'resume returns to the real current level');
     await ctx.close();
   }
+  {
+    // revisiting a completed level keeps achievements shown, offers ◀/▶, and
+    // redoing a lesson does NOT re-trigger a level-up
+    const found = []; for (let i = 0; i < 16; i++) found.push(i < 3 ? [0,1,2,3,4] : []);
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 3, lesson: 0, found }));
+    await page.evaluate(() => document.getElementById('bMap').click());
+    await page.waitForTimeout(80);
+    await page.evaluate(() => document.querySelectorAll('#mapgrid .pbtn')[0].click()); // revisit level 1 (nav)
+    await page.waitForTimeout(150);
+    ok((await page.evaluate(() => document.getElementById('lock').textContent)).replace(/\s/g, '') === 'ROBOT', 'revisited level shows its word already completed');
+    ok(await page.evaluate(() => !document.getElementById('lnav').hidden), 'back/forward nav is available in a revisited level');
+    const r = run(page);
+    await r('pwd'); await r('ls'); await r('pwd'); // complete nav.look
+    await page.waitForTimeout(150);
+    ok(await page.evaluate(() => document.getElementById('mx').hidden), 'redoing a lesson does not trigger a level-up');
+    ok(/Level 1 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'still inside the revisited level');
+    await ctx.close();
+  }
 
   // ---- random variants ----
   section('random task variants');

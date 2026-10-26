@@ -913,6 +913,11 @@
     ls.slots.forEach(function(idx){if(P.found[P.lvl].indexOf(idx)<0)P.found[P.lvl].push(idx);});
     renderLock();flashLock();sparkleLine();
     sfx(ls.checkpoint?'win':'letter');
+    if(practice){ /* revisiting a finished level \u2014 no word, no level-up */
+      if(P.lesson<lv.lessons.length-1){say('\u2b50 Still got it! Use <b>next \u25b6</b> or keep going.');P.lesson++;startLesson();}
+      else say('\u2b50 You reviewed the whole region! Press <b>Map</b> or <b>Back to my quest</b>.');
+      return;
+    }
     if(P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('\u2728 You found every letter! Read the glowing word on the left and type it in, then press Enter!');}
     else{say(ls.checkpoint?'\u2b50 Checkpoint passed! You earned a letter!':'\u2b50 Lesson done! You earned a letter!');P.lesson++;P.lessonMax=Math.max(P.lessonMax||0,P.lesson);startLesson();}
     save();
@@ -962,19 +967,22 @@
     pr('<span class="ok">✦ New quest #'+P.runs+'!</span> New secret words are hidden. Can you do it faster this time?');
     save();document.getElementById('in').focus();
   }
-  /* Practice a completed region again without touching real progress. */
+  /* Revisit a completed region. Its achievements stay earned (word shown full),
+     every lesson is reachable with ◀/▶, and you can redo any lesson — without
+     touching real progress and without re-triggering a level-up. */
   function enterPractice(idx){
     if(idx<0||idx>=LEVELS.length)return;
     /* Snapshot the REAL progress only the first time, so you can freely hop
        between finished regions without losing where you actually are. */
     if(!practice){practiceSnap=JSON.parse(JSON.stringify(P));practice=true;}
-    P.lvl=idx;P.lesson=0;P.lessonMax=0;P.task=0;P.found[idx]=[];grown=false;pendingWord=null;P.mode='quest';
+    P.lvl=idx;P.lesson=0;P.lessonMax=LEVELS[idx].lessons.length-1;P.task=0;grown=false;pendingWord=null;P.mode='quest';
+    /* keep P.found[idx] full so the completed achievements stay shown */
     newWorld();clearTerm();
     document.getElementById('mapov').hidden=true;
     document.getElementById('ps').textContent=prompt();
     var b=document.getElementById('bMode');if(b)b.textContent='Sandbox';
     renderStage();startLesson();
-    pr('<span class="hi">🎮 Replaying:</span> '+esc(LEVELS[idx].title)+'. Your real progress is safe. Press <b>Map</b> to jump to another finished region, or <b>Back to my quest</b> to return.');
+    pr('<span class="hi">🎮 Revisiting:</span> '+esc(LEVELS[idx].title)+' <span class="ok">(completed ★)</span>. Redo any lesson, use <b>◀ back</b> / <b>next ▶</b> to move around. Press <b>Map</b> or <b>Back to my quest</b> to return.');
     inp.focus();
   }
   function exitPractice(won){
