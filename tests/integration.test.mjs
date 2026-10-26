@@ -235,6 +235,24 @@ try {
     await ctx.close();
   }
 
+  // ---- move back/forward through finished lessons within a level ----
+  section('in-level lesson review');
+  {
+    const found = []; for (let i = 0; i < 16; i++) found.push([]); found[1] = [0, 1];
+    const seenArt = { 'make.create': 1, 'make.write': 1, 'make.copy': 1 };
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 1, lesson: 2, lessonMax: 2, found, seenArt })); // make, on lesson 3 of 5
+    const lesson = () => page.evaluate(() => document.getElementById('lvl').textContent.match(/lesson (\d+)/)[1]);
+    ok(await page.evaluate(() => !document.getElementById('lnav').hidden), 'the lesson review nav is shown');
+    ok(await page.evaluate(() => document.getElementById('lnext').disabled), 'cannot step past the furthest lesson');
+    await page.click('#lprev'); await page.waitForTimeout(80);
+    ok((await lesson()) === '2', 'back goes to an earlier lesson');
+    await page.click('#lprev'); await page.waitForTimeout(80);
+    ok((await lesson()) === '1' && (await page.evaluate(() => document.getElementById('lprev').disabled)), 'back stops at the first lesson');
+    await page.click('#lnext'); await page.waitForTimeout(80);
+    ok((await lesson()) === '2', 'next goes forward again');
+    await ctx.close();
+  }
+
   // ---- mini-articles before new-command lessons ----
   section('mini-articles');
   {

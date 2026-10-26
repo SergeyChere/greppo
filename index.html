@@ -54,6 +54,10 @@
   @media (prefers-reduced-motion:reduce){.pet,.petbig{animation:none;}}
   .stage{font-size:11.5px;color:var(--amber);}
   .lvl{font-size:12.5px;color:var(--dim);}
+  .lnav{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim);}
+  .lnav button{font-family:var(--mono);font-size:11px;font-weight:700;border:1px solid var(--edge);background:var(--panel2);color:var(--fg);border-radius:8px;padding:3px 9px;cursor:pointer;}
+  .lnav button:hover:not(:disabled){border-color:#2d3f52;background:#132030;}
+  .lnav button:disabled{opacity:.35;cursor:default;}
   .lock{font-size:24px;letter-spacing:6px;font-weight:700;color:var(--lock);transition:transform .18s ease;}
   .say{font-size:13px;line-height:1.5;color:var(--fg);min-height:40px;transition:opacity .15s;}
   .say b{color:var(--amber);font-weight:700;}
@@ -169,6 +173,7 @@
         <pre class="pet" id="pet"></pre>
         <div class="stage" id="stage"></div>
         <div class="lvl" id="lvl"></div>
+        <div class="lnav" id="lnav" hidden><button id="lprev" title="review the previous lesson">◀ back</button><span id="lnavpos"></span><button id="lnext" title="go forward again">next ▶</button></div>
         <div class="lock" id="lock"></div>
         <div class="say" id="say"></div>
         <div class="check" id="check"></div>
@@ -740,6 +745,7 @@
   if(!P.review)P.review={};
   if(!P.mode)P.mode='quest';
   if(!P.seenArt)P.seenArt={};
+  if(typeof P.lessonMax!=='number'||P.lessonMax<P.lesson)P.lessonMax=P.lesson;
   while(P.found.length<LEVELS.length)P.found.push([]);
   if(P.words){while(P.words.length<LEVELS.length)P.words.push(WORDPOOL[Math.floor(Math.random()*WORDPOOL.length)]);}
   while(P.lvl<LEVELS.length-1 && (P.found[P.lvl]||[]).length>=wordFor(P.lvl).length){P.lvl++;P.lesson=0;P.task=0;}
@@ -827,7 +833,24 @@
     if(hintLevel===1){say('<b>Hint 1 of 2:</b> use the <b>'+esc(first)+'</b> command'+desc+'. <span class="mask">Press Hint again for the full command.</span>');}
     else{say('<b>Hint 2 of 2:</b> type <b>'+esc(t.cmd)+'</b>');}
   }
-  function renderHead(){var lv=curLevel();document.getElementById('lvl').textContent=grown?'Graduated! ⭐':(lv?('Level '+(P.lvl+1)+' of '+LEVELS.length+'   ·   lesson '+(P.lesson+1)+' of '+lv.lessons.length):'All done!');}
+  function renderHead(){
+    var lv=curLevel();
+    document.getElementById('lvl').textContent=grown?'Graduated! ⭐':(lv?('Level '+(P.lvl+1)+' of '+LEVELS.length+'   ·   lesson '+(P.lesson+1)+' of '+lv.lessons.length):'All done!');
+    var nav=document.getElementById('lnav');if(!nav)return;
+    var lmax=(typeof P.lessonMax==='number')?P.lessonMax:P.lesson;
+    if(!lv||pendingWord||(P.lesson===0&&lmax===0)){nav.hidden=true;return;}
+    nav.hidden=false;
+    document.getElementById('lprev').disabled=(P.lesson<=0);
+    document.getElementById('lnext').disabled=(P.lesson>=lmax);
+    document.getElementById('lnavpos').textContent='review';
+  }
+  function gotoLesson(idx){
+    var lv=curLevel();if(!lv)return;
+    var lmax=(typeof P.lessonMax==='number')?P.lessonMax:P.lesson;
+    idx=Math.max(0,Math.min(idx,lmax,lv.lessons.length-1));
+    if(idx===P.lesson)return;
+    P.lesson=idx;pendingWord=null;save();startLesson();inp.focus();
+  }
   function renderStage(){document.getElementById('stage').textContent='Stage: '+STAGE_NAMES[stageIndex()];}
   function renderMastery(){var el=document.getElementById('mastery');if(el)el.hidden=true;}
   var sayTO=null;
@@ -891,7 +914,7 @@
     renderLock();flashLock();sparkleLine();
     sfx(ls.checkpoint?'win':'letter');
     if(P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('\u2728 You found every letter! Read the glowing word on the left and type it in, then press Enter!');}
-    else{say(ls.checkpoint?'\u2b50 Checkpoint passed! You earned a letter!':'\u2b50 Lesson done! You earned a letter!');P.lesson++;startLesson();}
+    else{say(ls.checkpoint?'\u2b50 Checkpoint passed! You earned a letter!':'\u2b50 Lesson done! You earned a letter!');P.lesson++;P.lessonMax=Math.max(P.lessonMax||0,P.lesson);startLesson();}
     save();
   }
   function doLevelUp(){
@@ -900,7 +923,7 @@
     if(P.lvl<LEVELS.length-1){
       var nl=P.lvl+1;
       var story=STORY[nl]||{t:'REGION '+(nl+1),l:['Greppo grows stronger!','A new region of the system opens up.','Keep exploring, {name}!']};
-      showMatrix(story,function(){P.lvl=nl;P.lesson=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();inp.focus();});
+      showMatrix(story,function(){P.lvl=nl;P.lesson=0;P.lessonMax=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();inp.focus();});
     }else{
       grown=true;
       showMatrix(STORY[3],function(){renderStage();document.getElementById('lvl').textContent='Graduated! \u2b50';say('\u2691 You did it, '+esc(P.name||'')+'! Greppo reached its MEGA form!');pr('<span class="ok">\u2691 DIPLOMA: '+esc(P.name||'Explorer')+' \u2014 Terminal Explorer! \u2691</span>');sparkleLine();pr('<span class="hi">Type <b>play</b> to start a brand-new quest with new secret words and beat your time! Or type <b>sandbox</b> to free-play.</span>');inp.focus();});
@@ -930,7 +953,7 @@
   }
   function replay(){
     var fr=[];for(var i=0;i<LEVELS.length;i++)fr.push([]);
-    P.lvl=0;P.lesson=0;P.task=0;P.found=fr;grown=false;pendingWord=null;P.mode='quest';
+    P.lvl=0;P.lesson=0;P.lessonMax=0;P.task=0;P.found=fr;grown=false;pendingWord=null;P.mode='quest';
     P.words=pickWords();P.runs=(P.runs||0)+1;
     newWorld();clearTerm();
     document.getElementById('ps').textContent=prompt();
@@ -945,7 +968,7 @@
     /* Snapshot the REAL progress only the first time, so you can freely hop
        between finished regions without losing where you actually are. */
     if(!practice){practiceSnap=JSON.parse(JSON.stringify(P));practice=true;}
-    P.lvl=idx;P.lesson=0;P.task=0;P.found[idx]=[];grown=false;pendingWord=null;P.mode='quest';
+    P.lvl=idx;P.lesson=0;P.lessonMax=0;P.task=0;P.found[idx]=[];grown=false;pendingWord=null;P.mode='quest';
     newWorld();clearTerm();
     document.getElementById('mapov').hidden=true;
     document.getElementById('ps').textContent=prompt();
@@ -1115,6 +1138,8 @@
   });
   document.getElementById('bSound').addEventListener('click',function(){P.muted=!P.muted;this.textContent='Sound: '+(P.muted?'off':'on');if(P.muted){musicStop();}else{sfx('ding');if(!document.getElementById('book').hidden)musicStart();}save();});
   document.getElementById('bHint').addEventListener('click',showHint);
+  document.getElementById('lprev').addEventListener('click',function(){gotoLesson(P.lesson-1);});
+  document.getElementById('lnext').addEventListener('click',function(){gotoLesson(P.lesson+1);});
   document.getElementById('bKeys').addEventListener('click',function(){document.getElementById('keysov').hidden=false;});
   document.getElementById('keysClose').addEventListener('click',function(){document.getElementById('keysov').hidden=true;inp.focus();});
   document.getElementById('bHome').addEventListener('click',function(){cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();clearTerm();flashPet('happy');sfx('ding');pr('<span class="ok">Back at the start.</span> You are home now (~). Nothing was lost \u2014 keep going!');var t=curTasks[P.task];if(t)say('You are back home. Next \u2192 '+taskLabel(t));else say('You are back home.');inp.focus();});
