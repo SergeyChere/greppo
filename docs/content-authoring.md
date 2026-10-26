@@ -90,6 +90,26 @@ Full `check` vocabulary: `ran`, `ranArg`, `cd`, `cdHome`, `cwd`, `cat`,
 The `roadmap` in `meta.json` is the 12-region map. A `"status":"ready"` region
 lists its `levelIds`; `"status":"soon"` regions show as "coming soon".
 
+## Mini-articles (shown before a lesson)
+`content/articles.json` holds short illustrated intros, keyed by **lesson id**.
+Before a non-checkpoint lesson starts, if an article exists for it, the game
+shows it once per profile (after any story/level-up animation):
+
+```json
+"make.create": {
+  "title": "mkdir & touch — make things",
+  "intro": "mkdir makes a new folder; touch makes a new empty file.",
+  "examples": [
+    {"cmd": "mkdir toys", "desc": "makes a folder named toys"},
+    {"cmd": "touch toys/ball.txt", "desc": "makes an empty file in toys"}
+  ],
+  "tip": "Build folders inside folders: mkdir city, then mkdir city/park."
+}
+```
+
+An example may also carry `"out"` (sample output). Only teach lessons need an
+article; the key must match an existing lesson id (the validator checks this).
+
 ## Validation
 `npm run build` fails on malformed JSON, a missing `levelOrder` entry, or a
 level file whose `id` doesn't match its filename. After building, the engine's

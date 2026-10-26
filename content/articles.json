@@ -1,0 +1,502 @@
+{
+  "nav.look": {
+    "title": "Looking around",
+    "intro": "Two commands tell you where you are and what is here.",
+    "examples": [
+      {
+        "cmd": "pwd",
+        "desc": "shows the folder you are in, like /home/you"
+      },
+      {
+        "cmd": "ls",
+        "desc": "lists the files and folders here"
+      },
+      {
+        "cmd": "ls -a",
+        "desc": "also shows hidden files (names starting with .)"
+      }
+    ],
+    "tip": "You can't break anything by looking — explore freely."
+  },
+  "nav.move": {
+    "title": "cd — move between folders",
+    "intro": "cd means “change directory” (a directory is a folder).",
+    "examples": [
+      {
+        "cmd": "cd games",
+        "desc": "go into the folder named games"
+      },
+      {
+        "cmd": "cd ..",
+        "desc": "go up one folder, toward home"
+      },
+      {
+        "cmd": "cd ~",
+        "desc": "jump straight back to your home folder"
+      }
+    ],
+    "tip": "~ always means your home folder."
+  },
+  "nav.read": {
+    "title": "cat — read a file",
+    "intro": "cat prints everything inside a text file.",
+    "examples": [
+      {
+        "cmd": "cat welcome.txt",
+        "desc": "shows what is written in welcome.txt"
+      },
+      {
+        "cmd": "cat box/clue.txt",
+        "desc": "reads a file inside the box folder"
+      }
+    ],
+    "tip": "A name like notes.txt has a name (notes) and a type (.txt = text)."
+  },
+  "nav.map": {
+    "title": "tree — the whole map",
+    "intro": "tree draws all the folders and files as a branching map.",
+    "examples": [
+      {
+        "cmd": "tree",
+        "desc": "shows every folder and file from here down"
+      }
+    ],
+    "tip": "Great for seeing where everything lives at a glance."
+  },
+  "make.create": {
+    "title": "mkdir & touch — make things",
+    "intro": "mkdir makes a new folder; touch makes a new empty file.",
+    "examples": [
+      {
+        "cmd": "mkdir toys",
+        "desc": "makes a folder named toys"
+      },
+      {
+        "cmd": "touch toys/ball.txt",
+        "desc": "makes an empty file ball.txt inside toys"
+      }
+    ],
+    "tip": "Build folders inside folders: mkdir city, then mkdir city/park."
+  },
+  "make.write": {
+    "title": "echo and > — write into a file",
+    "intro": "echo prints text. Add > to send that text INTO a file.",
+    "examples": [
+      {
+        "cmd": "echo hello",
+        "desc": "just prints hello on the screen"
+      },
+      {
+        "cmd": "echo hello > note.txt",
+        "desc": "puts hello INTO note.txt (replaces it)"
+      },
+      {
+        "cmd": "echo more >> note.txt",
+        "desc": "ADDS a line to the end of note.txt"
+      }
+    ],
+    "tip": "> replaces the file, >> adds to the end."
+  },
+  "make.copy": {
+    "title": "cp & mv — copy and rename",
+    "intro": "cp copies a file; mv moves or renames it.",
+    "examples": [
+      {
+        "cmd": "cp a.txt b.txt",
+        "desc": "makes a copy called b.txt"
+      },
+      {
+        "cmd": "mv b.txt c.txt",
+        "desc": "renames b.txt to c.txt"
+      },
+      {
+        "cmd": "mv c.txt box/",
+        "desc": "moves c.txt into the box folder"
+      }
+    ],
+    "tip": "cp keeps the first file, mv does not."
+  },
+  "make.remove": {
+    "title": "rm — delete (carefully)",
+    "intro": "rm removes a file. To delete a whole folder, add the -r flag.",
+    "examples": [
+      {
+        "cmd": "rm old.txt",
+        "desc": "deletes the file old.txt"
+      },
+      {
+        "cmd": "rm -r oldfolder",
+        "desc": "deletes a folder and everything in it"
+      }
+    ],
+    "tip": "A flag is an extra option that starts with a dash, like -r. Here it's safe; on a real computer rm is forever."
+  },
+  "seek.find": {
+    "title": "find — search by name",
+    "intro": "find looks for a file anywhere below you, by its name.",
+    "examples": [
+      {
+        "cmd": "find ball.txt",
+        "desc": "finds where ball.txt is hiding"
+      },
+      {
+        "cmd": "find *toy*",
+        "desc": "finds names that contain toy (* means anything)"
+      }
+    ],
+    "tip": "find looks at names; grep (next) looks INSIDE files."
+  },
+  "seek.grep": {
+    "title": "grep — search inside files",
+    "intro": "grep searches for a word inside files.",
+    "examples": [
+      {
+        "cmd": "grep treasure",
+        "desc": "finds the word treasure in any file here"
+      },
+      {
+        "cmd": "grep pet notes/diary.txt",
+        "desc": "searches only inside diary.txt"
+      }
+    ],
+    "tip": "grep is how you find which file mentions something."
+  },
+  "seek.star": {
+    "title": "The * wildcard",
+    "intro": "* means “anything”, so you can match many files at once.",
+    "examples": [
+      {
+        "cmd": "ls *.txt",
+        "desc": "lists only the text files"
+      },
+      {
+        "cmd": "find *toy*",
+        "desc": "finds names with toy anywhere in them"
+      }
+    ],
+    "tip": "Mix * with other commands to work on lots of files at once."
+  },
+  "view.peek": {
+    "title": "head & tail — peek at a file",
+    "intro": "head shows the FIRST lines, tail shows the LAST lines.",
+    "examples": [
+      {
+        "cmd": "head poem.txt",
+        "desc": "shows the first few lines"
+      },
+      {
+        "cmd": "tail poem.txt",
+        "desc": "shows the last few lines"
+      }
+    ],
+    "tip": "Handy for long files when you don't want all of it."
+  },
+  "view.count": {
+    "title": "wc — count a file",
+    "intro": "wc counts the lines, words and letters in a file.",
+    "examples": [
+      {
+        "cmd": "wc poem.txt",
+        "desc": "prints: lines words letters  poem.txt"
+      }
+    ],
+    "tip": "wc stands for “word count”."
+  },
+  "order.sort": {
+    "title": "sort — put lines in order",
+    "intro": "sort shows a file's lines in A-Z (or number) order.",
+    "examples": [
+      {
+        "cmd": "sort animals.txt",
+        "desc": "shows the animals in A-Z order"
+      }
+    ],
+    "tip": "sort doesn't change the file, it just shows it sorted."
+  },
+  "order.uniq": {
+    "title": "uniq — remove repeats",
+    "intro": "uniq removes repeated lines that are next to each other.",
+    "examples": [
+      {
+        "cmd": "uniq animals.txt",
+        "desc": "drops side-by-side duplicate lines"
+      }
+    ],
+    "tip": "Tip: sort first, then uniq, to remove ALL duplicates."
+  },
+  "flip.rev": {
+    "title": "rev — flip text",
+    "intro": "rev flips each line of text backwards, letter by letter.",
+    "examples": [
+      {
+        "cmd": "rev poem.txt",
+        "desc": "prints every line reversed, olleh -> hello"
+      }
+    ],
+    "tip": "Silly and fun — great for secret messages."
+  },
+  "flip.shout": {
+    "title": "tr — swap letters",
+    "intro": "tr swaps one set of letters for another.",
+    "examples": [
+      {
+        "cmd": "tr a-z A-Z poem.txt",
+        "desc": "turns small letters into BIG ones (SHOUTING)"
+      },
+      {
+        "cmd": "tr o 0 poem.txt",
+        "desc": "changes every o into a 0"
+      }
+    ],
+    "tip": "tr means “translate” — swap these for those."
+  },
+  "slice.cut": {
+    "title": "cut — take part of a line",
+    "intro": "cut keeps only part of each line.",
+    "examples": [
+      {
+        "cmd": "cut -c1-3 colors.txt",
+        "desc": "keeps the first 3 letters of each line"
+      },
+      {
+        "cmd": "cut -f1 scores.txt",
+        "desc": "keeps the first word of each line"
+      }
+    ],
+    "tip": "-c picks letters, -f picks word columns."
+  },
+  "slice.nl": {
+    "title": "nl — number the lines",
+    "intro": "nl puts a line number in front of every line.",
+    "examples": [
+      {
+        "cmd": "nl poem.txt",
+        "desc": "1  first line, 2  second line, ..."
+      }
+    ],
+    "tip": "Great for talking about “line 3” of a file."
+  },
+  "pipe.first": {
+    "title": "Pipes | — join commands",
+    "intro": "A pipe | sends one command's output straight INTO the next one.",
+    "examples": [
+      {
+        "cmd": "cat animals.txt | sort",
+        "desc": "read the file, then sort it"
+      },
+      {
+        "cmd": "cat animals.txt | sort | uniq",
+        "desc": "read, sort, then remove repeats"
+      },
+      {
+        "cmd": "cat animals.txt | wc",
+        "desc": "read, then count it"
+      }
+    ],
+    "tip": "Think of | as a water pipe carrying text from one command to the next."
+  },
+  "vars.set": {
+    "title": "Variables — boxes for words",
+    "intro": "A variable is a labelled box that holds a word. Write name=value (no spaces).",
+    "examples": [
+      {
+        "cmd": "pet=dragon",
+        "desc": "puts dragon into a box named pet"
+      },
+      {
+        "cmd": "echo $pet",
+        "desc": "shows what's in the box: dragon"
+      }
+    ],
+    "tip": "The $ means “what's inside this box”."
+  },
+  "vars.who": {
+    "title": "whoami, $USER, date",
+    "intro": "The computer already knows a few things about you.",
+    "examples": [
+      {
+        "cmd": "whoami",
+        "desc": "prints your name"
+      },
+      {
+        "cmd": "echo $USER",
+        "desc": "your name, from a ready-made variable"
+      },
+      {
+        "cmd": "date",
+        "desc": "shows the date and time"
+      }
+    ],
+    "tip": "$USER is a box that already has your name in it."
+  },
+  "guard.look": {
+    "title": "ls -l & id — details",
+    "intro": "ls -l shows file details (who may change them); id shows who YOU are.",
+    "examples": [
+      {
+        "cmd": "ls -l",
+        "desc": "lists files with a details column"
+      },
+      {
+        "cmd": "id",
+        "desc": "shows your user and groups"
+      }
+    ],
+    "tip": "The details tell you if a file is locked or open."
+  },
+  "guard.lock": {
+    "title": "chmod — lock a file",
+    "intro": "chmod can lock a file so it can't be changed, or unlock it again.",
+    "examples": [
+      {
+        "cmd": "chmod -w vault.txt",
+        "desc": "locks vault.txt (no changes allowed)"
+      },
+      {
+        "cmd": "chmod +w vault.txt",
+        "desc": "unlocks vault.txt again"
+      }
+    ],
+    "tip": "Try to delete a locked file and the computer will politely refuse."
+  },
+  "depth.du": {
+    "title": "du — how big?",
+    "intro": "du measures how big a file or folder is.",
+    "examples": [
+      {
+        "cmd": "du poem.txt",
+        "desc": "shows the size of poem.txt"
+      }
+    ],
+    "tip": "du means “disk usage”."
+  },
+  "depth.df": {
+    "title": "df — disk space",
+    "intro": "df shows how much room is left on the whole disk.",
+    "examples": [
+      {
+        "cmd": "df",
+        "desc": "shows total, used and free space"
+      }
+    ],
+    "tip": "df means “disk free”."
+  },
+  "depth.stat": {
+    "title": "stat — full info",
+    "intro": "stat shows everything about a file: type, size and lock.",
+    "examples": [
+      {
+        "cmd": "stat poem.txt",
+        "desc": "name, type, size and lock status"
+      }
+    ],
+    "tip": "stat is like an ID card for a file."
+  },
+  "motor.ps": {
+    "title": "ps — running programs",
+    "intro": "ps lists the little programs running right now, each with a number (PID).",
+    "examples": [
+      {
+        "cmd": "ps",
+        "desc": "shows PID and name of each program"
+      }
+    ],
+    "tip": "PID means “process id” — a program's number."
+  },
+  "motor.kill": {
+    "title": "kill — stop a program",
+    "intro": "kill stops a running program by its number (PID).",
+    "examples": [
+      {
+        "cmd": "kill 77",
+        "desc": "stops the program whose PID is 77"
+      }
+    ],
+    "tip": "Use ps first to see the PIDs, then kill the one you want."
+  },
+  "panel.env": {
+    "title": "env & $PATH — settings",
+    "intro": "env lists the computer's settings (its variables). $PATH is where commands live.",
+    "examples": [
+      {
+        "cmd": "env",
+        "desc": "lists all the settings"
+      },
+      {
+        "cmd": "echo $PATH",
+        "desc": "shows the list of places commands are kept"
+      }
+    ],
+    "tip": "Settings are just variables the whole computer shares."
+  },
+  "panel.which": {
+    "title": "which — where is it?",
+    "intro": "which tells you where a command program lives.",
+    "examples": [
+      {
+        "cmd": "which grep",
+        "desc": "prints the path to grep, like /bin/grep"
+      }
+    ],
+    "tip": "Every command is really a little program stored somewhere."
+  },
+  "radio.ping": {
+    "title": "ping — are you awake?",
+    "intro": "ping asks another computer “are you there?” and waits for a reply.",
+    "examples": [
+      {
+        "cmd": "ping greppo.world",
+        "desc": "sends hellos and shows the replies"
+      }
+    ],
+    "tip": "If it replies, that computer is awake and reachable."
+  },
+  "radio.curl": {
+    "title": "curl — fetch a page",
+    "intro": "curl fetches a page of text from another computer.",
+    "examples": [
+      {
+        "cmd": "curl greppo.world",
+        "desc": "downloads and shows that page"
+      }
+    ],
+    "tip": "A web page is really just a file on another computer."
+  },
+  "spell.make": {
+    "title": "Scripts — a spell book",
+    "intro": "A script is a file full of commands. Write the lines with echo and >, >>.",
+    "examples": [
+      {
+        "cmd": "echo whoami > spell.sh",
+        "desc": "start spell.sh with the line whoami"
+      },
+      {
+        "cmd": "echo ls >> spell.sh",
+        "desc": "add a second line, ls"
+      }
+    ],
+    "tip": "A .sh file is a script you can run again and again."
+  },
+  "spell.run": {
+    "title": "run — cast the spell",
+    "intro": "run does every line in a script file for you, top to bottom.",
+    "examples": [
+      {
+        "cmd": "run spell.sh",
+        "desc": "runs all the commands inside spell.sh"
+      }
+    ],
+    "tip": "Write it once, run it a hundred times."
+  },
+  "spell.repeat": {
+    "title": "repeat — do it many times",
+    "intro": "repeat does the same command several times in a row.",
+    "examples": [
+      {
+        "cmd": "repeat 3 echo hi",
+        "desc": "prints hi three times"
+      }
+    ],
+    "tip": "Computers are great at doing boring things many times."
+  }
+}

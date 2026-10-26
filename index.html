@@ -110,6 +110,16 @@
   kbd{display:inline-block;font-family:var(--mono);font-size:12px;background:var(--panel2);border:1px solid var(--edge);border-bottom-width:2px;border-radius:6px;padding:2px 6px;color:var(--blue);}
   .keystip{margin:12px 0 14px;color:var(--dim);font-size:12.5px;text-align:center;}
   #keysClose{background:var(--green);color:#06240f;border:none;}
+  .artcard{max-width:520px;text-align:left;max-height:80vh;overflow:auto;}
+  .artcard h3{margin:0 0 4px;color:var(--amber);font-size:19px;text-align:center;}
+  .artcard .artbadge{display:block;text-align:center;color:#8fd6a6;font-size:11px;letter-spacing:1px;margin-bottom:10px;text-transform:uppercase;}
+  .artcard .artintro{margin:0 0 12px;color:var(--fg);font-size:14px;line-height:1.5;}
+  .artcard .artex{display:flex;flex-direction:column;gap:7px;margin:0 0 12px;}
+  .artcard .exrow{background:var(--panel2);border:1px solid var(--edge);border-radius:9px;padding:8px 10px;}
+  .artcard .exrow code{font-family:var(--mono);font-size:13.5px;color:var(--green);}
+  .artcard .exrow .exdesc{display:block;color:var(--dim);font-size:12.5px;margin-top:3px;}
+  .artcard .arttip{margin:0 0 14px;color:#bfe8cf;font-size:12.5px;line-height:1.5;background:#102a1c;border-radius:9px;padding:9px 11px;}
+  #artGo{background:var(--green);color:#06240f;border:none;}
   .mapov{position:absolute;inset:0;background:rgba(4,8,6,.92);border-radius:14px;z-index:40;display:flex;flex-direction:column;padding:18px;overflow:auto;}
   .mapov h2{margin:0 0 4px;color:var(--amber);font-size:20px;}
   .mapov .maphint{margin:0 0 14px;color:#8fd6a6;font-size:13px;}
@@ -212,6 +222,8 @@
     <div class="mapgrid" id="mapgrid"></div>
     <button class="mapclose" id="mapClose">Close map</button>
   </div>
+
+  <div class="confirm" id="artov" hidden></div>
 
   <div class="confirm" id="keysov" hidden>
     <div class="card keyscard">
@@ -725,6 +737,7 @@
   if(!P.mastery)P.mastery={};
   if(!P.review)P.review={};
   if(!P.mode)P.mode='quest';
+  if(!P.seenArt)P.seenArt={};
   while(P.found.length<LEVELS.length)P.found.push([]);
   if(P.words){while(P.words.length<LEVELS.length)P.words.push(WORDPOOL[Math.floor(Math.random()*WORDPOOL.length)]);}
   while(P.lvl<LEVELS.length-1 && (P.found[P.lvl]||[]).length>=wordFor(P.lvl).length){P.lvl++;P.lesson=0;P.task=0;}
@@ -811,7 +824,28 @@
     } else {
       pr('<span class="dim">\ud83d\udccd You are home (~). New lesson: '+esc(ls.teach)+'</span>');
       say('<b>New skill:</b> '+ls.teach+'. Follow the steps \u2192');
+      maybeArticle(ls.id);
     }
+  }
+  function renderArticle(a){
+    var h='<div class="card artcard"><span class="artbadge">New lesson \u00b7 read me first</span><h3>'+esc(a.title)+'</h3>';
+    if(a.intro)h+='<p class="artintro">'+esc(a.intro)+'</p>';
+    if(a.examples&&a.examples.length){h+='<div class="artex">';a.examples.forEach(function(e){h+='<div class="exrow"><code>'+esc(e.cmd)+'</code>'+(e.out?'<code class="exout"> \u2192 '+esc(e.out)+'</code>':'')+'<span class="exdesc">'+esc(e.desc||'')+'</span></div>';});h+='</div>';}
+    if(a.tip)h+='<p class="arttip">\ud83d\udca1 '+esc(a.tip)+'</p>';
+    h+='<div class="row"><button id="artGo">Start the lesson \u25b6</button></div></div>';
+    var ov=document.getElementById('artov');ov.innerHTML=h;ov.hidden=false;
+    document.getElementById('artGo').addEventListener('click',function(){ov.hidden=true;try{inp.focus();}catch(e){}});
+  }
+  /* Show a mini-article (if one exists for this lesson) before the lesson,
+     once per profile, and only after any story/level-up animation has closed. */
+  function maybeArticle(id){
+    var arts=(window.GREPPO&&window.GREPPO.articles)||{},a=arts[id];
+    if(!a||(P.seenArt&&P.seenArt[id]))return;
+    (P.seenArt=P.seenArt||{})[id]=1;save();
+    (function go(){
+      if(!document.getElementById('book').hidden||!document.getElementById('mx').hidden){setTimeout(go,350);return;}
+      renderArticle(a);
+    })();
   }
   function done(){checkTask();save();}
   function sparkleLine(){pr('<span class="spk">   \u2728  \u00b7  \u2b50  \u00b7  \u2728  \u00b7  \u2b50  \u00b7  \u2728</span>');}

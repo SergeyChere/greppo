@@ -5,9 +5,10 @@ material — adding levels/lessons/tasks is editing data only.
 
 ## content/ — the source data (JSON)
 Authored content lives in `content/meta.json` (version, stageNames, wordPool,
-knowledge, roadmap, review, and `levelOrder`) and `content/levels/<id>.json`
-(one level each). `tools/build-content.mjs` (`npm run build`) assembles them
-into `content.js`. `content.js` is committed so the static site needs no build
+knowledge, roadmap, review, and `levelOrder`), `content/levels/<id>.json`
+(one level each), and `content/articles.json` (mini-articles shown before a
+lesson, keyed by lesson id). `tools/build-content.mjs` (`npm run build`)
+assembles them into `content.js`. `content.js` is committed so the static site needs no build
 to serve, but it is generated — edit the JSON, not `content.js`.
 
 ## content.js — the generated registry (`window.GREPPO`)

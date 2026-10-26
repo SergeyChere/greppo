@@ -22,7 +22,8 @@ function section(name) { console.log('\n# ' + name); }
 // Ignore the sandbox's font-CDN network error; fail on anything else.
 const pageErrors = [];
 
-async function freshPage(browser, save) {
+async function freshPage(browser, save, opts) {
+  opts = opts || {};
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
   page.on('pageerror', (e) => pageErrors.push('PAGEERROR ' + e.message));
@@ -30,6 +31,9 @@ async function freshPage(browser, save) {
   await page.addInitScript((s) => { try { if (s) localStorage.setItem('greppo_web_v4', JSON.stringify(s)); else localStorage.clear(); } catch (e) {} }, save || null);
   await page.goto(URL);
   await page.waitForTimeout(400);
+  // A new-command lesson pops a mini-article over the buttons; dismiss it unless
+  // the test wants to inspect it.
+  if (!opts.keepArticle) { try { if (!(await page.evaluate(() => document.getElementById('artov').hidden))) { await page.click('#artGo'); await page.waitForTimeout(40); } } catch (e) {} }
   return { ctx, page };
 }
 function seed(extra) {
@@ -188,6 +192,22 @@ try {
     ok(/screen cleared/.test((await term(page)).trim()), 'Ctrl+L clears the screen');
     await page.fill('#in', 'junk'); await page.keyboard.press('Escape'); await page.waitForTimeout(40);
     ok((await page.evaluate(() => document.getElementById('in').value)) === '', 'Esc erases the line');
+    await ctx.close();
+  }
+
+  // ---- mini-articles before new-command lessons ----
+  section('mini-articles');
+  {
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 1, lesson: 0 }), { keepArticle: true }); // make.create has an article
+    ok(await page.evaluate(() => !document.getElementById('artov').hidden), 'an article shows before a new-command lesson');
+    ok(/mkdir/i.test(await page.evaluate(() => document.getElementById('artov').innerText)), 'the article matches the lesson (mkdir)');
+    await page.click('#artGo'); await page.waitForTimeout(60);
+    ok(await page.evaluate(() => document.getElementById('artov').hidden), 'the article closes on "Start the lesson"');
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 0, lesson: 5 }), { keepArticle: true }); // nav.check (checkpoint)
+    ok(await page.evaluate(() => document.getElementById('artov').hidden), 'checkpoint lessons show no article');
     await ctx.close();
   }
 

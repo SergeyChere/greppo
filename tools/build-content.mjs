@@ -10,7 +10,7 @@
  * network — works opened from disk, on GitHub Pages and inside the artifact.
  * content.js is GENERATED; edit the JSON, not content.js. Run: npm run build
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -18,6 +18,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const readJSON = (p) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 
 const meta = readJSON('content/meta.json');
+/* Mini-articles shown before a lesson introduces new commands (keyed by lesson id). */
+const articles = existsSync(resolve(root, 'content/articles.json')) ? readJSON('content/articles.json') : {};
 if (!Array.isArray(meta.levelOrder) || !meta.levelOrder.length) {
   console.error('FAIL: meta.json needs a non-empty levelOrder array');
   process.exit(1);
@@ -37,6 +39,7 @@ const G = {
   knowledge: meta.knowledge,
   roadmap: meta.roadmap,
   review: meta.review,
+  articles,
   levels,
 };
 

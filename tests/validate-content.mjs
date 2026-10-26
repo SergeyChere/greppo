@@ -95,6 +95,17 @@ if (G.review) Object.keys(G.review).forEach((k) => {
   if (!r.ask || !r.cmd || !r.check) fail(`review "${k}" needs ask + cmd + check`);
 });
 
+// --- articles (keyed by lesson id) ---
+const lessonIds = new Set();
+G.levels.forEach((lv) => lv.lessons.forEach((ls) => lessonIds.add(ls.id)));
+if (G.articles) Object.keys(G.articles).forEach((id) => {
+  if (!lessonIds.has(id)) fail(`article "${id}" has no matching lesson`);
+  const ar = G.articles[id];
+  if (!ar.title) fail(`article "${id}" needs a title`);
+  (ar.examples || []).forEach((e, i) => { if (!e.cmd) fail(`article "${id}" example ${i} needs a cmd`); });
+});
+const articleCount = G.articles ? Object.keys(G.articles).length : 0;
+
 const levelCount = G.levels.length;
 const taskCount = G.levels.reduce((n, lv) => n + lv.lessons.reduce((m, ls) => m + ls.tasks.length, 0), 0);
 const variantCount = G.levels.reduce((n, lv) => n + lv.lessons.reduce((m, ls) => m + ls.tasks.reduce((a, t) => a + (t.alts ? t.alts.length : 0), 0), 0), 0);
@@ -104,4 +115,4 @@ if (errs.length) {
   errs.forEach((e) => console.error('   - ' + e));
   process.exit(1);
 }
-console.log(`✅ content OK: ${levelCount} levels, ${taskCount} tasks, ${variantCount} variants, ${G.roadmap.length} regions, ${G.stageNames.length} stages`);
+console.log(`✅ content OK: ${levelCount} levels, ${taskCount} tasks, ${variantCount} variants, ${articleCount} articles, ${G.roadmap.length} regions, ${G.stageNames.length} stages`);
