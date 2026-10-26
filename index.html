@@ -545,8 +545,8 @@
     document.getElementById('bookBack').style.visibility=bookIdx>0?'visible':'hidden';
     document.getElementById('bookNext').textContent=(bookIdx===PAGES.length-1)?'Start \u25b6':'Next \u25b6';
   }
-  function showBook(onDone){bookOnDone=onDone;bookIdx=0;document.getElementById('book').hidden=false;renderBook();var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;if(!reduce)rainStart('bookRain','book');}
-  function bookFinish(){rainStop();document.getElementById('book').hidden=true;var f=bookOnDone;bookOnDone=null;if(f)f();}
+  function showBook(onDone){bookOnDone=onDone;bookIdx=0;document.getElementById('book').hidden=false;renderBook();var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;if(!reduce)rainStart('bookRain','book');musicStart();}
+  function bookFinish(){musicStop();rainStop();document.getElementById('book').hidden=true;var f=bookOnDone;bookOnDone=null;if(f)f();}
   function bookNext(){sfx('click');if(bookIdx<PAGES.length-1){bookIdx++;renderBook();}else bookFinish();}
   function bookBack(){sfx('click');if(bookIdx>0){bookIdx--;renderBook();}}
 
@@ -721,6 +721,30 @@
     }
   }catch(e){}}
 
+  var music=null;
+  function musicStart(){
+    if(P.muted)return;
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    if(!actx){try{actx=new AC();}catch(e){return;}}
+    if(actx.state==='suspended')actx.resume();
+    if(music&&music.on)return;
+    var bpm=132,eighth=(60/bpm)/2;
+    var LEAD=[523.25,392.00,659.25,523.25, 587.33,440.00,523.25,0, 659.25,523.25,783.99,659.25, 440.00,523.25,392.00,0];
+    var BASS=[130.81,130.81,196.00,196.00,174.61,174.61,196.00,196.00];
+    function note(freq,start,dur,type,vol){if(!freq)return;var o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0.0001,start);g.gain.linearRampToValueAtTime(vol,start+0.012);g.gain.exponentialRampToValueAtTime(0.0001,start+dur);o.connect(g);g.connect(actx.destination);o.start(start);o.stop(start+dur+0.03);}
+    var t=actx.currentTime+0.12,idx=0;
+    music={on:true};
+    music.timer=setInterval(function(){
+      if(!music||!music.on||P.muted){musicStop();return;}
+      while(t<actx.currentTime+0.35){
+        note(LEAD[idx%LEAD.length],t,eighth*0.92,'square',0.055);
+        if(idx%2===0)note(BASS[(idx>>1)%BASS.length],t,eighth*1.9,'triangle',0.06);
+        t+=eighth;idx++;
+      }
+    },60);
+  }
+  function musicStop(){if(music){music.on=false;if(music.timer)clearInterval(music.timer);music=null;}}
+
   var frame=0,mood='idle',moodUntil=0,blinkUntil=0,nextBlink=30,spark=0,act=0,actUntil=0,nextAct=50;
   function flashPet(m,dur){mood=m;moodUntil=frame+(dur||28);if(m==='happy')spark=frame+24;}
   function petMood(m,d){flashPet(m,d);}
@@ -782,7 +806,7 @@
     if(e.key!=='Enter')return;
     var v=this.value;this.value='';runCommand(v);
   });
-  document.getElementById('bSound').addEventListener('click',function(){P.muted=!P.muted;this.textContent='Sound: '+(P.muted?'off':'on');if(!P.muted)sfx('ding');save();});
+  document.getElementById('bSound').addEventListener('click',function(){P.muted=!P.muted;this.textContent='Sound: '+(P.muted?'off':'on');if(P.muted){musicStop();}else{sfx('ding');if(!document.getElementById('book').hidden)musicStart();}save();});
   document.getElementById('bHint').addEventListener('click',function(){if(pendingWord){say('<b>Hint:</b> read the glowing letters and type that word.');return;}var t=curTasks[P.task];if(t){hintUsed=true;if(t.q)say('<b>Hint:</b> the command is <b>'+esc(t.cmd)+'</b>');else say('<b>Hint:</b> '+t.d);}});
   document.getElementById('bHome').addEventListener('click',function(){cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();clearTerm();flashPet('happy');sfx('ding');pr('<span class="ok">Back at the start.</span> You are home now (~). Nothing was lost \u2014 keep going!');var t=curTasks[P.task];if(t)say('You are back home. Next \u2192 '+(t.q?t.q:t.d));else say('You are back home.');inp.focus();});
   document.getElementById('bReset').addEventListener('click',function(){document.getElementById('confirm').hidden=false;});
