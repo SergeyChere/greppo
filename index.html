@@ -690,8 +690,8 @@
     document.getElementById('bookBack').style.visibility=bookIdx>0?'visible':'hidden';
     document.getElementById('bookNext').textContent=(bookIdx===PAGES.length-1)?'Start \u25b6':'Next \u25b6';
   }
-  function showBook(onDone){bookOnDone=onDone;bookIdx=0;document.getElementById('book').hidden=false;renderBook();var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;if(!reduce)rainStart('bookRain','book');musicStart();}
-  function bookFinish(){musicStop();rainStop();document.getElementById('book').hidden=true;var f=bookOnDone;bookOnDone=null;if(f)f();}
+  function showBook(onDone){storyActive=true;bookOnDone=onDone;bookIdx=0;document.getElementById('book').hidden=false;renderBook();var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;if(!reduce)rainStart('bookRain','book');musicStart();}
+  function bookFinish(){musicStop();rainStop();document.getElementById('book').hidden=true;storyActive=false;var f=bookOnDone;bookOnDone=null;if(f)f();}
   function bookNext(){sfx('click');if(bookIdx<PAGES.length-1){bookIdx++;renderBook();}else bookFinish();}
   function bookBack(){sfx('click');if(bookIdx>0){bookIdx--;renderBook();}}
 
@@ -722,13 +722,13 @@
   }
   function rainStop(){if(mxRAF)cancelAnimationFrame(mxRAF);mxRAF=null;}
   function showMatrix(story,onDone){
-    var ov=document.getElementById('mx');ov.hidden=false;
+    storyActive=true;var ov=document.getElementById('mx');ov.hidden=false;
     var name=P.name||'friend';
     var ls=story.l.map(function(s){return s.replace('{name}',name);});
     document.getElementById('mxs').innerHTML='<div class="mxt">'+esc(story.t)+'</div>'+ls.map(function(s){return '<div class="mxl">'+esc(s)+'</div>';}).join('');
     var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     if(!reduce)rainStart('mxc','mx');
-    mxDone=function(){rainStop();ov.hidden=true;var f=onDone;onDone=null;mxDone=null;if(f)f();};
+    mxDone=function(){rainStop();ov.hidden=true;storyActive=false;var f=onDone;onDone=null;mxDone=null;if(f)f();};
   }
 
   var P={name:'',user:'',lvl:0,lesson:0,task:0,found:[[],[],[]],mastery:{},review:{},words:null,runs:0,mode:'quest',muted:false,seenIntro:false};
@@ -743,7 +743,7 @@
   while(P.lvl<LEVELS.length-1 && (P.found[P.lvl]||[]).length>=wordFor(P.lvl).length){P.lvl++;P.lesson=0;P.task=0;}
   function save(){if(practice)return;try{localStorage.setItem('greppo_web_v4',JSON.stringify(P));}catch(e){}}
   var pendingWord=null,grown=false,curTasks=[],hintUsed=false,hintLevel=0;
-  var practice=false,practiceSnap=null,inScript=false;
+  var practice=false,practiceSnap=null,inScript=false,storyActive=false;
 
   function curLevel(){return LEVELS[P.lvl];}
   function curLesson(){return curLevel()?curLevel().lessons[P.lesson]:null;}
@@ -843,7 +843,7 @@
     if(!a||(P.seenArt&&P.seenArt[id]))return;
     (P.seenArt=P.seenArt||{})[id]=1;save();
     (function go(){
-      if(!document.getElementById('book').hidden||!document.getElementById('mx').hidden){setTimeout(go,350);return;}
+      if(storyActive||!document.getElementById('book').hidden||!document.getElementById('mx').hidden){setTimeout(go,300);return;}
       renderArticle(a);
     })();
   }
@@ -1172,10 +1172,14 @@
     var subEl=document.getElementById('sub');if(subEl)subEl.textContent='learn the Linux terminal — '+LEVELS.length+' levels, 12 regions · one evolving pet';
     document.getElementById('ps').textContent=prompt();
     grown=((P.found[LEVELS.length-1]||[]).length>=wordFor(LEVELS.length-1).length);
+    /* Decide the intro BEFORE startLesson so the first lesson's article waits
+       for the story to finish (story -> article -> task). */
+    var willIntro=(!P.seenIntro && P.lvl===0 && P.lesson===0 && (P.found[0]||[]).length===0);
+    if(willIntro)storyActive=true;
     startLesson();
     if(P.found[P.lvl]&&curLevel()&&P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('Read the glowing word on the left and type it in!');}
     pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');if(CONTENT_ERRORS&&CONTENT_ERRORS.length)pr('<span class="er">Content check: '+CONTENT_ERRORS.join('; ')+'</span>');
-    if(!P.seenIntro && P.lvl===0 && P.lesson===0 && (P.found[0]||[]).length===0){P.seenIntro=true;save();showBook(function(){inp.focus();});}
+    if(willIntro){P.seenIntro=true;save();showBook(function(){inp.focus();});}
     else inp.focus();
   }
   function commitName(){var raw=document.getElementById('nameIn').value.trim();P.name=raw||'friend';P.user=sani(raw);P.words=pickWords();P.mode='quest';save();startGame();}

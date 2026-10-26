@@ -209,6 +209,16 @@ try {
     ok(await page.evaluate(() => document.getElementById('artov').hidden), 'checkpoint lessons show no article');
     await ctx.close();
   }
+  {
+    // on a fresh start the order is story -> article -> task
+    const { ctx, page } = await freshPage(browser, null, { keepArticle: true });
+    await page.fill('#nameIn', 'Kid'); await page.click('#startBtn'); await page.waitForTimeout(350);
+    ok(await page.evaluate(() => !document.getElementById('book').hidden), 'the story shows first on a fresh start');
+    ok(await page.evaluate(() => document.getElementById('artov').hidden), 'the article does not cover the story');
+    await page.click('#bookSkip'); await page.waitForTimeout(600);
+    ok(await page.evaluate(() => !document.getElementById('artov').hidden), 'the article appears after the story ends');
+    await ctx.close();
+  }
 
   ok(pageErrors.length === 0, 'no uncaught page errors (' + pageErrors.join(' | ') + ')');
 } finally {
