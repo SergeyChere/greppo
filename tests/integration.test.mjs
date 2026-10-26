@@ -156,11 +156,19 @@ try {
     await page.evaluate(() => document.getElementById('bMap').click());
     await page.waitForTimeout(80);
     ok((await page.evaluate(() => document.querySelectorAll('#mapgrid .region').length)) === 12, 'map shows 12 regions');
-    ok((await page.evaluate(() => document.querySelectorAll('#mapgrid .pbtn').length)) >= 1, 'completed levels offer a Practice button');
-    await page.evaluate(() => document.querySelector('#mapgrid .pbtn').click());
+    ok((await page.evaluate(() => document.querySelectorAll('#mapgrid .pbtn').length)) >= 2, 'each finished level offers a Replay button');
+    // jump to the FIRST finished level
+    await page.evaluate(() => document.querySelectorAll('#mapgrid .pbtn')[0].click());
     await page.waitForTimeout(150);
-    ok(/Level 1 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'practice enters the chosen (earlier) level');
-    await page.evaluate(() => document.getElementById('bMap').click());   // reopen map
+    ok(/Level 1 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'replay enters the chosen (earlier) level');
+    // hop straight to another finished level from the map (free movement)
+    await page.evaluate(() => document.getElementById('bMap').click());
+    await page.waitForTimeout(80);
+    await page.evaluate(() => document.querySelectorAll('#mapgrid .pbtn')[1].click());
+    await page.waitForTimeout(150);
+    ok(/Level 2 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'can hop directly to another finished level');
+    // and still return to the real current level
+    await page.evaluate(() => document.getElementById('bMap').click());
     await page.waitForTimeout(80);
     await page.evaluate(() => document.getElementById('mapResume').click());
     await page.waitForTimeout(120);

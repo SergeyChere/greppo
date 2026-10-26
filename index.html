@@ -217,7 +217,7 @@
 
   <div class="mapov" id="mapov" hidden>
     <h2>World Map</h2>
-    <p class="maphint">Every region teaches new commands and reuses the ones before. Green = you can play it now. Collect the glowing letters in each region to spell its secret word.</p>
+    <p class="maphint">Every region teaches new commands and reuses the ones before. Green = you can play it now. Finished a region? Press <b>▶ Replay this level</b> to go back and play it again any time — your real progress is kept.</p>
     <button class="mapresume" id="mapResume">▶ Back to my quest</button>
     <div class="mapgrid" id="mapgrid"></div>
     <button class="mapclose" id="mapClose">Close map</button>
@@ -940,14 +940,16 @@
   /* Practice a completed region again without touching real progress. */
   function enterPractice(idx){
     if(idx<0||idx>=LEVELS.length)return;
-    practiceSnap=JSON.parse(JSON.stringify(P));practice=true;
+    /* Snapshot the REAL progress only the first time, so you can freely hop
+       between finished regions without losing where you actually are. */
+    if(!practice){practiceSnap=JSON.parse(JSON.stringify(P));practice=true;}
     P.lvl=idx;P.lesson=0;P.task=0;P.found[idx]=[];grown=false;pendingWord=null;P.mode='quest';
     newWorld();clearTerm();
     document.getElementById('mapov').hidden=true;
     document.getElementById('ps').textContent=prompt();
     var b=document.getElementById('bMode');if(b)b.textContent='Sandbox';
     renderStage();startLesson();
-    pr('<span class="hi">🎯 Practice run:</span> '+esc(LEVELS[idx].title)+'. Your real progress is safe — this is just for practice. Press <b>Map</b> any time to leave.');
+    pr('<span class="hi">🎮 Replaying:</span> '+esc(LEVELS[idx].title)+'. Your real progress is safe. Press <b>Map</b> to jump to another finished region, or <b>Back to my quest</b> to return.');
     inp.focus();
   }
   function exitPractice(won){
@@ -1125,8 +1127,8 @@
   document.getElementById('bMode').addEventListener('click',function(){setMode(P.mode==='sandbox'?'quest':'sandbox');});
 
   function lvlIdxById(id){for(var i=0;i<LEVELS.length;i++)if(LEVELS[i].id===id)return i;return -1;}
-  function wordProgressHTML(idx){
-    var w=wordFor(idx),found=(P.found[idx]||[]),out='';
+  function wordProgressHTML(idx,PF){
+    var w=wordFor(idx),found=(PF[idx]||[]),out='';
     for(var i=0;i<w.length;i++){
       if(found.indexOf(i)>=0)out+='<span>'+esc(w.charAt(i))+'</span>';
       else out+='<span class="blank">_</span>';
@@ -1135,6 +1137,10 @@
   }
   function renderMap(){
     var G=window.GREPPO,road=(G&&G.roadmap)||[],grid=document.getElementById('mapgrid'),html='';
+    /* While replaying, show REAL progress (the snapshot), not the practice copy,
+       so finished regions stay stable and you can hop freely. */
+    var PF=(practice&&practiceSnap?practiceSnap.found:P.found);
+    var curLvl=(practice&&practiceSnap?practiceSnap.lvl:P.lvl);
     for(var r=0;r<road.length;r++){
       var reg=road[r],ready=(reg.status==='ready'),cls='region'+(ready?' ready':''),badge='',word='',done=false,cur=false;
       if(ready&&reg.levelIds&&reg.levelIds.length){
@@ -1142,13 +1148,13 @@
         for(var k=0;k<reg.levelIds.length;k++){
           var li=lvlIdxById(reg.levelIds[k]);
           if(li<0)continue;
-          var lf=(P.found[li]||[]).length,ln=wordFor(li).length;
+          var lf=(PF[li]||[]).length,ln=wordFor(li).length;
           if(lf<ln)allDone=false;
-          if(li===P.lvl)anyCur=true;
+          if(li===curLvl)anyCur=true;
           var lvlDone=lf>=ln;
-          wstr+='<div class="word">'+esc(LEVELS[li].title)+': '+wordProgressHTML(li)+
-            (lvlDone?' <button class="pbtn" data-idx="'+li+'">↻ Practice</button>'
-             :(li===P.lvl?' <span class="here">▶ you are here</span>':' <span class="soonmini">locked</span>'))+'</div>';
+          wstr+='<div class="word">'+esc(LEVELS[li].title)+': '+wordProgressHTML(li,PF)+
+            (lvlDone?' <button class="pbtn" data-idx="'+li+'">▶ Replay this level</button>'
+             :(li===curLvl?' <span class="here">▶ you are here</span>':' <span class="soonmini">locked</span>'))+'</div>';
         }
         done=allDone;cur=anyCur&&!allDone;word=wstr;
         if(done){cls+=' done';badge='<span class="rbadge done">Completed ★</span>';}
