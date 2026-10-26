@@ -301,7 +301,7 @@
 
   function buildHelp(){
     var G=window.GREPPO,lines='<span class="hi">What each command does</span> (don\'t type the ( ) brackets):\n';
-    (G&&G.knowledge?G.knowledge:[]).forEach(function(k){var name=k.cmd;while(name.length<6)name+=' ';var lock=(typeof P!=='undefined'&&P&&P.mode==='sandbox')&&!cmdLearned(k.cmd);lines+=(lock?'  <span class="mask">🔒 '+name+' '+k.sum+'  (unlock in the quest)</span>':'  '+name+' '+k.sum)+'\n';});
+    (G&&G.knowledge?G.knowledge:[]).forEach(function(k){var name=k.cmd;while(name.length<6)name+=' ';var lock=!cmdLearned(k.cmd);lines+=(lock?'  <span class="mask">🔒 '+name+' '+k.sum+'  (unlock in the quest)</span>':'  '+name+' '+k.sum)+'\n';});
     lines+='<span class="dim">A name like welcome.txt has a name (welcome) and an extension (.txt) that means a text file.\n'+
       'Pipes: cmd | cmd sends one command INTO another, e.g. cat library/animals.txt | sort | uniq\n'+
       'Variables: pet=dragon saves a word; show it with echo $pet. Your name is in $USER.\n'+
@@ -385,8 +385,8 @@
       pr('<span class="er">Not quite! Read the glowing letters on the left and type that word.</span>');sfx('error');return;
     }
     function O(h){st.out+=(h+'\n');pr(h);}
-    if(P.mode==='sandbox'&&(cmd in CMD_LEVEL)&&!cmdLearned(cmd)){
-      O('<span class="hi">🔒 You haven\'t earned <b>'+esc(cmd)+'</b> yet!</span> You\'ll learn it in the quest — region "'+esc(LEVELS[CMD_LEVEL[cmd]].title)+'". Type <b>quest</b> to keep leveling up and unlock it.');
+    if((cmd in CMD_LEVEL)&&!cmdLearned(cmd)){
+      O('<span class="hi">🔒 You haven\'t earned <b>'+esc(cmd)+'</b> yet!</span> It unlocks when you reach <b>Level '+(CMD_LEVEL[cmd]+1)+' — '+esc(LEVELS[CMD_LEVEL[cmd]].title)+'</b>. Keep going and it\'s yours!'+(P.mode==='sandbox'?' <span class="dim">(type quest to continue the story)</span>':''));
       sfx('error');return done();
     }
     if(cmd==='help'){O(buildHelp());return done();}

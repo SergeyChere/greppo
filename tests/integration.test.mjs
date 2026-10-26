@@ -60,16 +60,15 @@ try {
   {
     const { ctx, page } = await freshPage(browser, seed());
     const r = run(page);
-    // in QUEST, help shows no locks and a not-yet-reached command still runs
-    ok(!/🔒/.test(await r('help')), 'help shows no locks in quest mode');
-    ok(/robert/.test(await r('whoami')), 'a not-yet-reached command (whoami) still runs in quest');
-    await r('sandbox');                       // sandbox at level 1: only early commands are free
-    // level-1 commands work
-    ok(/library|welcome\.txt/.test(await r('ls')), 'ls lists files');
-    // in SANDBOX help marks locks and later commands are gated until reached
-    ok(/🔒/.test(await r('help')), 'help marks locked commands in sandbox');
-    ok(/haven't earned/i.test(await r('tr a-z A-Z library/poem.txt')), 'un-earned command (tr) is locked in sandbox');
-    ok(/haven't earned/i.test(await r('ps')), 'un-earned command (ps) is locked in sandbox');
+    // help marks locked commands, and a not-yet-reached command is blocked —
+    // consistently in quest too
+    ok(/🔒/.test(await r('help')), 'help marks locked commands (quest)');
+    ok(/haven't earned/i.test(await r('whoami')), 'a not-yet-reached command is blocked in quest');
+    await r('sandbox');
+    ok(/library|welcome\.txt/.test(await r('ls')), 'a learned command (ls) runs');
+    ok(/🔒/.test(await r('help')), 'help marks locked commands (sandbox)');
+    ok(/haven't earned/i.test(await r('tr a-z A-Z library/poem.txt')), 'un-earned command (tr) is blocked in sandbox');
+    ok(/haven't earned/i.test(await r('ps')), 'un-earned command (ps) is blocked in sandbox');
     await ctx.close();
   }
   {
