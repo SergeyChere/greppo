@@ -1,0 +1,231 @@
+{
+  "id": "make",
+  "word": "LINUX",
+  "title": "Workshop",
+  "lessons": [
+    {
+      "id": "make.create",
+      "title": "mkdir + touch — make things",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "make.create.1",
+          "show": "Make a new folder called den. Type <b>mkdir den</b> — make directory",
+          "cmd": "mkdir den",
+          "check": {
+            "exists": "~/den"
+          }
+        },
+        {
+          "id": "make.create.2",
+          "show": "Make an empty file inside it. Use <b>touch den/bowl.txt</b> — touch makes an empty file",
+          "cmd": "touch den/bowl.txt",
+          "check": {
+            "exists": "~/den/bowl.txt"
+          }
+        },
+        {
+          "id": "make.create.3",
+          "ask": "Make a new folder called toys",
+          "cmd": "mkdir toys",
+          "check": {
+            "exists": "~/toys"
+          }
+        }
+      ]
+    },
+    {
+      "id": "make.write",
+      "title": "echo > — write into files",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "make.write.1",
+          "show": "Write a word into a file. Use <b>echo food > den/bowl.txt</b> — the > sends the word into the file",
+          "cmd": "echo food > den/bowl.txt",
+          "check": {
+            "fileHas": [
+              "~/den/bowl.txt",
+              "food"
+            ]
+          }
+        },
+        {
+          "id": "make.write.2",
+          "ask": "Add the word <span class=\"kw\">yummy</span> to the end of den/bowl.txt. Use >> to keep the old text",
+          "cmd": "echo yummy >> den/bowl.txt",
+          "check": {
+            "fileHas": [
+              "~/den/bowl.txt",
+              "yummy"
+            ]
+          }
+        },
+        {
+          "id": "make.write.3",
+          "ask": "Create a new file hello.txt with the word <span class=\"kw\">hi</span> inside. Use echo with > to make the file",
+          "cmd": "echo hi > hello.txt",
+          "check": {
+            "fileHas": [
+              "~/hello.txt",
+              "hi"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "make.copy",
+      "title": "cp + mv — copy and rename",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "make.copy.1",
+          "show": "Copy the bowl. Type <b>cp den/bowl.txt den/bowl2.txt</b> — copy",
+          "cmd": "cp den/bowl.txt den/bowl2.txt",
+          "check": {
+            "exists": "~/den/bowl2.txt"
+          }
+        },
+        {
+          "id": "make.copy.2",
+          "ask": "Rename den/bowl2.txt to den/spare.txt",
+          "cmd": "mv den/bowl2.txt den/spare.txt",
+          "check": {
+            "and": [
+              {
+                "gone": "~/den/bowl2.txt"
+              },
+              {
+                "exists": "~/den/spare.txt"
+              }
+            ]
+          }
+        },
+        {
+          "id": "make.copy.3",
+          "ask": "Go into the folder den (an old skill!).",
+          "cmd": "cd den",
+          "check": {
+            "cd": "~/den"
+          }
+        }
+      ]
+    },
+    {
+      "id": "make.remove",
+      "title": "rm + flags — delete, be careful",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "make.remove.1",
+          "show": "Delete the spare file. Use <b>rm ~/den/spare.txt</b> — rm removes a file",
+          "cmd": "rm ~/den/spare.txt",
+          "check": {
+            "gone": "~/den/spare.txt"
+          }
+        },
+        {
+          "id": "make.remove.2",
+          "show": "A flag is an extra option that starts with a dash -. To delete a whole folder, add the flag -r. Use <b>rm -r ~/den/toys</b>",
+          "cmd": "rm -r ~/den/toys",
+          "check": {
+            "gone": "~/den/toys"
+          }
+        },
+        {
+          "id": "make.remove.3",
+          "ask": "Now delete the folder <span class=\"kw\">toys</span> in your home, using the same -r flag",
+          "cmd": "rm -r ~/toys",
+          "check": {
+            "gone": "~/toys"
+          }
+        },
+        {
+          "id": "make.remove.4",
+          "ask": "Which command deletes things? Delete the file ~/hello.txt",
+          "cmd": "rm ~/hello.txt",
+          "check": {
+            "gone": "~/hello.txt"
+          }
+        }
+      ]
+    },
+    {
+      "id": "make.check",
+      "title": "Checkpoint — answer from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "make.check.1",
+          "ask": "Make a new folder called test.",
+          "cmd": "mkdir test",
+          "check": {
+            "exists": "~/test"
+          }
+        },
+        {
+          "id": "make.check.2",
+          "ask": "Make a file called test/a.txt",
+          "cmd": "touch test/a.txt",
+          "check": {
+            "exists": "~/test/a.txt"
+          }
+        },
+        {
+          "id": "make.check.3",
+          "ask": "Write the word ok into test/a.txt",
+          "cmd": "echo ok > test/a.txt",
+          "check": {
+            "fileHas": [
+              "~/test/a.txt",
+              "ok"
+            ]
+          }
+        },
+        {
+          "id": "make.check.4",
+          "ask": "Copy test/a.txt to test/b.txt",
+          "cmd": "cp test/a.txt test/b.txt",
+          "check": {
+            "exists": "~/test/b.txt"
+          }
+        },
+        {
+          "id": "make.check.5",
+          "ask": "Rename test/b.txt to test/c.txt",
+          "cmd": "mv test/b.txt test/c.txt",
+          "check": {
+            "and": [
+              {
+                "gone": "~/test/b.txt"
+              },
+              {
+                "exists": "~/test/c.txt"
+              }
+            ]
+          }
+        },
+        {
+          "id": "make.check.6",
+          "ask": "Delete the whole folder test.",
+          "cmd": "rm -r test",
+          "check": {
+            "gone": "~/test"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,18 @@
 # Architecture
 
-Two files, content split from engine. The engine never grows with the amount of
-course material — adding levels/lessons/tasks is editing `content.js` only.
+Content split from engine. The engine never grows with the amount of course
+material — adding levels/lessons/tasks is editing data only.
 
-## content.js — the registry (`window.GREPPO`)
-Plain data, no functions:
+## content/ — the source data (JSON)
+Authored content lives in `content/meta.json` (version, stageNames, wordPool,
+knowledge, roadmap, review, and `levelOrder`) and `content/levels/<id>.json`
+(one level each). `tools/build-content.mjs` (`npm run build`) assembles them
+into `content.js`. `content.js` is committed so the static site needs no build
+to serve, but it is generated — edit the JSON, not `content.js`.
+
+## content.js — the generated registry (`window.GREPPO`)
+Plain data, no functions. Loaded by a plain `<script>` (no network), so it works
+opened from disk, on GitHub Pages and inside the artifact:
 - `version`
 - `stageNames` — pet evolution names; length must be `levels.length + 1`
   (egg + one stage per level + MEGA)

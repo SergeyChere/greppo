@@ -1,0 +1,283 @@
+{
+  "id": "flip",
+  "word": "MAGIC",
+  "title": "Mirror Hall",
+  "lessons": [
+    {
+      "id": "flip.rev",
+      "title": "rev — flip text backwards",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "flip.rev.1",
+          "show": "Flip a file's text backwards. Use <b>rev library/poem.txt</b>",
+          "cmd": "rev library/poem.txt",
+          "check": {
+            "argHas": [
+              "rev",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "flip.rev.2",
+          "ask": "Flip library/colors.txt backwards.",
+          "cmd": "rev library/colors.txt",
+          "check": {
+            "argHas": [
+              "rev",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Flip library/animals.txt backwards.",
+              "cmd": "rev library/animals.txt",
+              "check": {
+                "argHas": [
+                  "rev",
+                  "animals.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Flip library/numbers.txt backwards.",
+              "cmd": "rev library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "rev",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "flip.rev.3",
+          "ask": "Which command flips text backwards? Use it on library/poem.txt",
+          "cmd": "rev library/poem.txt",
+          "check": {
+            "argHas": [
+              "rev",
+              "poem.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "flip.shout",
+      "title": "tr — SHOUT in capitals",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "flip.shout.1",
+          "show": "Turn small letters into BIG letters. Use <b>tr a-z A-Z library/poem.txt</b> — tr swaps letters",
+          "cmd": "tr a-z A-Z library/poem.txt",
+          "check": {
+            "argHas": [
+              "tr",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "flip.shout.2",
+          "ask": "Make library/colors.txt SHOUT in capitals.",
+          "cmd": "tr a-z A-Z library/colors.txt",
+          "check": {
+            "argHas": [
+              "tr",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Make library/animals.txt SHOUT in capitals.",
+              "cmd": "tr a-z A-Z library/animals.txt",
+              "check": {
+                "argHas": [
+                  "tr",
+                  "animals.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Make library/poem.txt SHOUT in capitals.",
+              "cmd": "tr a-z A-Z library/poem.txt",
+              "check": {
+                "argHas": [
+                  "tr",
+                  "poem.txt"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flip.swap",
+      "title": "tr — swap one letter",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "flip.swap.1",
+          "show": "Swap every o for 0. Use <b>tr o 0 library/poem.txt</b>",
+          "cmd": "tr o 0 library/poem.txt",
+          "check": {
+            "argHas": [
+              "tr",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "flip.swap.2",
+          "ask": "In library/colors.txt, swap every e for 3. (tr e 3 ...)",
+          "cmd": "tr e 3 library/colors.txt",
+          "check": {
+            "argHas": [
+              "tr",
+              "colors.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "flip.mix",
+      "title": "Mix — old and new",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "flip.mix.1",
+          "ask": "Read library/poem.txt with cat.",
+          "cmd": "cat library/poem.txt",
+          "check": {
+            "cat": "~/library/poem.txt"
+          }
+        },
+        {
+          "id": "flip.mix.2",
+          "ask": "Flip library/poem.txt backwards.",
+          "cmd": "rev library/poem.txt",
+          "check": {
+            "argHas": [
+              "rev",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "flip.mix.3",
+          "ask": "Print your own name. Type the command that does it.",
+          "cmd": "whoami",
+          "check": {
+            "ran": "whoami"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flip.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "flip.check.1",
+          "ask": "Flip library/colors.txt backwards.",
+          "cmd": "rev library/colors.txt",
+          "check": {
+            "argHas": [
+              "rev",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Flip library/animals.txt backwards.",
+              "cmd": "rev library/animals.txt",
+              "check": {
+                "argHas": [
+                  "rev",
+                  "animals.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Flip library/numbers.txt backwards.",
+              "cmd": "rev library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "rev",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "flip.check.2",
+          "ask": "Make library/poem.txt SHOUT in capitals.",
+          "cmd": "tr a-z A-Z library/poem.txt",
+          "check": {
+            "argHas": [
+              "tr",
+              "poem.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Make library/colors.txt SHOUT in capitals.",
+              "cmd": "tr a-z A-Z library/colors.txt",
+              "check": {
+                "argHas": [
+                  "tr",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Make library/animals.txt SHOUT in capitals.",
+              "cmd": "tr a-z A-Z library/animals.txt",
+              "check": {
+                "argHas": [
+                  "tr",
+                  "animals.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "flip.check.3",
+          "ask": "Print your name.",
+          "cmd": "whoami",
+          "check": {
+            "ran": "whoami"
+          }
+        },
+        {
+          "id": "flip.check.4",
+          "ask": "Read library/colors.txt with cat.",
+          "cmd": "cat library/colors.txt",
+          "check": {
+            "cat": "~/library/colors.txt"
+          }
+        }
+      ]
+    }
+  ]
+}

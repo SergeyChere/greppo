@@ -1,0 +1,185 @@
+{
+  "id": "motor",
+  "word": "MOTOR",
+  "title": "Machine Yard",
+  "lessons": [
+    {
+      "id": "motor.ps",
+      "title": "ps — what is running",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "motor.ps.1",
+          "show": "See the little programs running right now. Type <b>ps</b>",
+          "cmd": "ps",
+          "check": {
+            "ran": "ps"
+          }
+        },
+        {
+          "id": "motor.ps.2",
+          "ask": "Show the running programs again.",
+          "cmd": "ps",
+          "check": {
+            "ran": "ps"
+          }
+        }
+      ]
+    },
+    {
+      "id": "motor.kill",
+      "title": "kill — stop a program",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "motor.kill.1",
+          "show": "Each program has a number (PID). Stop the music-box (PID 77): <b>kill 77</b>",
+          "cmd": "kill 77",
+          "check": {
+            "argHas": [
+              "kill",
+              "77"
+            ]
+          }
+        },
+        {
+          "id": "motor.kill.2",
+          "ask": "Now stop the games program, PID 88.",
+          "cmd": "kill 88",
+          "check": {
+            "argHas": [
+              "kill",
+              "88"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Now stop the music-box, PID 77.",
+              "cmd": "kill 77",
+              "check": {
+                "argHas": [
+                  "kill",
+                  "77"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "motor.top",
+      "title": "top — watch them",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "motor.top.1",
+          "show": "Another way to watch the programs: type <b>top</b>",
+          "cmd": "top",
+          "check": {
+            "ran": "top"
+          }
+        },
+        {
+          "id": "motor.top.2",
+          "ask": "List the programs with ps again.",
+          "cmd": "ps",
+          "check": {
+            "ran": "ps"
+          }
+        }
+      ]
+    },
+    {
+      "id": "motor.mix",
+      "title": "Mix — old and new",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "motor.mix.1",
+          "ask": "Who are you? (old skill)",
+          "cmd": "whoami",
+          "check": {
+            "ran": "whoami"
+          }
+        },
+        {
+          "id": "motor.mix.2",
+          "ask": "Show the running programs.",
+          "cmd": "ps",
+          "check": {
+            "ran": "ps"
+          }
+        },
+        {
+          "id": "motor.mix.3",
+          "ask": "Try kill 42 — that's greppo! See what happens.",
+          "cmd": "kill 42",
+          "check": {
+            "argHas": [
+              "kill",
+              "42"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "motor.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "motor.check.1",
+          "ask": "List the programs running now.",
+          "cmd": "ps",
+          "check": {
+            "ran": "ps"
+          }
+        },
+        {
+          "id": "motor.check.2",
+          "ask": "Stop the program with PID 88.",
+          "cmd": "kill 88",
+          "check": {
+            "argHas": [
+              "kill",
+              "88"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Stop the program with PID 77.",
+              "cmd": "kill 77",
+              "check": {
+                "argHas": [
+                  "kill",
+                  "77"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "motor.check.3",
+          "ask": "Watch the programs with top.",
+          "cmd": "top",
+          "check": {
+            "ran": "top"
+          }
+        }
+      ]
+    }
+  ]
+}

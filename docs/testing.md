@@ -36,8 +36,12 @@ Two files under `tests/`, run together by `npm test`:
 ```sh
 npm install                        # Playwright (dev dependency)
 npx playwright install chromium    # the browser binary
-npm test                           # content validator, then integration tests
+npm test                           # build content.js, validate, then integration
 ```
+
+`npm test` first runs `npm run build` (compiles `content/*.json` →
+`content.js`), so the tests always check the freshly built registry. CI also
+fails if the committed `content.js` is out of sync with the JSON.
 
 `npm run test:content` and `npm run test:integration` run them separately.
 CI runs the same on every push/PR (`.github/workflows/ci.yml`).

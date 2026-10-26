@@ -1,0 +1,208 @@
+{
+  "id": "guard",
+  "word": "BADGE",
+  "title": "Citadel of Locks",
+  "lessons": [
+    {
+      "id": "guard.look",
+      "title": "ls -l + id — who can change things",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "guard.look.1",
+          "show": "See the details of files, including who can change them. Type <b>ls -l</b>",
+          "cmd": "ls -l",
+          "check": {
+            "argHas": [
+              "ls",
+              "-l"
+            ]
+          }
+        },
+        {
+          "id": "guard.look.2",
+          "show": "Who are you to the computer? Type <b>id</b>",
+          "cmd": "id",
+          "check": {
+            "ran": "id"
+          }
+        }
+      ]
+    },
+    {
+      "id": "guard.lock",
+      "title": "chmod -w — lock a file",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "guard.lock.1",
+          "show": "First make a treasure file: <b>echo gold > vault.txt</b>",
+          "cmd": "echo gold > vault.txt",
+          "check": {
+            "fileHas": [
+              "~/vault.txt",
+              "gold"
+            ]
+          }
+        },
+        {
+          "id": "guard.lock.2",
+          "show": "Now lock it so nobody can change it: <b>chmod -w vault.txt</b>",
+          "cmd": "chmod -w vault.txt",
+          "check": {
+            "argHas": [
+              "chmod",
+              "vault.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "guard.try",
+      "title": "locked files are safe",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "guard.try.1",
+          "show": "Try to delete the locked file: <b>rm vault.txt</b> — Greppo will refuse. That's the lock working!",
+          "cmd": "rm vault.txt",
+          "check": {
+            "ran": "rm"
+          }
+        },
+        {
+          "id": "guard.try.2",
+          "show": "Unlock it again when YOU want to: <b>chmod +w vault.txt</b>",
+          "cmd": "chmod +w vault.txt",
+          "check": {
+            "argHas": [
+              "chmod",
+              "vault.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "guard.mix",
+      "title": "Mix — protect your things",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "guard.mix.1",
+          "ask": "Make a file: echo secret > diary.txt",
+          "cmd": "echo secret > diary.txt",
+          "check": {
+            "fileHas": [
+              "~/diary.txt",
+              "secret"
+            ]
+          }
+        },
+        {
+          "id": "guard.mix.2",
+          "ask": "Lock diary.txt so it can't change (chmod -w ...).",
+          "cmd": "chmod -w diary.txt",
+          "check": {
+            "argHas": [
+              "chmod",
+              "diary.txt"
+            ]
+          }
+        },
+        {
+          "id": "guard.mix.3",
+          "ask": "See the details of everything here (the long list).",
+          "cmd": "ls -l",
+          "check": {
+            "argHas": [
+              "ls",
+              "-l"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Who are you to the computer? Show your id.",
+              "cmd": "id",
+              "check": {
+                "ran": "id"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "guard.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "guard.check.1",
+          "ask": "Who are you to the computer?",
+          "cmd": "id",
+          "check": {
+            "ran": "id"
+          },
+          "alts": [
+            {
+              "ask": "See the details of everything here (the long list).",
+              "cmd": "ls -l",
+              "check": {
+                "argHas": [
+                  "ls",
+                  "-l"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "guard.check.2",
+          "ask": "Make a file: echo mine > box.txt",
+          "cmd": "echo mine > box.txt",
+          "check": {
+            "fileHas": [
+              "~/box.txt",
+              "mine"
+            ]
+          }
+        },
+        {
+          "id": "guard.check.3",
+          "ask": "Lock box.txt (chmod -w ...).",
+          "cmd": "chmod -w box.txt",
+          "check": {
+            "argHas": [
+              "chmod",
+              "box.txt"
+            ]
+          }
+        },
+        {
+          "id": "guard.check.4",
+          "ask": "Unlock box.txt again (chmod +w ...).",
+          "cmd": "chmod +w box.txt",
+          "check": {
+            "argHas": [
+              "chmod",
+              "box.txt"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

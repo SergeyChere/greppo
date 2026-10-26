@@ -1,0 +1,240 @@
+{
+  "id": "radio",
+  "word": "RADIO",
+  "title": "Network Frontier",
+  "lessons": [
+    {
+      "id": "radio.ping",
+      "title": "ping — is it awake?",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "radio.ping.1",
+          "show": "Is another computer awake? Use <b>ping greppo.world</b>",
+          "cmd": "ping greppo.world",
+          "check": {
+            "argHas": [
+              "ping",
+              "greppo.world"
+            ]
+          }
+        },
+        {
+          "id": "radio.ping.2",
+          "ask": "Ping pet.greppo.world.",
+          "cmd": "ping pet.greppo.world",
+          "check": {
+            "argHas": [
+              "ping",
+              "pet.greppo.world"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Ping help.greppo.world.",
+              "cmd": "ping help.greppo.world",
+              "check": {
+                "argHas": [
+                  "ping",
+                  "help.greppo.world"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio.curl",
+      "title": "curl — fetch a page",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "radio.curl.1",
+          "show": "Fetch a page from another computer. Use <b>curl greppo.world</b>",
+          "cmd": "curl greppo.world",
+          "check": {
+            "argHas": [
+              "curl",
+              "greppo.world"
+            ]
+          }
+        },
+        {
+          "id": "radio.curl.2",
+          "ask": "Fetch the page help.greppo.world.",
+          "cmd": "curl help.greppo.world",
+          "check": {
+            "argHas": [
+              "curl",
+              "help.greppo.world"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Fetch the page pet.greppo.world.",
+              "cmd": "curl pet.greppo.world",
+              "check": {
+                "argHas": [
+                  "curl",
+                  "pet.greppo.world"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio.both",
+      "title": "ping then fetch",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "radio.both.1",
+          "ask": "Ping help.greppo.world first.",
+          "cmd": "ping help.greppo.world",
+          "check": {
+            "argHas": [
+              "ping",
+              "help.greppo.world"
+            ]
+          }
+        },
+        {
+          "id": "radio.both.2",
+          "ask": "Now fetch pet.greppo.world.",
+          "cmd": "curl pet.greppo.world",
+          "check": {
+            "argHas": [
+              "curl",
+              "pet.greppo.world"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "radio.mix",
+      "title": "Mix — old and new",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "radio.mix.1",
+          "ask": "Ping greppo.world.",
+          "cmd": "ping greppo.world",
+          "check": {
+            "argHas": [
+              "ping",
+              "greppo.world"
+            ]
+          }
+        },
+        {
+          "id": "radio.mix.2",
+          "ask": "Fetch greppo.world.",
+          "cmd": "curl greppo.world",
+          "check": {
+            "argHas": [
+              "curl",
+              "greppo.world"
+            ]
+          }
+        },
+        {
+          "id": "radio.mix.3",
+          "ask": "Print your name (whoami).",
+          "cmd": "whoami",
+          "check": {
+            "ran": "whoami"
+          }
+        }
+      ]
+    },
+    {
+      "id": "radio.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "radio.check.1",
+          "ask": "Check if greppo.world is awake.",
+          "cmd": "ping greppo.world",
+          "check": {
+            "argHas": [
+              "ping",
+              "greppo.world"
+            ]
+          }
+        },
+        {
+          "id": "radio.check.2",
+          "ask": "Fetch the page greppo.world.",
+          "cmd": "curl greppo.world",
+          "check": {
+            "argHas": [
+              "curl",
+              "greppo.world"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Fetch the page pet.greppo.world.",
+              "cmd": "curl pet.greppo.world",
+              "check": {
+                "argHas": [
+                  "curl",
+                  "pet.greppo.world"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "radio.check.3",
+          "ask": "Fetch help.greppo.world.",
+          "cmd": "curl help.greppo.world",
+          "check": {
+            "argHas": [
+              "curl",
+              "help.greppo.world"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Ping pet.greppo.world.",
+              "cmd": "ping pet.greppo.world",
+              "check": {
+                "argHas": [
+                  "ping",
+                  "pet.greppo.world"
+                ]
+              }
+            },
+            {
+              "ask": "Ping greppo.world.",
+              "cmd": "ping greppo.world",
+              "check": {
+                "argHas": [
+                  "ping",
+                  "greppo.world"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

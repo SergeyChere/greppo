@@ -1,0 +1,297 @@
+{
+  "id": "order",
+  "word": "ORDER",
+  "title": "Sorting Hall",
+  "lessons": [
+    {
+      "id": "order.sort",
+      "title": "sort — put lines in order",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "order.sort.1",
+          "show": "Put a file's lines in A-Z order. Use <b>sort library/animals.txt</b>",
+          "cmd": "sort library/animals.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "animals.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.sort.2",
+          "ask": "Sort library/numbers.txt",
+          "cmd": "sort library/numbers.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "numbers.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.sort.3",
+          "ask": "Which command puts lines in order? Use it on library/animals.txt",
+          "cmd": "sort library/animals.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "animals.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "order.uniq",
+      "title": "uniq — remove repeats",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "order.uniq.1",
+          "show": "Remove repeated lines that are next to each other. Use <b>uniq library/animals.txt</b>",
+          "cmd": "uniq library/animals.txt",
+          "check": {
+            "argHas": [
+              "uniq",
+              "animals.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.uniq.2",
+          "ask": "Remove repeats in library/numbers.txt",
+          "cmd": "uniq library/numbers.txt",
+          "check": {
+            "argHas": [
+              "uniq",
+              "numbers.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.uniq.3",
+          "ask": "Sort library/numbers.txt first (an old skill).",
+          "cmd": "sort library/numbers.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "numbers.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "order.mix",
+      "title": "Mix — count and order",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "order.mix.1",
+          "ask": "Count library/animals.txt",
+          "cmd": "wc library/animals.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "animals.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.mix.2",
+          "ask": "Sort library/animals.txt",
+          "cmd": "sort library/animals.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "animals.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.mix.3",
+          "ask": "Show the first lines of library/animals.txt",
+          "cmd": "head library/animals.txt",
+          "check": {
+            "argHas": [
+              "head",
+              "animals.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "order.spiral",
+      "title": "Mix — search and order",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "order.spiral.1",
+          "ask": "Find the file animals.txt",
+          "cmd": "find animals.txt",
+          "check": {
+            "out": [
+              "find",
+              "animals.txt"
+            ]
+          }
+        },
+        {
+          "id": "order.spiral.2",
+          "ask": "Make a new folder called sorted.",
+          "cmd": "mkdir sorted",
+          "check": {
+            "exists": "~/sorted"
+          }
+        },
+        {
+          "id": "order.spiral.3",
+          "ask": "Sort library/numbers.txt",
+          "cmd": "sort library/numbers.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "numbers.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "order.check",
+      "title": "Final checkpoint",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "order.check.1",
+          "ask": "Show where you are.",
+          "cmd": "pwd",
+          "check": {
+            "ran": "pwd"
+          }
+        },
+        {
+          "id": "order.check.2",
+          "ask": "Sort library/animals.txt",
+          "cmd": "sort library/animals.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "animals.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Sort library/colors.txt",
+              "cmd": "sort library/colors.txt",
+              "check": {
+                "argHas": [
+                  "sort",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Sort library/numbers.txt",
+              "cmd": "sort library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "sort",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "order.check.3",
+          "ask": "Remove repeats in library/animals.txt",
+          "cmd": "uniq library/animals.txt",
+          "check": {
+            "argHas": [
+              "uniq",
+              "animals.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Remove repeats in library/numbers.txt",
+              "cmd": "uniq library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "uniq",
+                  "numbers.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Remove repeats in library/scores.txt",
+              "cmd": "uniq library/scores.txt",
+              "check": {
+                "argHas": [
+                  "uniq",
+                  "scores.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "order.check.4",
+          "ask": "Count library/poem.txt",
+          "cmd": "wc library/poem.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "poem.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Count library/colors.txt",
+              "cmd": "wc library/colors.txt",
+              "check": {
+                "argHas": [
+                  "wc",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Count library/animals.txt",
+              "cmd": "wc library/animals.txt",
+              "check": {
+                "argHas": [
+                  "wc",
+                  "animals.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "order.check.5",
+          "ask": "Read the treasure: ~/treasure.txt",
+          "cmd": "cat ~/treasure.txt",
+          "check": {
+            "cat": "~/treasure.txt"
+          }
+        }
+      ]
+    }
+  ]
+}

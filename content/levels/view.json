@@ -1,0 +1,288 @@
+{
+  "id": "view",
+  "word": "SCOUT",
+  "title": "Reading Room",
+  "lessons": [
+    {
+      "id": "view.peek",
+      "title": "head + tail — peek at a file",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "view.peek.1",
+          "show": "Peek at the first lines of a file. Use <b>head library/poem.txt</b> — head shows the top",
+          "cmd": "head library/poem.txt",
+          "check": {
+            "argHas": [
+              "head",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "view.peek.2",
+          "show": "See the last lines. Use <b>tail library/poem.txt</b> — tail shows the bottom",
+          "cmd": "tail library/poem.txt",
+          "check": {
+            "argHas": [
+              "tail",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "view.peek.3",
+          "ask": "Which command shows the FIRST lines of a file? Use it on library/poem.txt",
+          "cmd": "head library/poem.txt",
+          "check": {
+            "argHas": [
+              "head",
+              "poem.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "view.count",
+      "title": "wc — count lines and words",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "view.count.1",
+          "show": "Count the lines and words in a file. Use <b>wc library/poem.txt</b> — word count",
+          "cmd": "wc library/poem.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "view.count.2",
+          "ask": "Count what is in library/animals.txt",
+          "cmd": "wc library/animals.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "animals.txt"
+            ]
+          }
+        },
+        {
+          "id": "view.count.3",
+          "ask": "Read the whole poem with cat (an old skill!). The file is library/poem.txt",
+          "cmd": "cat library/poem.txt",
+          "check": {
+            "cat": "~/library/poem.txt"
+          }
+        }
+      ]
+    },
+    {
+      "id": "view.mix",
+      "title": "Mix — move in and look",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "view.mix.1",
+          "ask": "Go into the folder library.",
+          "cmd": "cd library",
+          "check": {
+            "cd": "~/library"
+          }
+        },
+        {
+          "id": "view.mix.2",
+          "ask": "List what is there.",
+          "cmd": "ls",
+          "check": {
+            "ran": "ls"
+          }
+        },
+        {
+          "id": "view.mix.3",
+          "ask": "Show the last lines of poem.txt",
+          "cmd": "tail poem.txt",
+          "check": {
+            "argHas": [
+              "tail",
+              "poem.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "view.more",
+      "title": "Practice — top, bottom, count",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "view.more.1",
+          "ask": "Show the first lines of library/numbers.txt",
+          "cmd": "head library/numbers.txt",
+          "check": {
+            "argHas": [
+              "head",
+              "numbers.txt"
+            ]
+          }
+        },
+        {
+          "id": "view.more.2",
+          "ask": "Count library/numbers.txt",
+          "cmd": "wc library/numbers.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "numbers.txt"
+            ]
+          }
+        },
+        {
+          "id": "view.more.3",
+          "ask": "Read library/numbers.txt with cat.",
+          "cmd": "cat library/numbers.txt",
+          "check": {
+            "cat": "~/library/numbers.txt"
+          }
+        }
+      ]
+    },
+    {
+      "id": "view.check",
+      "title": "Checkpoint — answer from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "view.check.1",
+          "ask": "Show where you are.",
+          "cmd": "pwd",
+          "check": {
+            "ran": "pwd"
+          }
+        },
+        {
+          "id": "view.check.2",
+          "ask": "Show the first lines of library/poem.txt",
+          "cmd": "head library/poem.txt",
+          "check": {
+            "argHas": [
+              "head",
+              "poem.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Show the first lines of library/colors.txt",
+              "cmd": "head library/colors.txt",
+              "check": {
+                "argHas": [
+                  "head",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Show the first lines of library/numbers.txt",
+              "cmd": "head library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "head",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "view.check.3",
+          "ask": "Show the last lines of library/poem.txt",
+          "cmd": "tail library/poem.txt",
+          "check": {
+            "argHas": [
+              "tail",
+              "poem.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Show the last lines of library/colors.txt",
+              "cmd": "tail library/colors.txt",
+              "check": {
+                "argHas": [
+                  "tail",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Show the last lines of library/scores.txt",
+              "cmd": "tail library/scores.txt",
+              "check": {
+                "argHas": [
+                  "tail",
+                  "scores.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "view.check.4",
+          "ask": "Count library/animals.txt",
+          "cmd": "wc library/animals.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "animals.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Count library/poem.txt",
+              "cmd": "wc library/poem.txt",
+              "check": {
+                "argHas": [
+                  "wc",
+                  "poem.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Count library/colors.txt",
+              "cmd": "wc library/colors.txt",
+              "check": {
+                "argHas": [
+                  "wc",
+                  "colors.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "view.check.5",
+          "ask": "Read library/animals.txt with cat.",
+          "cmd": "cat library/animals.txt",
+          "check": {
+            "cat": "~/library/animals.txt"
+          }
+        }
+      ]
+    }
+  ]
+}

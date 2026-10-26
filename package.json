@@ -5,9 +5,10 @@
   "description": "Offline browser game that teaches children the Linux terminal.",
   "type": "module",
   "scripts": {
-    "test:content": "node tests/validate-content.mjs",
+    "build": "node tools/build-content.mjs",
+    "test:content": "node tools/build-content.mjs && node tests/validate-content.mjs",
     "test:integration": "node tests/integration.test.mjs",
-    "test": "node tests/validate-content.mjs && node tests/integration.test.mjs"
+    "test": "node tools/build-content.mjs && node tests/validate-content.mjs && node tests/integration.test.mjs"
   },
   "devDependencies": {
     "playwright": "1.48.2"

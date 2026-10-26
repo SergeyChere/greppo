@@ -1,0 +1,290 @@
+{
+  "id": "slice",
+  "word": "LASER",
+  "title": "Cutting Room",
+  "lessons": [
+    {
+      "id": "slice.cut",
+      "title": "cut -c — take some letters",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "slice.cut.1",
+          "show": "Take just the first 3 letters of each line. Use <b>cut -c1-3 library/colors.txt</b>",
+          "cmd": "cut -c1-3 library/colors.txt",
+          "check": {
+            "argHas": [
+              "cut",
+              "colors.txt"
+            ]
+          }
+        },
+        {
+          "id": "slice.cut.2",
+          "ask": "Take just the first letter of each color. (cut -c1 ...)",
+          "cmd": "cut -c1 library/colors.txt",
+          "check": {
+            "argHas": [
+              "cut",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Take the first 2 letters of each line in library/colors.txt (cut -c1-2 ...)",
+              "cmd": "cut -c1-2 library/colors.txt",
+              "check": {
+                "argHas": [
+                  "cut",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Take the first 4 letters of each line in library/animals.txt (cut -c1-4 ...)",
+              "cmd": "cut -c1-4 library/animals.txt",
+              "check": {
+                "argHas": [
+                  "cut",
+                  "animals.txt"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slice.field",
+      "title": "cut -f — take a word column",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "slice.field.1",
+          "show": "Each line of scores has a name and a number. Take the names: <b>cut -f1 library/scores.txt</b>",
+          "cmd": "cut -f1 library/scores.txt",
+          "check": {
+            "argHas": [
+              "cut",
+              "scores.txt"
+            ]
+          }
+        },
+        {
+          "id": "slice.field.2",
+          "ask": "Now take just the scores (the second word): cut -f2 library/scores.txt",
+          "cmd": "cut -f2 library/scores.txt",
+          "check": {
+            "argHas": [
+              "cut",
+              "scores.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "slice.nl",
+      "title": "nl — number the lines",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "slice.nl.1",
+          "show": "Number every line of a file. Use <b>nl library/poem.txt</b>",
+          "cmd": "nl library/poem.txt",
+          "check": {
+            "argHas": [
+              "nl",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "slice.nl.2",
+          "ask": "Number the lines of library/colors.txt",
+          "cmd": "nl library/colors.txt",
+          "check": {
+            "argHas": [
+              "nl",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Number the lines of library/animals.txt",
+              "cmd": "nl library/animals.txt",
+              "check": {
+                "argHas": [
+                  "nl",
+                  "animals.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Number the lines of library/numbers.txt",
+              "cmd": "nl library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "nl",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slice.mix",
+      "title": "Mix — order and number",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "slice.mix.1",
+          "ask": "Sort library/colors.txt (an old skill).",
+          "cmd": "sort library/colors.txt",
+          "check": {
+            "argHas": [
+              "sort",
+              "colors.txt"
+            ]
+          }
+        },
+        {
+          "id": "slice.mix.2",
+          "ask": "Number the lines of library/colors.txt",
+          "cmd": "nl library/colors.txt",
+          "check": {
+            "argHas": [
+              "nl",
+              "colors.txt"
+            ]
+          }
+        },
+        {
+          "id": "slice.mix.3",
+          "ask": "What day is it? Type the command that shows the date.",
+          "cmd": "date",
+          "check": {
+            "ran": "date"
+          }
+        }
+      ]
+    },
+    {
+      "id": "slice.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "slice.check.1",
+          "ask": "Take the first 3 letters of each line in library/colors.txt",
+          "cmd": "cut -c1-3 library/colors.txt",
+          "check": {
+            "argHas": [
+              "cut",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Take the first 2 letters of each line in library/animals.txt",
+              "cmd": "cut -c1-2 library/animals.txt",
+              "check": {
+                "argHas": [
+                  "cut",
+                  "animals.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Take the first letter of each line in library/colors.txt",
+              "cmd": "cut -c1 library/colors.txt",
+              "check": {
+                "argHas": [
+                  "cut",
+                  "colors.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "slice.check.2",
+          "ask": "Take the names from library/scores.txt (first word).",
+          "cmd": "cut -f1 library/scores.txt",
+          "check": {
+            "argHas": [
+              "cut",
+              "scores.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Take the scores from library/scores.txt (second word).",
+              "cmd": "cut -f2 library/scores.txt",
+              "check": {
+                "argHas": [
+                  "cut",
+                  "scores.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "slice.check.3",
+          "ask": "Number the lines of library/poem.txt",
+          "cmd": "nl library/poem.txt",
+          "check": {
+            "argHas": [
+              "nl",
+              "poem.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Number the lines of library/colors.txt",
+              "cmd": "nl library/colors.txt",
+              "check": {
+                "argHas": [
+                  "nl",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Number the lines of library/animals.txt",
+              "cmd": "nl library/animals.txt",
+              "check": {
+                "argHas": [
+                  "nl",
+                  "animals.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "slice.check.4",
+          "ask": "Show a calendar.",
+          "cmd": "cal",
+          "check": {
+            "ran": "cal"
+          }
+        }
+      ]
+    }
+  ]
+}

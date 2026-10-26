@@ -1,0 +1,597 @@
+{
+  "version": 1,
+  "stageNames": [
+    "Egg",
+    "Hatchling",
+    "Sprout",
+    "Junior",
+    "Fighter",
+    "Scout",
+    "Ranger",
+    "Pilot",
+    "Rider",
+    "Captain",
+    "Knight",
+    "Wizard",
+    "Hero",
+    "Guardian",
+    "Legend",
+    "Titan",
+    "MEGA"
+  ],
+  "wordPool": [
+    "ROBOT",
+    "LINUX",
+    "PILOT",
+    "SCOUT",
+    "ORDER",
+    "SPACE",
+    "LASER",
+    "MAGIC",
+    "TIGER",
+    "PIXEL",
+    "NINJA",
+    "COMET",
+    "DRONE",
+    "POWER",
+    "BRAVE",
+    "CLOUD",
+    "SOLAR",
+    "ROCKY",
+    "SUPER",
+    "FROST",
+    "RIVER",
+    "STONE",
+    "FLAME",
+    "BADGE",
+    "DEPTH",
+    "MOTOR",
+    "PANEL",
+    "RADIO",
+    "SPELL",
+    "GUARD",
+    "METAL",
+    "WIRES"
+  ],
+  "knowledge": [
+    {
+      "cmd": "pwd",
+      "sum": "print working directory — shows where you are"
+    },
+    {
+      "cmd": "ls",
+      "sum": "list files here (ls -a shows hidden, ls -l shows details)"
+    },
+    {
+      "cmd": "cd",
+      "sum": "change directory: cd folder, cd .. goes up, cd ~ goes home"
+    },
+    {
+      "cmd": "cat",
+      "sum": "show what is inside a file"
+    },
+    {
+      "cmd": "tree",
+      "sum": "show all folders as a tree"
+    },
+    {
+      "cmd": "mkdir",
+      "sum": "make a new folder"
+    },
+    {
+      "cmd": "touch",
+      "sum": "make a new empty file"
+    },
+    {
+      "cmd": "echo",
+      "sum": "print text; echo hi > note.txt writes it into a file"
+    },
+    {
+      "cmd": "cp",
+      "sum": "copy a file: cp a b"
+    },
+    {
+      "cmd": "mv",
+      "sum": "move or rename: mv a b"
+    },
+    {
+      "cmd": "rm",
+      "sum": "remove (delete); rm -r folder deletes a folder"
+    },
+    {
+      "cmd": "find",
+      "sum": "search for a file by its name"
+    },
+    {
+      "cmd": "grep",
+      "sum": "search for a word inside files"
+    },
+    {
+      "cmd": "head",
+      "sum": "show the first lines of a file"
+    },
+    {
+      "cmd": "tail",
+      "sum": "show the last lines of a file"
+    },
+    {
+      "cmd": "wc",
+      "sum": "count the lines, words and letters in a file"
+    },
+    {
+      "cmd": "sort",
+      "sum": "show a file's lines in A-Z order"
+    },
+    {
+      "cmd": "uniq",
+      "sum": "remove repeated lines that are next to each other"
+    },
+    {
+      "cmd": "rev",
+      "sum": "flip a file's text backwards"
+    },
+    {
+      "cmd": "tr",
+      "sum": "swap letters: tr a-z A-Z makes it SHOUT in capitals"
+    },
+    {
+      "cmd": "cut",
+      "sum": "take parts of each line: cut -c1-3 file"
+    },
+    {
+      "cmd": "nl",
+      "sum": "number every line of a file"
+    },
+    {
+      "cmd": "whoami",
+      "sum": "print your name"
+    },
+    {
+      "cmd": "date",
+      "sum": "show the date and time"
+    },
+    {
+      "cmd": "cal",
+      "sum": "show a calendar"
+    },
+    {
+      "cmd": "history",
+      "sum": "show the commands you typed"
+    },
+    {
+      "cmd": "chmod",
+      "sum": "lock a file (chmod -w) or unlock it (chmod +w)"
+    },
+    {
+      "cmd": "id",
+      "sum": "show who you are to the computer"
+    },
+    {
+      "cmd": "du",
+      "sum": "how big is a file or folder"
+    },
+    {
+      "cmd": "df",
+      "sum": "how much room is left on the disk"
+    },
+    {
+      "cmd": "stat",
+      "sum": "show full info about a file"
+    },
+    {
+      "cmd": "ps",
+      "sum": "list the programs running now"
+    },
+    {
+      "cmd": "kill",
+      "sum": "stop a running program by its number"
+    },
+    {
+      "cmd": "env",
+      "sum": "show the computer's settings (variables)"
+    },
+    {
+      "cmd": "which",
+      "sum": "show where a command lives"
+    },
+    {
+      "cmd": "ping",
+      "sum": "check if another computer is awake"
+    },
+    {
+      "cmd": "curl",
+      "sum": "fetch a page from another computer"
+    },
+    {
+      "cmd": "run",
+      "sum": "run a script file full of commands"
+    },
+    {
+      "cmd": "repeat",
+      "sum": "do a command many times: repeat 3 echo hi"
+    },
+    {
+      "cmd": "clear",
+      "sum": "clear the screen"
+    },
+    {
+      "cmd": "help",
+      "sum": "show this list of commands"
+    }
+  ],
+  "roadmap": [
+    {
+      "n": 1,
+      "title": "Valley of Files",
+      "teach": "pwd, ls, cd, paths, viewing files",
+      "status": "ready",
+      "levelIds": [
+        "nav"
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Workshop",
+      "teach": "make, copy, move, delete, wildcards",
+      "status": "ready",
+      "levelIds": [
+        "make"
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Lands of Seekers",
+      "teach": "find, grep, head, tail, wc, sort, uniq",
+      "status": "ready",
+      "levelIds": [
+        "seek",
+        "view",
+        "order"
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Mirror & Cutting Rooms",
+      "teach": "rev, tr (SHOUT), cut, nl",
+      "status": "ready",
+      "levelIds": [
+        "flip",
+        "slice"
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Crossroads of Streams",
+      "teach": "pipes | — join commands together",
+      "status": "ready",
+      "levelIds": [
+        "pipe",
+        "flow"
+      ]
+    },
+    {
+      "n": 6,
+      "title": "Tower of Names",
+      "teach": "variables, $USER, whoami, date, cal",
+      "status": "ready",
+      "levelIds": [
+        "vars"
+      ]
+    },
+    {
+      "n": 7,
+      "title": "Citadel of Locks",
+      "teach": "locking files (chmod), ls -l, id",
+      "status": "ready",
+      "levelIds": [
+        "guard"
+      ]
+    },
+    {
+      "n": 8,
+      "title": "Underground Paths",
+      "teach": "file sizes: du, df, stat",
+      "status": "ready",
+      "levelIds": [
+        "depth"
+      ]
+    },
+    {
+      "n": 9,
+      "title": "Machine Yard",
+      "teach": "running programs: ps, kill, top",
+      "status": "ready",
+      "levelIds": [
+        "motor"
+      ]
+    },
+    {
+      "n": 10,
+      "title": "Control Center",
+      "teach": "settings: env, $PATH, which",
+      "status": "ready",
+      "levelIds": [
+        "panel"
+      ]
+    },
+    {
+      "n": 11,
+      "title": "Network Frontier",
+      "teach": "other computers: ping, curl",
+      "status": "ready",
+      "levelIds": [
+        "radio"
+      ]
+    },
+    {
+      "n": 12,
+      "title": "Automation Lab",
+      "teach": "scripts & loops: run a .sh, repeat",
+      "status": "ready",
+      "levelIds": [
+        "spell"
+      ]
+    }
+  ],
+  "review": {
+    "pwd": {
+      "ask": "Review: show where you are.",
+      "cmd": "pwd",
+      "check": {
+        "ran": "pwd"
+      }
+    },
+    "ls": {
+      "ask": "Review: list everything here.",
+      "cmd": "ls",
+      "check": {
+        "ran": "ls"
+      }
+    },
+    "cd": {
+      "ask": "Review: go into the folder games.",
+      "cmd": "cd games",
+      "check": {
+        "cd": "~/games"
+      }
+    },
+    "cat": {
+      "ask": "Review: read ~/welcome.txt",
+      "cmd": "cat ~/welcome.txt",
+      "check": {
+        "cat": "~/welcome.txt"
+      }
+    },
+    "tree": {
+      "ask": "Review: show the whole tree.",
+      "cmd": "tree",
+      "check": {
+        "ran": "tree"
+      }
+    },
+    "mkdir": {
+      "ask": "Review: make a folder ~/review.",
+      "cmd": "mkdir ~/review",
+      "check": {
+        "exists": "~/review"
+      }
+    },
+    "touch": {
+      "ask": "Review: make a file ~/review-note.txt",
+      "cmd": "touch ~/review-note.txt",
+      "check": {
+        "exists": "~/review-note.txt"
+      }
+    },
+    "echo": {
+      "ask": "Review: write hi into ~/review-note.txt",
+      "cmd": "echo hi > ~/review-note.txt",
+      "check": {
+        "fileHas": [
+          "~/review-note.txt",
+          "hi"
+        ]
+      }
+    },
+    "cp": {
+      "ask": "Review: copy ~/welcome.txt to ~/welcome2.txt",
+      "cmd": "cp ~/welcome.txt ~/welcome2.txt",
+      "check": {
+        "exists": "~/welcome2.txt"
+      }
+    },
+    "mv": {
+      "ask": "Review: rename ~/welcome2.txt to ~/renamed.txt",
+      "cmd": "mv ~/welcome2.txt ~/renamed.txt",
+      "check": {
+        "exists": "~/renamed.txt"
+      }
+    },
+    "rm": {
+      "ask": "Review: delete ~/renamed.txt",
+      "cmd": "rm ~/renamed.txt",
+      "check": {
+        "gone": "~/renamed.txt"
+      }
+    },
+    "find": {
+      "ask": "Review: find ball.txt",
+      "cmd": "find ball.txt",
+      "check": {
+        "out": [
+          "find",
+          "ball.txt"
+        ]
+      }
+    },
+    "grep": {
+      "ask": "Review: search for the word treasure.",
+      "cmd": "grep treasure",
+      "check": {
+        "out": [
+          "grep",
+          "treasure"
+        ]
+      }
+    },
+    "head": {
+      "ask": "Review: show the first lines of library/poem.txt",
+      "cmd": "head library/poem.txt",
+      "check": {
+        "argHas": [
+          "head",
+          "poem.txt"
+        ]
+      }
+    },
+    "tail": {
+      "ask": "Review: show the last lines of library/poem.txt",
+      "cmd": "tail library/poem.txt",
+      "check": {
+        "argHas": [
+          "tail",
+          "poem.txt"
+        ]
+      }
+    },
+    "wc": {
+      "ask": "Review: count library/animals.txt",
+      "cmd": "wc library/animals.txt",
+      "check": {
+        "argHas": [
+          "wc",
+          "animals.txt"
+        ]
+      }
+    },
+    "sort": {
+      "ask": "Review: sort library/animals.txt",
+      "cmd": "sort library/animals.txt",
+      "check": {
+        "argHas": [
+          "sort",
+          "animals.txt"
+        ]
+      }
+    },
+    "uniq": {
+      "ask": "Review: remove repeats in library/animals.txt",
+      "cmd": "uniq library/animals.txt",
+      "check": {
+        "argHas": [
+          "uniq",
+          "animals.txt"
+        ]
+      }
+    },
+    "rev": {
+      "ask": "Review: flip library/colors.txt backwards.",
+      "cmd": "rev library/colors.txt",
+      "check": {
+        "argHas": [
+          "rev",
+          "colors.txt"
+        ]
+      }
+    },
+    "tr": {
+      "ask": "Review: make library/poem.txt SHOUT (tr a-z A-Z ...).",
+      "cmd": "tr a-z A-Z library/poem.txt",
+      "check": {
+        "argHas": [
+          "tr",
+          "poem.txt"
+        ]
+      }
+    },
+    "cut": {
+      "ask": "Review: take the first 3 letters of each line in library/colors.txt",
+      "cmd": "cut -c1-3 library/colors.txt",
+      "check": {
+        "argHas": [
+          "cut",
+          "colors.txt"
+        ]
+      }
+    },
+    "nl": {
+      "ask": "Review: number the lines of library/poem.txt",
+      "cmd": "nl library/poem.txt",
+      "check": {
+        "argHas": [
+          "nl",
+          "poem.txt"
+        ]
+      }
+    },
+    "whoami": {
+      "ask": "Review: print your name.",
+      "cmd": "whoami",
+      "check": {
+        "ran": "whoami"
+      }
+    },
+    "chmod": {
+      "ask": "Review: see file details with the long list.",
+      "cmd": "ls -l",
+      "check": {
+        "argHas": [
+          "ls",
+          "-l"
+        ]
+      }
+    },
+    "du": {
+      "ask": "Review: how big is library/poem.txt?",
+      "cmd": "du library/poem.txt",
+      "check": {
+        "argHas": [
+          "du",
+          "poem.txt"
+        ]
+      }
+    },
+    "ps": {
+      "ask": "Review: list the programs running now.",
+      "cmd": "ps",
+      "check": {
+        "ran": "ps"
+      }
+    },
+    "ping": {
+      "ask": "Review: check if greppo.world is awake.",
+      "cmd": "ping greppo.world",
+      "check": {
+        "argHas": [
+          "ping",
+          "greppo.world"
+        ]
+      }
+    },
+    "run": {
+      "ask": "Review: a script runs with which command? Make echo hi > r.sh then run r.sh.",
+      "cmd": "run r.sh",
+      "check": {
+        "ran": "run"
+      }
+    }
+  },
+  "levelOrder": [
+    "nav",
+    "make",
+    "seek",
+    "view",
+    "order",
+    "flip",
+    "slice",
+    "pipe",
+    "flow",
+    "vars",
+    "guard",
+    "depth",
+    "motor",
+    "panel",
+    "radio",
+    "spell"
+  ]
+}

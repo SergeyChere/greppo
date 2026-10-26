@@ -1,17 +1,29 @@
 # Authoring content
 
-All content is in `content.js`. To add or change course material you only edit
-this file — never the engine.
+Content is authored as **JSON** under `content/`, never in the engine:
+
+- `content/meta.json` — `version`, `stageNames`, `wordPool`, `knowledge`,
+  `roadmap`, `review`, and `levelOrder` (the level ids in play order).
+- `content/levels/<id>.json` — one level each (its `id`, `word`, `title`,
+  `lessons`).
+
+`content.js` is **generated** from these by `npm run build`
+(`tools/build-content.mjs`) and is committed so the site needs no build to
+serve. Never edit `content.js` by hand — edit the JSON and rebuild.
+
+Workflow: edit JSON → `npm run build` → `npm test`. (JSON has no comments; this
+doc is the reference.)
 
 ## Add a lesson
-Append a lesson object to a level's `lessons[]`:
+Append a lesson object to a level file's `lessons` array
+(`content/levels/view.json`):
 
-```js
-{id:"view.peek", title:"head + tail — peek at a file", letters:[0], tasks:[
-  {id:"view.peek.1", show:"Peek at the first lines. Use <b>head library/poem.txt</b>",
-   cmd:"head library/poem.txt", check:{argHas:["head","poem.txt"]}},
-  {id:"view.peek.3", ask:"Which command shows the FIRST lines of a file? Use it on library/poem.txt",
-   cmd:"head library/poem.txt", check:{argHas:["head","poem.txt"]}}
+```json
+{"id":"view.peek", "title":"head + tail — peek at a file", "letters":[0], "tasks":[
+  {"id":"view.peek.1", "show":"Peek at the first lines. Use <b>head library/poem.txt</b>",
+   "cmd":"head library/poem.txt", "check":{"argHas":["head","poem.txt"]}},
+  {"id":"view.peek.3", "ask":"Which command shows the FIRST lines of a file? Use it on library/poem.txt",
+   "cmd":"head library/poem.txt", "check":{"argHas":["head","poem.txt"]}}
 ]}
 ```
 
@@ -42,20 +54,26 @@ not copy a ready line. So:
 Give a task an `alts` array of equivalent versions (same shape). Each play the
 engine shows the base task or a random variant:
 
-```js
-{id:"seek.find.2", ask:"Find the file named robot-toy.txt",
- cmd:"find robot-toy.txt", check:{out:["find","robot-toy.txt"]}, alts:[
-   {ask:"Find the file named ball.txt",  cmd:"find ball.txt",  check:{out:["find","ball.txt"]}},
-   {ask:"Find the file named beach.txt", cmd:"find beach.txt", check:{out:["find","beach.txt"]}}
+```json
+{"id":"seek.find.2", "ask":"Find the file named robot-toy.txt",
+ "cmd":"find robot-toy.txt", "check":{"out":["find","robot-toy.txt"]}, "alts":[
+   {"ask":"Find the file named ball.txt",  "cmd":"find ball.txt",  "check":{"out":["find","ball.txt"]}},
+   {"ask":"Find the file named beach.txt", "cmd":"find beach.txt", "check":{"out":["find","beach.txt"]}}
 ]}
 ```
 
 Keep every variant solvable from the files seeded in `index.html` (`seed`).
 
 ## Add a command to help
-Add `{cmd, sum}` to `knowledge`. `help` and Tab-completion read from it. A
-command's first appearance in `levels[]` also decides when it unlocks in
-sandbox (earlier level = unlocked sooner).
+Add `{"cmd": ..., "sum": ...}` to `knowledge` in `meta.json`. `help` and
+Tab-completion read from it. A command's first appearance across the levels (in
+`levelOrder`) also decides when it unlocks in sandbox (earlier level = sooner).
+
+## Add a level / region
+Create `content/levels/<id>.json`, add its `id` to `meta.json` `levelOrder` at
+the right position, and (if it's a new region) set that `roadmap` region to
+`"status":"ready"` with its `levelIds`. Keep `stageNames` at
+`levelOrder.length + 1`.
 
 ## Checks
 Prefer checking the resulting world state (`cwd`, `exists`, `fileHas`, `cat`)
@@ -69,15 +87,14 @@ Full `check` vocabulary: `ran`, `ranArg`, `cd`, `cdHome`, `cwd`, `cat`,
 `exists`, `gone`, `fileHas`, `out`, `argHas`, `typed`, `setVar`, `varHas`,
 `and`, `or`. Paths may use `~ .. .`.
 
-## Regions (the world map)
-`roadmap` is the 12-region map. When you make a region playable, set
-`status:"ready"` and list its `levelIds`. Keep `status:"soon"` for planned
-regions; they show under "coming soon". `stageNames` must stay
-`levels.length + 1` long when you add a level.
+The `roadmap` in `meta.json` is the 12-region map. A `"status":"ready"` region
+lists its `levelIds`; `"status":"soon"` regions show as "coming soon".
 
 ## Validation
-`validateContent()` runs on load and reports: duplicate ids, non-5-letter words,
-missing tasks/checks, recall tasks (and variants) without a `cmd`, uncovered
-letter slots, and `ready` regions pointing at unknown levels. Problems are
-printed in the terminal. The same checks (plus roadmap and stage-count) run
-headless in `tests/validate-content.mjs` — see `testing.md`.
+`npm run build` fails on malformed JSON, a missing `levelOrder` entry, or a
+level file whose `id` doesn't match its filename. After building, the engine's
+`validateContent()` runs on load and reports (in the terminal): duplicate ids,
+non-5-letter words, missing tasks/checks, recall tasks (and variants) without a
+`cmd`, uncovered letter slots, and `ready` regions pointing at unknown levels.
+The same checks (plus roadmap and stage-count) run headless in
+`tests/validate-content.mjs` — see `testing.md`.

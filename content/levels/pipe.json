@@ -1,0 +1,274 @@
+{
+  "id": "pipe",
+  "word": "RIVER",
+  "title": "River of Streams",
+  "lessons": [
+    {
+      "id": "pipe.first",
+      "title": "| — send one command into another",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "pipe.first.1",
+          "show": "A pipe | sends one command's output into the next. Sort the animals: <b>cat library/animals.txt | sort</b>",
+          "cmd": "cat library/animals.txt | sort",
+          "check": {
+            "typed": [
+              "cat",
+              "|",
+              "sort"
+            ]
+          }
+        },
+        {
+          "id": "pipe.first.2",
+          "ask": "Send the colors file into sort: cat library/colors.txt | sort",
+          "cmd": "cat library/colors.txt | sort",
+          "check": {
+            "typed": [
+              "colors.txt",
+              "|",
+              "sort"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Send the animals file into sort: cat library/animals.txt | sort",
+              "cmd": "cat library/animals.txt | sort",
+              "check": {
+                "typed": [
+                  "animals.txt",
+                  "|",
+                  "sort"
+                ]
+              }
+            },
+            {
+              "ask": "Send the scores file into sort: cat library/scores.txt | sort",
+              "cmd": "cat library/scores.txt | sort",
+              "check": {
+                "typed": [
+                  "scores.txt",
+                  "|",
+                  "sort"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pipe.uniq",
+      "title": "| sort | uniq — remove repeats",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "pipe.uniq.1",
+          "show": "Sort, then remove repeats. Type <b>cat library/animals.txt | sort | uniq</b>",
+          "cmd": "cat library/animals.txt | sort | uniq",
+          "check": {
+            "typed": [
+              "|",
+              "sort",
+              "uniq"
+            ]
+          }
+        },
+        {
+          "id": "pipe.uniq.2",
+          "ask": "Do the same for library/scores.txt: sort then uniq.",
+          "cmd": "cat library/scores.txt | sort | uniq",
+          "check": {
+            "typed": [
+              "scores.txt",
+              "sort",
+              "uniq"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pipe.count",
+      "title": "| wc — count what flows through",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "pipe.count.1",
+          "show": "Count the lines that come through a pipe. Type <b>cat library/animals.txt | wc</b>",
+          "cmd": "cat library/animals.txt | wc",
+          "check": {
+            "typed": [
+              "animals.txt",
+              "|",
+              "wc"
+            ]
+          }
+        },
+        {
+          "id": "pipe.count.2",
+          "ask": "Sort the animals and count them: cat library/animals.txt | sort | wc",
+          "cmd": "cat library/animals.txt | sort | wc",
+          "check": {
+            "typed": [
+              "sort",
+              "wc",
+              "|"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pipe.grep",
+      "title": "| grep — keep only some lines",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "pipe.grep.1",
+          "show": "Keep only lines with a word. Type <b>cat library/scores.txt | grep max</b>",
+          "cmd": "cat library/scores.txt | grep max",
+          "check": {
+            "typed": [
+              "scores.txt",
+              "|",
+              "grep"
+            ]
+          }
+        },
+        {
+          "id": "pipe.grep.2",
+          "ask": "From library/scores.txt keep only robert's lines. (| grep robert)",
+          "cmd": "cat library/scores.txt | grep robert",
+          "check": {
+            "typed": [
+              "grep",
+              "robert"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "From library/scores.txt keep only lily's lines. (| grep lily)",
+              "cmd": "cat library/scores.txt | grep lily",
+              "check": {
+                "typed": [
+                  "grep",
+                  "lily"
+                ]
+              }
+            },
+            {
+              "ask": "From library/colors.txt keep only the blue line. (| grep blue)",
+              "cmd": "cat library/colors.txt | grep blue",
+              "check": {
+                "typed": [
+                  "grep",
+                  "blue"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pipe.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "pipe.check.1",
+          "ask": "Sort library/colors.txt with a pipe: cat ... | sort",
+          "cmd": "cat library/colors.txt | sort",
+          "check": {
+            "typed": [
+              "colors.txt",
+              "|",
+              "sort"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Sort library/animals.txt with a pipe: cat ... | sort",
+              "cmd": "cat library/animals.txt | sort",
+              "check": {
+                "typed": [
+                  "animals.txt",
+                  "|",
+                  "sort"
+                ]
+              }
+            },
+            {
+              "ask": "Sort library/scores.txt with a pipe: cat ... | sort",
+              "cmd": "cat library/scores.txt | sort",
+              "check": {
+                "typed": [
+                  "scores.txt",
+                  "|",
+                  "sort"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "pipe.check.2",
+          "ask": "Sort and remove repeats in library/animals.txt",
+          "cmd": "cat library/animals.txt | sort | uniq",
+          "check": {
+            "typed": [
+              "sort",
+              "uniq"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Sort and remove repeats in library/scores.txt",
+              "cmd": "cat library/scores.txt | sort | uniq",
+              "check": {
+                "typed": [
+                  "sort",
+                  "uniq"
+                ]
+              }
+            },
+            {
+              "ask": "Sort and remove repeats in library/colors.txt",
+              "cmd": "cat library/colors.txt | sort | uniq",
+              "check": {
+                "typed": [
+                  "sort",
+                  "uniq"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "pipe.check.3",
+          "ask": "Count library/animals.txt through a pipe.",
+          "cmd": "cat library/animals.txt | wc",
+          "check": {
+            "typed": [
+              "|",
+              "wc"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -14,7 +14,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Fast, browserless content validation first.
+      # Build content.js from content/*.json and fail if it is out of sync
+      # with the committed file.
+      - run: node tools/build-content.mjs
+      - run: git diff --exit-code content.js || (echo "content.js is stale — run 'npm run build' and commit"; exit 1)
+      # Fast, browserless content validation.
       - run: node tests/validate-content.mjs
       # Then the Playwright integration tests.
       - run: npm install

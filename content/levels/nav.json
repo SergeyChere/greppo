@@ -1,0 +1,293 @@
+{
+  "id": "nav",
+  "word": "ROBOT",
+  "title": "Valley of Files",
+  "lessons": [
+    {
+      "id": "nav.look",
+      "title": "pwd + ls — look around",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "nav.look.1",
+          "show": "Where am I? Type <b>pwd</b> — print working directory",
+          "cmd": "pwd",
+          "check": {
+            "ran": "pwd"
+          }
+        },
+        {
+          "id": "nav.look.2",
+          "show": "What is here? Type <b>ls</b> — list files and folders",
+          "cmd": "ls",
+          "check": {
+            "ran": "ls"
+          }
+        },
+        {
+          "id": "nav.look.3",
+          "ask": "Which command shows where you are? Type it.",
+          "cmd": "pwd",
+          "check": {
+            "ran": "pwd"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nav.move",
+      "title": "cd — move between folders",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "nav.move.1",
+          "show": "Go into the folder games. Type <b>cd games</b> — change directory",
+          "cmd": "cd games",
+          "check": {
+            "cd": "~/games"
+          }
+        },
+        {
+          "id": "nav.move.2",
+          "show": "Go up one folder, back toward home. Type <b>cd ..</b> (.. means \"the folder above\")",
+          "cmd": "cd ..",
+          "check": {
+            "ranArg": [
+              "cd",
+              ".."
+            ]
+          }
+        },
+        {
+          "id": "nav.move.3",
+          "ask": "Go into the folder pictures",
+          "cmd": "cd pictures",
+          "check": {
+            "cd": "~/pictures"
+          }
+        },
+        {
+          "id": "nav.move.4",
+          "ask": "Which command takes you to your home folder? Type it.",
+          "cmd": "cd ~",
+          "check": {
+            "cdHome": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nav.paths",
+      "title": "paths — two ways to say where",
+      "letters": [],
+      "tasks": [
+        {
+          "id": "nav.paths.1",
+          "show": "A <b>relative</b> path starts from where you are now. From home, type <b>cd games</b> to go into games",
+          "cmd": "cd games",
+          "check": {
+            "cd": "~/games"
+          }
+        },
+        {
+          "id": "nav.paths.2",
+          "show": "An <b>absolute</b> path starts with <b>~</b> (your home) and works from anywhere. Type <b>cd ~/box</b>",
+          "cmd": "cd ~/box",
+          "check": {
+            "cd": "~/box"
+          }
+        },
+        {
+          "id": "nav.paths.3",
+          "ask": "Using an absolute path (start with ~), go into ~/pictures",
+          "cmd": "cd ~/pictures",
+          "check": {
+            "cd": "~/pictures"
+          }
+        },
+        {
+          "id": "nav.paths.4",
+          "ask": "Go back home with the short absolute path. Type the command.",
+          "cmd": "cd ~",
+          "check": {
+            "cdHome": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nav.read",
+      "title": "cat — read files",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "nav.read.1",
+          "show": "Read the file welcome.txt. Type <b>cat welcome.txt</b>. The .txt means it is a text file",
+          "cmd": "cat welcome.txt",
+          "check": {
+            "cat": "~/welcome.txt"
+          }
+        },
+        {
+          "id": "nav.read.2",
+          "ask": "Read the file games/secret.txt",
+          "cmd": "cat games/secret.txt",
+          "check": {
+            "cat": "~/games/secret.txt"
+          }
+        },
+        {
+          "id": "nav.read.3",
+          "ask": "Which command reads a file? Use it to read box/clue.txt",
+          "cmd": "cat box/clue.txt",
+          "check": {
+            "cat": "~/box/clue.txt"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nav.map",
+      "title": "tree + paths",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "nav.map.1",
+          "show": "See all folders as a tree. Use the command <b>tree</b>",
+          "cmd": "tree",
+          "check": {
+            "ran": "tree"
+          }
+        },
+        {
+          "id": "nav.map.2",
+          "ask": "From your home folder, go into box and then toys in one step: cd box/toys",
+          "cmd": "cd box/toys",
+          "check": {
+            "cd": "~/box/toys"
+          }
+        },
+        {
+          "id": "nav.map.3",
+          "ask": "Which one-word command shows the whole tree? Type it.",
+          "cmd": "tree",
+          "check": {
+            "ran": "tree"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nav.check",
+      "title": "Checkpoint — answer from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "nav.check.1",
+          "ask": "Show where you are.",
+          "cmd": "pwd",
+          "check": {
+            "ran": "pwd"
+          }
+        },
+        {
+          "id": "nav.check.2",
+          "ask": "List everything here.",
+          "cmd": "ls",
+          "check": {
+            "ran": "ls"
+          }
+        },
+        {
+          "id": "nav.check.3",
+          "ask": "Go into the folder games.",
+          "cmd": "cd games",
+          "check": {
+            "cd": "~/games"
+          },
+          "alts": [
+            {
+              "ask": "Go into the folder pictures.",
+              "cmd": "cd pictures",
+              "check": {
+                "cd": "~/pictures"
+              }
+            },
+            {
+              "ask": "Go into the folder box.",
+              "cmd": "cd box",
+              "check": {
+                "cd": "~/box"
+              }
+            },
+            {
+              "ask": "Go into the folder notes.",
+              "cmd": "cd notes",
+              "check": {
+                "cd": "~/notes"
+              }
+            }
+          ]
+        },
+        {
+          "id": "nav.check.4",
+          "ask": "Now go back to your home folder.",
+          "cmd": "cd ~",
+          "check": {
+            "cdHome": true
+          }
+        },
+        {
+          "id": "nav.check.5",
+          "ask": "Read the file welcome.txt",
+          "cmd": "cat welcome.txt",
+          "check": {
+            "cat": "~/welcome.txt"
+          },
+          "alts": [
+            {
+              "ask": "Read the file notes/diary.txt",
+              "cmd": "cat notes/diary.txt",
+              "check": {
+                "cat": "~/notes/diary.txt"
+              }
+            },
+            {
+              "ask": "Read the file box/clue.txt",
+              "cmd": "cat box/clue.txt",
+              "check": {
+                "cat": "~/box/clue.txt"
+              }
+            },
+            {
+              "ask": "Read the file library/poem.txt",
+              "cmd": "cat library/poem.txt",
+              "check": {
+                "cat": "~/library/poem.txt"
+              }
+            }
+          ]
+        },
+        {
+          "id": "nav.check.6",
+          "ask": "Show all folders as a tree.",
+          "cmd": "tree",
+          "check": {
+            "ran": "tree"
+          }
+        }
+      ]
+    }
+  ]
+}

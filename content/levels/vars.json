@@ -1,0 +1,244 @@
+{
+  "id": "vars",
+  "word": "POWER",
+  "title": "Tower of Names",
+  "lessons": [
+    {
+      "id": "vars.set",
+      "title": "make a variable",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "vars.set.1",
+          "show": "Save a word in a box called a variable. Type <b>pet=dragon</b> (no spaces around =)",
+          "cmd": "pet=dragon",
+          "check": {
+            "setVar": "pet"
+          }
+        },
+        {
+          "id": "vars.set.2",
+          "show": "Show what is inside the box. Type <b>echo $pet</b> — the $ means \"what's inside\"",
+          "cmd": "echo $pet",
+          "check": {
+            "typed": [
+              "echo",
+              "$pet"
+            ]
+          }
+        },
+        {
+          "id": "vars.set.3",
+          "ask": "Make a variable called hero with any name: hero=...",
+          "cmd": "hero=greppo",
+          "check": {
+            "setVar": "hero"
+          },
+          "alts": [
+            {
+              "ask": "Make a variable called hero with any name: hero=...",
+              "cmd": "hero=max",
+              "check": {
+                "setVar": "hero"
+              }
+            },
+            {
+              "ask": "Make a variable called hero with any name: hero=...",
+              "cmd": "hero=luna",
+              "check": {
+                "setVar": "hero"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vars.use",
+      "title": "use a variable in a sentence",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "vars.use.1",
+          "show": "Variables work anywhere. Type <b>echo my pet is $pet</b>",
+          "cmd": "echo my pet is $pet",
+          "check": {
+            "typed": [
+              "$pet"
+            ]
+          }
+        },
+        {
+          "id": "vars.use.2",
+          "ask": "Show your hero variable: echo $hero",
+          "cmd": "echo $hero",
+          "check": {
+            "typed": [
+              "$hero"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "vars.who",
+      "title": "$USER, whoami, date",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "vars.who.1",
+          "show": "The computer already knows you. Type <b>whoami</b>",
+          "cmd": "whoami",
+          "check": {
+            "ran": "whoami"
+          }
+        },
+        {
+          "id": "vars.who.2",
+          "show": "Your name is in a ready-made variable. Type <b>echo $USER</b>",
+          "cmd": "echo $USER",
+          "check": {
+            "typed": [
+              "$USER"
+            ]
+          }
+        },
+        {
+          "id": "vars.who.3",
+          "ask": "What day is it? Type the date command.",
+          "cmd": "date",
+          "check": {
+            "ran": "date"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vars.mix",
+      "title": "Mix — your own variables",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "vars.mix.1",
+          "ask": "Make a variable color with your favorite color: color=...",
+          "cmd": "color=blue",
+          "check": {
+            "setVar": "color"
+          },
+          "alts": [
+            {
+              "ask": "Make a variable color with your favorite color: color=...",
+              "cmd": "color=green",
+              "check": {
+                "setVar": "color"
+              }
+            },
+            {
+              "ask": "Make a variable color with your favorite color: color=...",
+              "cmd": "color=gold",
+              "check": {
+                "setVar": "color"
+              }
+            }
+          ]
+        },
+        {
+          "id": "vars.mix.2",
+          "ask": "Show it: echo $color",
+          "cmd": "echo $color",
+          "check": {
+            "typed": [
+              "$color"
+            ]
+          }
+        },
+        {
+          "id": "vars.mix.3",
+          "ask": "Show a calendar.",
+          "cmd": "cal",
+          "check": {
+            "ran": "cal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vars.check",
+      "title": "Final Checkpoint",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "vars.check.1",
+          "ask": "Print your name with whoami.",
+          "cmd": "whoami",
+          "check": {
+            "ran": "whoami"
+          }
+        },
+        {
+          "id": "vars.check.2",
+          "ask": "Make a variable star with any word: star=...",
+          "cmd": "star=shine",
+          "check": {
+            "setVar": "star"
+          },
+          "alts": [
+            {
+              "ask": "Make a variable star with any word: star=...",
+              "cmd": "star=sparkle",
+              "check": {
+                "setVar": "star"
+              }
+            },
+            {
+              "ask": "Make a variable star with any word: star=...",
+              "cmd": "star=comet",
+              "check": {
+                "setVar": "star"
+              }
+            }
+          ]
+        },
+        {
+          "id": "vars.check.3",
+          "ask": "Show it: echo $star",
+          "cmd": "echo $star",
+          "check": {
+            "typed": [
+              "$star"
+            ]
+          }
+        },
+        {
+          "id": "vars.check.4",
+          "ask": "Show your name variable: echo $USER",
+          "cmd": "echo $USER",
+          "check": {
+            "typed": [
+              "$USER"
+            ]
+          }
+        },
+        {
+          "id": "vars.check.5",
+          "ask": "Show a calendar one more time.",
+          "cmd": "cal",
+          "check": {
+            "ran": "cal"
+          }
+        }
+      ]
+    }
+  ]
+}

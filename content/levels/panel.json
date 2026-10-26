@@ -1,0 +1,213 @@
+{
+  "id": "panel",
+  "word": "PANEL",
+  "title": "Control Center",
+  "lessons": [
+    {
+      "id": "panel.env",
+      "title": "env + $PATH — the settings",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "panel.env.1",
+          "show": "See the computer's settings (its variables). Type <b>env</b>",
+          "cmd": "env",
+          "check": {
+            "ran": "env"
+          }
+        },
+        {
+          "id": "panel.env.2",
+          "show": "PATH is the list of places commands live. Type <b>echo $PATH</b>",
+          "cmd": "echo $PATH",
+          "check": {
+            "typed": [
+              "$PATH"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "panel.which",
+      "title": "which — where a command lives",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "panel.which.1",
+          "show": "Where does a command live? Use <b>which grep</b>",
+          "cmd": "which grep",
+          "check": {
+            "argHas": [
+              "which",
+              "grep"
+            ]
+          }
+        },
+        {
+          "id": "panel.which.2",
+          "ask": "Find where cat lives: which cat",
+          "cmd": "which cat",
+          "check": {
+            "argHas": [
+              "which",
+              "cat"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Find where sort lives: which sort",
+              "cmd": "which sort",
+              "check": {
+                "argHas": [
+                  "which",
+                  "sort"
+                ]
+              }
+            },
+            {
+              "ask": "Find where find lives: which find",
+              "cmd": "which find",
+              "check": {
+                "argHas": [
+                  "which",
+                  "find"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel.var",
+      "title": "your own settings",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "panel.var.1",
+          "ask": "Make a setting of your own: level=5",
+          "cmd": "level=5",
+          "check": {
+            "setVar": "level"
+          }
+        },
+        {
+          "id": "panel.var.2",
+          "ask": "Show it: echo $level",
+          "cmd": "echo $level",
+          "check": {
+            "typed": [
+              "$level"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "panel.mix",
+      "title": "Mix — control room",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "panel.mix.1",
+          "ask": "Show all the settings with env.",
+          "cmd": "env",
+          "check": {
+            "ran": "env"
+          }
+        },
+        {
+          "id": "panel.mix.2",
+          "ask": "Where does sort live? (which sort)",
+          "cmd": "which sort",
+          "check": {
+            "argHas": [
+              "which",
+              "sort"
+            ]
+          }
+        },
+        {
+          "id": "panel.mix.3",
+          "ask": "Show your name variable: echo $USER",
+          "cmd": "echo $USER",
+          "check": {
+            "typed": [
+              "$USER"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "panel.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "panel.check.1",
+          "ask": "Show the computer's settings.",
+          "cmd": "env",
+          "check": {
+            "ran": "env"
+          }
+        },
+        {
+          "id": "panel.check.2",
+          "ask": "Where does grep live?",
+          "cmd": "which grep",
+          "check": {
+            "argHas": [
+              "which",
+              "grep"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Where does cat live?",
+              "cmd": "which cat",
+              "check": {
+                "argHas": [
+                  "which",
+                  "cat"
+                ]
+              }
+            },
+            {
+              "ask": "Where does ls live?",
+              "cmd": "which ls",
+              "check": {
+                "argHas": [
+                  "which",
+                  "ls"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "panel.check.3",
+          "ask": "Show the PATH setting: echo $PATH",
+          "cmd": "echo $PATH",
+          "check": {
+            "typed": [
+              "$PATH"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

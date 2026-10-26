@@ -1,0 +1,259 @@
+{
+  "id": "spell",
+  "word": "SPELL",
+  "title": "Automation Lab",
+  "lessons": [
+    {
+      "id": "spell.make",
+      "title": "write a spell (script)",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "spell.make.1",
+          "show": "A script is a file full of commands. Start one: <b>echo whoami > spell.sh</b>",
+          "cmd": "echo whoami > spell.sh",
+          "check": {
+            "fileHas": [
+              "~/spell.sh",
+              "whoami"
+            ]
+          }
+        },
+        {
+          "id": "spell.make.2",
+          "show": "Add another command to the end: <b>echo ls >> spell.sh</b>",
+          "cmd": "echo ls >> spell.sh",
+          "check": {
+            "fileHas": [
+              "~/spell.sh",
+              "ls"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "spell.run",
+      "title": "run — cast the spell",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "spell.run.1",
+          "show": "Now run your script — it does every line for you! Type <b>run spell.sh</b>",
+          "cmd": "run spell.sh",
+          "check": {
+            "argHas": [
+              "run",
+              "spell.sh"
+            ]
+          }
+        },
+        {
+          "id": "spell.run.2",
+          "ask": "Run your script spell.sh again.",
+          "cmd": "run spell.sh",
+          "check": {
+            "argHas": [
+              "run",
+              "spell.sh"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "spell.repeat",
+      "title": "repeat — do it many times",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "spell.repeat.1",
+          "show": "Do something many times at once. Type <b>repeat 3 echo hooray</b>",
+          "cmd": "repeat 3 echo hooray",
+          "check": {
+            "argHas": [
+              "repeat",
+              "3"
+            ]
+          }
+        },
+        {
+          "id": "spell.repeat.2",
+          "ask": "Repeat 5 times: repeat 5 echo yay",
+          "cmd": "repeat 5 echo yay",
+          "check": {
+            "argHas": [
+              "repeat",
+              "5"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Repeat 4 times: repeat 4 echo yay",
+              "cmd": "repeat 4 echo yay",
+              "check": {
+                "argHas": [
+                  "repeat",
+                  "4"
+                ]
+              }
+            },
+            {
+              "ask": "Repeat 6 times: repeat 6 echo yay",
+              "cmd": "repeat 6 echo yay",
+              "check": {
+                "argHas": [
+                  "repeat",
+                  "6"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spell.mix",
+      "title": "Mix — build and run",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "spell.mix.1",
+          "ask": "Make a script: echo date > show.sh",
+          "cmd": "echo date > show.sh",
+          "check": {
+            "fileHas": [
+              "~/show.sh",
+              "date"
+            ]
+          }
+        },
+        {
+          "id": "spell.mix.2",
+          "ask": "Run it: run show.sh",
+          "cmd": "run show.sh",
+          "check": {
+            "argHas": [
+              "run",
+              "show.sh"
+            ]
+          }
+        },
+        {
+          "id": "spell.mix.3",
+          "ask": "Repeat 2 times: repeat 2 echo done",
+          "cmd": "repeat 2 echo done",
+          "check": {
+            "argHas": [
+              "repeat",
+              "2"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Repeat 3 times: repeat 3 echo done",
+              "cmd": "repeat 3 echo done",
+              "check": {
+                "argHas": [
+                  "repeat",
+                  "3"
+                ]
+              }
+            },
+            {
+              "ask": "Repeat 4 times: repeat 4 echo done",
+              "cmd": "repeat 4 echo done",
+              "check": {
+                "argHas": [
+                  "repeat",
+                  "4"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spell.check",
+      "title": "Final Checkpoint",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "spell.check.1",
+          "ask": "Make a script: echo whoami > final.sh",
+          "cmd": "echo whoami > final.sh",
+          "check": {
+            "fileHas": [
+              "~/final.sh",
+              "whoami"
+            ]
+          }
+        },
+        {
+          "id": "spell.check.2",
+          "ask": "Run it: run final.sh",
+          "cmd": "run final.sh",
+          "check": {
+            "argHas": [
+              "run",
+              "final.sh"
+            ]
+          }
+        },
+        {
+          "id": "spell.check.3",
+          "ask": "Repeat 3 times: repeat 3 echo win",
+          "cmd": "repeat 3 echo win",
+          "check": {
+            "argHas": [
+              "repeat",
+              "3"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Repeat 4 times: repeat 4 echo win",
+              "cmd": "repeat 4 echo win",
+              "check": {
+                "argHas": [
+                  "repeat",
+                  "4"
+                ]
+              }
+            },
+            {
+              "ask": "Repeat 5 times: repeat 5 echo win",
+              "cmd": "repeat 5 echo win",
+              "check": {
+                "argHas": [
+                  "repeat",
+                  "5"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "spell.check.4",
+          "ask": "The grand finale — open the treasure: cat ~/treasure.txt",
+          "cmd": "cat ~/treasure.txt",
+          "check": {
+            "cat": "~/treasure.txt"
+          }
+        }
+      ]
+    }
+  ]
+}

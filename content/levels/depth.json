@@ -1,0 +1,264 @@
+{
+  "id": "depth",
+  "word": "DEPTH",
+  "title": "Underground Paths",
+  "lessons": [
+    {
+      "id": "depth.du",
+      "title": "du — how big is it",
+      "letters": [
+        0
+      ],
+      "tasks": [
+        {
+          "id": "depth.du.1",
+          "show": "How big is a file? Use <b>du library/poem.txt</b> — it counts the letters inside",
+          "cmd": "du library/poem.txt",
+          "check": {
+            "argHas": [
+              "du",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "depth.du.2",
+          "ask": "How big is library/colors.txt?",
+          "cmd": "du library/colors.txt",
+          "check": {
+            "argHas": [
+              "du",
+              "colors.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "How big is library/animals.txt?",
+              "cmd": "du library/animals.txt",
+              "check": {
+                "argHas": [
+                  "du",
+                  "animals.txt"
+                ]
+              }
+            },
+            {
+              "ask": "How big is library/scores.txt?",
+              "cmd": "du library/scores.txt",
+              "check": {
+                "argHas": [
+                  "du",
+                  "scores.txt"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "depth.df",
+      "title": "df — room on the disk",
+      "letters": [
+        1
+      ],
+      "tasks": [
+        {
+          "id": "depth.df.1",
+          "show": "How much room is left on the whole disk? Type <b>df</b>",
+          "cmd": "df",
+          "check": {
+            "ran": "df"
+          }
+        },
+        {
+          "id": "depth.df.2",
+          "ask": "Check the disk space once more.",
+          "cmd": "df",
+          "check": {
+            "ran": "df"
+          }
+        }
+      ]
+    },
+    {
+      "id": "depth.stat",
+      "title": "stat — full info",
+      "letters": [
+        2
+      ],
+      "tasks": [
+        {
+          "id": "depth.stat.1",
+          "show": "Get full info about a file. Use <b>stat library/poem.txt</b>",
+          "cmd": "stat library/poem.txt",
+          "check": {
+            "argHas": [
+              "stat",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "depth.stat.2",
+          "ask": "Get the info for library/animals.txt",
+          "cmd": "stat library/animals.txt",
+          "check": {
+            "argHas": [
+              "stat",
+              "animals.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Get the info for library/colors.txt",
+              "cmd": "stat library/colors.txt",
+              "check": {
+                "argHas": [
+                  "stat",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Get the info for library/numbers.txt",
+              "cmd": "stat library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "stat",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "depth.mix",
+      "title": "Mix — measure things",
+      "letters": [
+        3
+      ],
+      "tasks": [
+        {
+          "id": "depth.mix.1",
+          "ask": "Measure library/numbers.txt with du.",
+          "cmd": "du library/numbers.txt",
+          "check": {
+            "argHas": [
+              "du",
+              "numbers.txt"
+            ]
+          }
+        },
+        {
+          "id": "depth.mix.2",
+          "ask": "Count library/poem.txt (old skill: wc).",
+          "cmd": "wc library/poem.txt",
+          "check": {
+            "argHas": [
+              "wc",
+              "poem.txt"
+            ]
+          }
+        },
+        {
+          "id": "depth.mix.3",
+          "ask": "Get full info about library/colors.txt",
+          "cmd": "stat library/colors.txt",
+          "check": {
+            "argHas": [
+              "stat",
+              "colors.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "depth.check",
+      "title": "Checkpoint — from memory",
+      "checkpoint": true,
+      "letters": [
+        4
+      ],
+      "tasks": [
+        {
+          "id": "depth.check.1",
+          "ask": "How big is library/poem.txt?",
+          "cmd": "du library/poem.txt",
+          "check": {
+            "argHas": [
+              "du",
+              "poem.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "How big is library/colors.txt?",
+              "cmd": "du library/colors.txt",
+              "check": {
+                "argHas": [
+                  "du",
+                  "colors.txt"
+                ]
+              }
+            },
+            {
+              "ask": "How big is library/numbers.txt?",
+              "cmd": "du library/numbers.txt",
+              "check": {
+                "argHas": [
+                  "du",
+                  "numbers.txt"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "depth.check.2",
+          "ask": "How much room is on the disk?",
+          "cmd": "df",
+          "check": {
+            "ran": "df"
+          }
+        },
+        {
+          "id": "depth.check.3",
+          "ask": "Full info about library/animals.txt",
+          "cmd": "stat library/animals.txt",
+          "check": {
+            "argHas": [
+              "stat",
+              "animals.txt"
+            ]
+          },
+          "alts": [
+            {
+              "ask": "Full info about library/poem.txt",
+              "cmd": "stat library/poem.txt",
+              "check": {
+                "argHas": [
+                  "stat",
+                  "poem.txt"
+                ]
+              }
+            },
+            {
+              "ask": "Full info about library/scores.txt",
+              "cmd": "stat library/scores.txt",
+              "check": {
+                "argHas": [
+                  "stat",
+                  "scores.txt"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
