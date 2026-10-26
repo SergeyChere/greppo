@@ -15,7 +15,7 @@
           "show": "Create a new folder called den.",
           "cmd": "mkdir den",
           "check": {
-            "exists": "~/den"
+            "isDir": "~/den"
           }
         },
         {
@@ -23,7 +23,7 @@
           "show": "Create a new empty file den/bowl.txt.",
           "cmd": "touch den/bowl.txt",
           "check": {
-            "exists": "~/den/bowl.txt"
+            "isFile": "~/den/bowl.txt"
           }
         },
         {
@@ -31,7 +31,7 @@
           "ask": "Make a new folder called toys",
           "cmd": "mkdir toys",
           "check": {
-            "exists": "~/toys"
+            "isDir": "~/toys"
           }
         }
       ]
@@ -90,7 +90,7 @@
           "show": "Copy den/bowl.txt to a new file den/bowl2.txt.",
           "cmd": "cp den/bowl.txt den/bowl2.txt",
           "check": {
-            "exists": "~/den/bowl2.txt"
+            "isFile": "~/den/bowl2.txt"
           }
         },
         {
@@ -103,7 +103,7 @@
                 "gone": "~/den/bowl2.txt"
               },
               {
-                "exists": "~/den/spare.txt"
+                "isFile": "~/den/spare.txt"
               }
             ]
           }
@@ -172,7 +172,7 @@
           "ask": "Make a new folder called test.",
           "cmd": "mkdir test",
           "check": {
-            "exists": "~/test"
+            "isDir": "~/test"
           }
         },
         {
@@ -180,7 +180,7 @@
           "ask": "Make a file called test/a.txt",
           "cmd": "touch test/a.txt",
           "check": {
-            "exists": "~/test/a.txt"
+            "isFile": "~/test/a.txt"
           }
         },
         {
@@ -199,7 +199,7 @@
           "ask": "Copy test/a.txt to test/b.txt",
           "cmd": "cp test/a.txt test/b.txt",
           "check": {
-            "exists": "~/test/b.txt"
+            "isFile": "~/test/b.txt"
           }
         },
         {
@@ -212,7 +212,7 @@
                 "gone": "~/test/b.txt"
               },
               {
-                "exists": "~/test/c.txt"
+                "isFile": "~/test/c.txt"
               }
             ]
           }

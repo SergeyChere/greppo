@@ -373,14 +373,14 @@
       "ask": "Review: make a folder ~/review.",
       "cmd": "mkdir ~/review",
       "check": {
-        "exists": "~/review"
+        "isDir": "~/review"
       }
     },
     "touch": {
       "ask": "Review: make a file ~/review-note.txt",
       "cmd": "touch ~/review-note.txt",
       "check": {
-        "exists": "~/review-note.txt"
+        "isFile": "~/review-note.txt"
       }
     },
     "echo": {
@@ -397,14 +397,14 @@
       "ask": "Review: copy ~/welcome.txt to ~/welcome2.txt",
       "cmd": "cp ~/welcome.txt ~/welcome2.txt",
       "check": {
-        "exists": "~/welcome2.txt"
+        "isFile": "~/welcome2.txt"
       }
     },
     "mv": {
       "ask": "Review: rename ~/welcome2.txt to ~/renamed.txt",
       "cmd": "mv ~/welcome2.txt ~/renamed.txt",
       "check": {
-        "exists": "~/renamed.txt"
+        "isFile": "~/renamed.txt"
       }
     },
     "rm": {

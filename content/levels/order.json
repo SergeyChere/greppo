@@ -152,7 +152,7 @@
           "ask": "Make a new folder called sorted.",
           "cmd": "mkdir sorted",
           "check": {
-            "exists": "~/sorted"
+            "isDir": "~/sorted"
           }
         },
         {

@@ -376,14 +376,14 @@ window.GREPPO = {
       "ask": "Review: make a folder ~/review.",
       "cmd": "mkdir ~/review",
       "check": {
-        "exists": "~/review"
+        "isDir": "~/review"
       }
     },
     "touch": {
       "ask": "Review: make a file ~/review-note.txt",
       "cmd": "touch ~/review-note.txt",
       "check": {
-        "exists": "~/review-note.txt"
+        "isFile": "~/review-note.txt"
       }
     },
     "echo": {
@@ -400,14 +400,14 @@ window.GREPPO = {
       "ask": "Review: copy ~/welcome.txt to ~/welcome2.txt",
       "cmd": "cp ~/welcome.txt ~/welcome2.txt",
       "check": {
-        "exists": "~/welcome2.txt"
+        "isFile": "~/welcome2.txt"
       }
     },
     "mv": {
       "ask": "Review: rename ~/welcome2.txt to ~/renamed.txt",
       "cmd": "mv ~/welcome2.txt ~/renamed.txt",
       "check": {
-        "exists": "~/renamed.txt"
+        "isFile": "~/renamed.txt"
       }
     },
     "rm": {
@@ -1392,7 +1392,7 @@ window.GREPPO = {
               "show": "Create a new folder called den.",
               "cmd": "mkdir den",
               "check": {
-                "exists": "~/den"
+                "isDir": "~/den"
               }
             },
             {
@@ -1400,7 +1400,7 @@ window.GREPPO = {
               "show": "Create a new empty file den/bowl.txt.",
               "cmd": "touch den/bowl.txt",
               "check": {
-                "exists": "~/den/bowl.txt"
+                "isFile": "~/den/bowl.txt"
               }
             },
             {
@@ -1408,7 +1408,7 @@ window.GREPPO = {
               "ask": "Make a new folder called toys",
               "cmd": "mkdir toys",
               "check": {
-                "exists": "~/toys"
+                "isDir": "~/toys"
               }
             }
           ]
@@ -1467,7 +1467,7 @@ window.GREPPO = {
               "show": "Copy den/bowl.txt to a new file den/bowl2.txt.",
               "cmd": "cp den/bowl.txt den/bowl2.txt",
               "check": {
-                "exists": "~/den/bowl2.txt"
+                "isFile": "~/den/bowl2.txt"
               }
             },
             {
@@ -1480,7 +1480,7 @@ window.GREPPO = {
                     "gone": "~/den/bowl2.txt"
                   },
                   {
-                    "exists": "~/den/spare.txt"
+                    "isFile": "~/den/spare.txt"
                   }
                 ]
               }
@@ -1549,7 +1549,7 @@ window.GREPPO = {
               "ask": "Make a new folder called test.",
               "cmd": "mkdir test",
               "check": {
-                "exists": "~/test"
+                "isDir": "~/test"
               }
             },
             {
@@ -1557,7 +1557,7 @@ window.GREPPO = {
               "ask": "Make a file called test/a.txt",
               "cmd": "touch test/a.txt",
               "check": {
-                "exists": "~/test/a.txt"
+                "isFile": "~/test/a.txt"
               }
             },
             {
@@ -1576,7 +1576,7 @@ window.GREPPO = {
               "ask": "Copy test/a.txt to test/b.txt",
               "cmd": "cp test/a.txt test/b.txt",
               "check": {
-                "exists": "~/test/b.txt"
+                "isFile": "~/test/b.txt"
               }
             },
             {
@@ -1589,7 +1589,7 @@ window.GREPPO = {
                     "gone": "~/test/b.txt"
                   },
                   {
-                    "exists": "~/test/c.txt"
+                    "isFile": "~/test/c.txt"
                   }
                 ]
               }
@@ -1892,7 +1892,7 @@ window.GREPPO = {
               "ask": "In your home folder, make a new folder called logs: mkdir logs",
               "cmd": "mkdir logs",
               "check": {
-                "exists": "~/logs"
+                "isDir": "~/logs"
               }
             },
             {
@@ -2435,7 +2435,7 @@ window.GREPPO = {
               "ask": "Make a new folder called sorted.",
               "cmd": "mkdir sorted",
               "check": {
-                "exists": "~/sorted"
+                "isDir": "~/sorted"
               }
             },
             {

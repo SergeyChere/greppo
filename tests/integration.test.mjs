@@ -210,6 +210,31 @@ try {
     await ctx.close();
   }
 
+  // ---- a folder command can't satisfy a "make a file" task (and vice versa) ----
+  section('file vs folder type');
+  {
+    const mk = () => freshPage(browser, seed({ lvl: 1, lesson: 0 })); // make.create: mkdir den, touch den/bowl.txt
+    const done = (page) => page.evaluate(() => (document.getElementById('check').innerText.match(/\[x\]/g) || []).length);
+    // wrong tool for a "make a folder" task
+    let { ctx, page } = await mk();
+    await run(page)('touch den');
+    ok((await done(page)) === 0, 'touch does not complete a make-a-folder task');
+    await ctx.close();
+    // right tool advances; then wrong tool for the "make a file" task (no crash)
+    ({ ctx, page } = await mk());
+    await run(page)('mkdir den');
+    ok((await done(page)) === 1, 'mkdir completes the make-a-folder task');
+    await run(page)('mkdir den/bowl.txt');
+    ok((await done(page)) === 1, 'mkdir does not complete a make-a-file task (no crash)');
+    await ctx.close();
+    // the correct file command completes the file task
+    ({ ctx, page } = await mk());
+    await run(page)('mkdir den');
+    await run(page)('touch den/bowl.txt');
+    ok((await done(page)) === 2, 'touch completes the make-a-file task');
+    await ctx.close();
+  }
+
   // ---- mini-articles before new-command lessons ----
   section('mini-articles');
   {
