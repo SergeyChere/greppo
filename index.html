@@ -168,6 +168,7 @@
 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<script src="content.js"></script>
 <script>
 (function(){
   var USER='player';
@@ -183,6 +184,7 @@
       'games':D('games',{'secret.txt':F('secret.txt','You read a note! Clue: visit the box folder'),'arcade':D('arcade',{'highscore.txt':F('highscore.txt','Top score: 9000')})}),
       'pictures':D('pictures',{'beach.txt':F('beach.txt','A sunny beach photo')}),
       'box':D('box',{'clue.txt':F('clue.txt','Clue: the treasure is at ~/treasure.txt'),'mystery.txt':F('mystery.txt','Secret! Try these fun commands: meow  dance  fortune  rainbow\nHidden files start with a dot. Try: ls -a'),'toys':D('toys',{'ball.txt':F('ball.txt','A bouncy ball'),'robot-toy.txt':F('robot-toy.txt','A shiny robot toy')})}),
+      'library':D('library',{'poem.txt':F('poem.txt','Greppo wakes inside the screen\nFolders deep and tunnels green\nType a word and watch it glow\nThrough the data winds we go\nLetters hidden letters found\nGreppo grows with every sound'),'animals.txt':F('animals.txt','cat\ndog\ncat\nbird\ndog\ncat'),'numbers.txt':F('numbers.txt','3\n1\n2\n2\n5')}),
       'notes':D('notes',{'diary.txt':F('diary.txt','Dear diary, today I met greppo the pet')}),
       '.secret':F('.secret','You found a hidden file! Names that start with a dot are hidden.\nType meow to hear something!'),
       'treasure.txt':F('treasure.txt','TREASURE FOUND! You are a real terminal explorer!')
@@ -212,27 +214,15 @@
   function matchGlob(name,pat){var re='^'+pat.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*')+'$';return new RegExp(re).test(name);}
   function listAll(dir,base,acc){var ks=keys(dir);for(var i=0;i<ks.length;i++){var ch=dir.ch[ks[i]];var pth=base+'/'+ks[i];acc.push({node:ch,path:pth});if(ch.t==='d')listAll(ch,pth,acc);}return acc;}
 
-  var HELP=
-    '<span class="hi">What each command does</span> (don\'t type the ( ) brackets):\n'+
-    '  pwd        print working directory \u2014 shows where you are\n'+
-    '  ls         list the files and folders here\n'+
-    '  cd games   change directory \u2014 go into the folder games\n'+
-    '  cd ..      go up one folder\n'+
-    '  cd ~       go to your home folder\n'+
-    '  cat file   show what is inside a file\n'+
-    '  tree       show all folders as a tree\n'+
-    '  mkdir name make a new folder\n'+
-    '  touch name make a new empty file\n'+
-    '  echo hi    print text   ( echo hi > note.txt writes it into a file )\n'+
-    '  cp a b     copy file a to b\n'+
-    '  mv a b     move or rename a to b\n'+
-    '  rm file    remove \u2014 delete   ( rm -r folder deletes a folder )\n'+
-    '  find name  search for a file by its name\n'+
-    '  grep word  search for a word inside files\n'+
-    '  clear      clear the screen\n'+
-    '<span class="dim">A name like welcome.txt has a name (welcome) and an extension (.txt) that means it is a text file.\n'+
-    'Keys: Enter runs a command. Up arrow shows your last command. Tab finishes a name.\n'+
-    'Type symbols to learn > >> ~ .. . *   ·   type games to play a mini-game.</span>';
+  function buildHelp(){
+    var G=window.GREPPO,lines='<span class="hi">What each command does</span> (don\'t type the ( ) brackets):\n';
+    (G&&G.knowledge?G.knowledge:[]).forEach(function(k){var name=k.cmd;while(name.length<6)name+=' ';lines+='  '+name+' '+k.sum+'\n';});
+    lines+='<span class="dim">A name like welcome.txt has a name (welcome) and an extension (.txt) that means a text file.\n'+
+      'Keys: Enter runs a command. Up arrow shows your last command. Tab finishes a name.\n'+
+      'Type symbols to learn > >> ~ .. . *   \u00b7   type games to play a mini-game.</span>';
+    return lines;
+  }
+  var HELP=buildHelp();
 
   function exec(line){
     var tl=line.trim();
@@ -272,6 +262,26 @@
     if(cmd==='rm'){var rec=false,ts=[];for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('r')>=0)rec=true;}else ts.push(a[i]);}if(!ts.length){O('rm: what to remove?');return done();}for(var j=0;j<ts.length;j++){var n=resolve(ts[j]);if(!n){O('<span class="er">rm: '+esc(ts[j])+': not found</span>');continue;}if(n===cwd||!n.parent){O('<span class="er">rm: step out first</span>');continue;}if(n.t==='d'&&keys(n).length&&!rec){O('<span class="er">rm: '+esc(n.name)+' is a full folder. Use rm -r '+esc(ts[j])+'</span>');continue;}delete n.parent.ch[n.name];}return done();}
     if(cmd==='find'){if(!a.length){O('find: find <name>');return done();}var all=listAll(cwd,abspath(cwd),[]),hits=all.filter(function(e){return a[0].indexOf('*')>=0?matchGlob(e.node.name,a[0]):e.node.name===a[0];});if(!hits.length){O('(not found)');}else hits.forEach(function(e){O(e.path);});return done();}
     if(cmd==='grep'){if(a.length<1){O('grep: grep <word> [file]');return done();}var word=a[0];var files=[];if(a[1]){var f=resolve(a[1]);if(f&&f.t==='f')files.push({node:f,path:abspath(f)});}else{files=listAll(cwd,abspath(cwd),[]).filter(function(e){return e.node.t==='f';});}var any=false;files.forEach(function(e){e.node.content.split('\n').forEach(function(ln){if(ln.toLowerCase().indexOf(word.toLowerCase())>=0){any=true;O('<span class="hi">'+esc(e.path)+'</span>: '+esc(ln));}});});if(!any)O('(no matches)');return done();}
+    if(cmd==='head'||cmd==='tail'){
+      if(!a.length){O(cmd+': which file? e.g. '+cmd+' library/poem.txt');return done();}
+      var hf=resolve(a[0]);if(!hf){O('<span class="er">'+cmd+': '+esc(a[0])+': no such file</span>');return done();}
+      if(hf.t!=='f'){O('<span class="er">'+cmd+': '+esc(a[0])+' is a folder</span>');return done();}
+      var hl=(hf.content||'').replace(/\n$/,'').split('\n'),hn=5;
+      O(esc((cmd==='head'?hl.slice(0,hn):hl.slice(Math.max(0,hl.length-hn))).join('\n')));return done();
+    }
+    if(cmd==='wc'){
+      if(!a.length){O('wc: which file? e.g. wc library/poem.txt');return done();}
+      var wf=resolve(a[0]);if(!wf||wf.t!=='f'){O('<span class="er">wc: '+esc(a[0])+': no such file</span>');return done();}
+      var wt=wf.content||'',wln=wt===''?0:wt.replace(/\n$/,'').split('\n').length,wwd=wt.split(/\s+/).filter(function(x){return x.length;}).length;
+      O(wln+' '+wwd+' '+wt.length+'  '+wf.name);return done();
+    }
+    if(cmd==='sort'||cmd==='uniq'){
+      if(!a.length){O(cmd+': which file? e.g. '+cmd+' library/animals.txt');return done();}
+      var sf2=resolve(a[0]);if(!sf2||sf2.t!=='f'){O('<span class="er">'+cmd+': '+esc(a[0])+': no such file</span>');return done();}
+      var sar=(sf2.content||'').replace(/\n$/,'').split('\n');
+      if(cmd==='sort')sar=sar.slice().sort();else{var su=[];sar.forEach(function(x){if(!su.length||su[su.length-1]!==x)su.push(x);});sar=su;}
+      O(esc(sar.join('\n')));return done();
+    }
     if(funCmd(cmd,a,O))return done();
     O('<span class="er">'+esc(cmd)+': command not found \u2014 type help. Tip: try meow, dance, fortune or rainbow!</span>');sfx('error');
   }
@@ -419,106 +429,52 @@
   function T(d,c){return{d:d,c:c};}
   function Q(q,cmd,c){return{q:q,cmd:cmd,c:c};}
 
-  var LEVELS=[
-    {word:'ROBOT',lessons:[
-      {teach:'pwd + ls \u2014 look around',slots:[0],tasks:[
-        T('Where am I? Type <b>pwd</b> \u2014 print working directory.',isCmd('pwd')),
-        T('What is here? Type <b>ls</b> \u2014 list files and folders.',isCmd('ls')),
-        Q('Which command shows where you are? Type it.','pwd',isCmd('pwd'))]},
-      {teach:'cd \u2014 move between folders',slots:[1],tasks:[
-        T('Go into the folder games. Type <b>cd games</b> \u2014 change directory.',goInto('~/games')),
-        T('Go up one folder. Type <b>cd ..</b>',cdUp()),
-        Q('Go into the folder pictures.','cd pictures',goInto('~/pictures')),
-        Q('Which command takes you to your home folder? Type it.','cd ~',cdHomeCmd())]},
-      {teach:'cat \u2014 read files',slots:[2],tasks:[
-        T('Read the file welcome.txt. Type <b>cat welcome.txt</b>. The .txt means it is a text file.',catIs('~/welcome.txt')),
-        Q('Read the file games/secret.txt','cat games/secret.txt',catIs('~/games/secret.txt')),
-        Q('Which command reads a file? Use it to read box/clue.txt','cat box/clue.txt',catIs('~/box/clue.txt'))]},
-      {teach:'tree + paths',slots:[3],tasks:[
-        T('See all folders as a tree. Use the command <b>tree</b>',isCmd('tree')),
-        Q('Go into the folder box, then into toys.','cd box/toys',goInto('~/box/toys')),
-        Q('Which one-word command shows the whole tree? Type it.','tree',isCmd('tree'))]},
-      {teach:'Checkpoint \u2014 answer from memory',checkpoint:true,slots:[4],tasks:[
-        Q('Show where you are.','pwd',isCmd('pwd')),
-        Q('List everything here.','ls',isCmd('ls')),
-        Q('Go into the folder games.','cd games',goInto('~/games')),
-        Q('Now go back to your home folder.','cd ~',cdHomeCmd()),
-        Q('Read the file welcome.txt','cat welcome.txt',catIs('~/welcome.txt')),
-        Q('Show all folders as a tree.','tree',isCmd('tree'))]}
-    ]},
-    {word:'LINUX',lessons:[
-      {teach:'mkdir + touch \u2014 make things',slots:[0],tasks:[
-        T('Make a new folder called den. Type <b>mkdir den</b> \u2014 make directory.',exists('~/den')),
-        T('Make an empty file inside it. Use <b>touch den/bowl.txt</b> \u2014 touch makes an empty file',exists('~/den/bowl.txt')),
-        Q('Make a new folder called toys','mkdir toys',exists('~/toys'))]},
-      {teach:'echo > \u2014 write into files',slots:[1],tasks:[
-        T('Write a word into a file. Use <b>echo food > den/bowl.txt</b> \u2014 the > sends the word into the file',fileHas('~/den/bowl.txt','food')),
-        Q('Add the word <span class="kw">yummy</span> to the end of den/bowl.txt. Use >> to keep the old text','echo yummy >> den/bowl.txt',fileHas('~/den/bowl.txt','yummy')),
-        Q('Create a new file hello.txt with the word <span class="kw">hi</span> inside. Use echo with > to make the file','echo hi > hello.txt',fileHas('~/hello.txt','hi'))]},
-      {teach:'cp + mv \u2014 copy and rename',slots:[2],tasks:[
-        T('Copy the bowl. Type <b>cp den/bowl.txt den/bowl2.txt</b> \u2014 copy.',exists('~/den/bowl2.txt')),
-        Q('Rename den/bowl2.txt to den/spare.txt','mv den/bowl2.txt den/spare.txt',function(s){return gone('~/den/bowl2.txt')(s)&&exists('~/den/spare.txt')(s);}),
-        Q('Go into the folder den (an old skill!).','cd den',goInto('~/den'))]},
-      {teach:'rm + flags \u2014 delete, be careful',slots:[3],tasks:[
-        T('Delete the spare file. Use <b>rm ~/den/spare.txt</b> \u2014 rm removes a file',gone('~/den/spare.txt')),
-        T('A flag is an extra option that starts with a dash -. To delete a whole folder, add the flag -r. Use <b>rm -r ~/den/toys</b>',gone('~/den/toys')),
-        Q('Now delete the folder <span class="kw">toys</span> in your home, using the same -r flag','rm -r ~/toys',gone('~/toys')),
-        Q('Which command deletes things? Delete the file ~/hello.txt','rm ~/hello.txt',gone('~/hello.txt'))]},
-      {teach:'Checkpoint \u2014 answer from memory',checkpoint:true,slots:[4],tasks:[
-        Q('Make a new folder called test.','mkdir test',exists('~/test')),
-        Q('Make a file called test/a.txt','touch test/a.txt',exists('~/test/a.txt')),
-        Q('Write the word ok into test/a.txt','echo ok > test/a.txt',fileHas('~/test/a.txt','ok')),
-        Q('Copy test/a.txt to test/b.txt','cp test/a.txt test/b.txt',exists('~/test/b.txt')),
-        Q('Rename test/b.txt to test/c.txt','mv test/b.txt test/c.txt',function(s){return gone('~/test/b.txt')(s)&&exists('~/test/c.txt')(s);}),
-        Q('Delete the whole folder test.','rm -r test',gone('~/test'))]}
-    ]},
-    {word:'PILOT',lessons:[
-      {teach:'find \u2014 search by name',slots:[0],tasks:[
-        T('Search for a file by name. Use <b>find ball.txt</b>',outHas('find','ball.txt')),
-        Q('Find the file robot-toy.txt','find robot-toy.txt',outHas('find','robot-toy.txt')),
-        Q('Which command finds a file by its name? Find ball.txt','find ball.txt',outHas('find','ball.txt'))]},
-      {teach:'grep \u2014 search inside files',slots:[1],tasks:[
-        T('Search for a word inside files. Use <b>grep greppo notes/diary.txt</b>',outHas('grep','greppo')),
-        Q('Search everywhere for the word treasure.','grep treasure',outHas('grep','treasure')),
-        Q('Which command searches inside files? Search for the word pet.','grep pet',outHas('grep','pet'))]},
-      {teach:'* the star (wildcards)',slots:[2],tasks:[
-        T('List only text files. Type <b>ls *.txt</b> \u2014 the star means "anything".',function(s){return s.cmd==='ls'&&s.args.join('').indexOf('*')>=0;}),
-        Q('Find files with toy in the name, using the star.','find *toy*',function(s){return s.cmd==='find'&&s.args.join('').indexOf('*')>=0&&s.out.indexOf('toy')>=0;}),
-        Q('Go into the folder box, then toys (an old skill!).','cd box/toys',goInto('~/box/toys'))]},
-      {teach:'Mix \u2014 old and new together',slots:[3],tasks:[
-        Q('Show where you are.','pwd',isCmd('pwd')),
-        Q('Make a new folder called logs.','mkdir logs',exists('~/logs')),
-        Q('Search for the word pet.','grep pet',outHas('grep','pet'))]},
-      {teach:'Final checkpoint \u2014 the big quest',checkpoint:true,slots:[4],tasks:[
-        Q('Show where you are.','pwd',isCmd('pwd')),
-        Q('Find the file robot-toy.txt','find robot-toy.txt',outHas('find','robot-toy.txt')),
-        Q('Go into the folder box, then toys.','cd box/toys',goInto('~/box/toys')),
-        Q('Read the file robot-toy.txt','cat robot-toy.txt',catIs('~/box/toys/robot-toy.txt')),
-        Q('Go back to your home folder.','cd ~',cdHomeCmd()),
-        Q('Open the treasure: read ~/treasure.txt','cat ~/treasure.txt',catIs('~/treasure.txt'))]}
-    ]}
-  ];
+  function compileCheck(c){
+    if(!c)return function(){return false;};
+    if(c.and){var A=c.and.map(compileCheck);return function(s){return A.every(function(f){return f(s);});};}
+    if(c.or){var Ov=c.or.map(compileCheck);return function(s){return Ov.some(function(f){return f(s);});};}
+    if('ran' in c)return isCmd(c.ran);
+    if('ranArg' in c)return function(s){return s.cmd===c.ranArg[0]&&s.args[0]===c.ranArg[1];};
+    if('cd' in c)return goInto(c.cd);
+    if('cdHome' in c)return cdHomeCmd();
+    if('cwd' in c)return cwdIs(c.cwd);
+    if('cat' in c)return catIs(c.cat);
+    if('exists' in c)return exists(c.exists);
+    if('gone' in c)return gone(c.gone);
+    if('fileHas' in c)return fileHas(c.fileHas[0],c.fileHas[1]);
+    if('out' in c)return outHas(c.out[0],c.out[1]);
+    if('argHas' in c)return function(s){return s.cmd===c.argHas[0]&&s.args.join(' ').indexOf(c.argHas[1])>=0;};
+    return function(){return false;};
+  }
+  function buildTask(t){var o={id:t.id,cmd:t.cmd,c:compileCheck(t.check)};if(t.ask)o.q=t.ask;else o.d=t.show;return o;}
+  function buildLevels(){var G=window.GREPPO;if(!G||!G.levels)return [];return G.levels.map(function(lv){return {id:lv.id,word:lv.word,title:lv.title,lessons:lv.lessons.map(function(ls){return {id:ls.id,teach:ls.title,checkpoint:!!ls.checkpoint,slots:ls.letters||[0],tasks:ls.tasks.map(buildTask)};})};});}
+  function validateContent(){
+    var G=window.GREPPO,errs=[],ids={};
+    if(!G||!G.levels||!G.levels.length)return ['content registry is empty'];
+    G.levels.forEach(function(lv){
+      if(ids[lv.id])errs.push('dup level '+lv.id);ids[lv.id]=1;
+      if(!lv.word||lv.word.length!==5)errs.push('level '+lv.id+' word must be 5 letters');
+      var slots={};
+      lv.lessons.forEach(function(ls){
+        if(ids[ls.id])errs.push('dup lesson '+ls.id);ids[ls.id]=1;
+        if(!ls.tasks||!ls.tasks.length)errs.push('lesson '+ls.id+' has no tasks');
+        (ls.letters||[]).forEach(function(n){if(n<0||n>=lv.word.length)errs.push('lesson '+ls.id+' slot out of range');slots[n]=1;});
+        (ls.tasks||[]).forEach(function(t){if(ids[t.id])errs.push('dup task '+t.id);ids[t.id]=1;if(!t.check)errs.push('task '+t.id+' missing check');if(t.ask&&!t.cmd)errs.push('recall '+t.id+' missing cmd');});
+      });
+      for(var i=0;i<lv.word.length;i++)if(!slots[i])errs.push('level '+lv.id+' no lesson gives letter '+i);
+    });
+    return errs;
+  }
+  var CONTENT_ERRORS=validateContent();
+  var LEVELS=buildLevels();
 
-  var REVIEWQ={
-    pwd:Q('Review: show where you are.','pwd',isCmd('pwd')),
-    ls:Q('Review: list everything here.','ls',isCmd('ls')),
-    cd:Q('Review: go into the folder games.','cd games',goInto('~/games')),
-    cat:Q('Review: read ~/welcome.txt','cat ~/welcome.txt',catIs('~/welcome.txt')),
-    tree:Q('Review: show the whole tree.','tree',isCmd('tree')),
-    mkdir:Q('Review: make a folder ~/review.','mkdir ~/review',exists('~/review')),
-    touch:Q('Review: make a file ~/review-note.txt','touch ~/review-note.txt',exists('~/review-note.txt')),
-    echo:Q('Review: write hi into ~/review-note.txt','echo hi > ~/review-note.txt',fileHas('~/review-note.txt','hi')),
-    cp:Q('Review: copy ~/welcome.txt to ~/welcome2.txt','cp ~/welcome.txt ~/welcome2.txt',exists('~/welcome2.txt')),
-    mv:Q('Review: rename ~/welcome2.txt to ~/renamed.txt','mv ~/welcome2.txt ~/renamed.txt',exists('~/renamed.txt')),
-    rm:Q('Review: delete ~/renamed.txt','rm ~/renamed.txt',gone('~/renamed.txt')),
-    find:Q('Review: find ball.txt','find ball.txt',outHas('find','ball.txt')),
-    grep:Q('Review: search for the word treasure.','grep treasure',outHas('grep','treasure'))
-  };
-  var MORDER=['pwd','ls','cd','cat','tree','mkdir','touch','echo','cp','mv','rm','find','grep'];
-  var CMDS=['pwd','ls','cd','cat','tree','mkdir','touch','echo','cp','mv','rm','find','grep','clear','help'];
-  var STAGE_NAMES=['Egg','Hatchling','Junior','Champion','MEGA'];
-  var WORDPOOL=['ROBOT','LINUX','PILOT','SPACE','LASER','MAGIC','TIGER','PIXEL','NINJA','COMET','DRONE','POWER','BRAVE','CLOUD','SOLAR','ROCKY','SUPER','FROST'];
-  function pickWords(){var p=WORDPOOL.slice(),out=[];for(var i=0;i<3;i++){var j=Math.floor(Math.random()*p.length);out.push(p.splice(j,1)[0]);}return out;}
+  function buildReview(){var G=window.GREPPO,R={};if(G&&G.review){for(var k in G.review){var r=G.review[k];R[k]={q:r.ask,cmd:r.cmd,c:compileCheck(r.check)};}}return R;}
+  var REVIEWQ=buildReview();
+  var MORDER=(window.GREPPO&&window.GREPPO.knowledge?window.GREPPO.knowledge.map(function(k){return k.cmd;}).filter(function(c){return c!=='clear'&&c!=='help';}):[]);
+  var CMDS=(window.GREPPO&&window.GREPPO.knowledge?window.GREPPO.knowledge.map(function(k){return k.cmd;}):[]);
+  var STAGE_NAMES=(window.GREPPO&&window.GREPPO.stageNames)||['Egg','MEGA'];
+  var WORDPOOL=(window.GREPPO&&window.GREPPO.wordPool)||['ROBOT'];
+  function pickWords(){var p=WORDPOOL.slice(),out=[],n=LEVELS.length;for(var i=0;i<n;i++){if(!p.length)p=WORDPOOL.slice();var j=Math.floor(Math.random()*p.length);out.push(p.splice(j,1)[0]);}return out;}
   function wordFor(l){return (P.words&&P.words[l])||LEVELS[l].word;}
 
   var PAGES=[
@@ -592,6 +548,8 @@
   if(!P.mastery)P.mastery={};
   if(!P.review)P.review={};
   if(!P.mode)P.mode='quest';
+  while(P.found.length<LEVELS.length)P.found.push([]);
+  if(P.words){while(P.words.length<LEVELS.length)P.words.push(WORDPOOL[Math.floor(Math.random()*WORDPOOL.length)]);}
   function save(){try{localStorage.setItem('greppo_web_v4',JSON.stringify(P));}catch(e){}}
   var pendingWord=null,grown=false,curTasks=[],hintUsed=false;
 
@@ -599,7 +557,7 @@
   function curLesson(){return curLevel()?curLevel().lessons[P.lesson]:null;}
   function cmdOf(task){var m=/<b>([^<]+)<\/b>/.exec(task.d||'');return m?m[1].trim():'';}
   function baseOf(task){var full=task.q?(task.cmd||''):cmdOf(task);return full.trim().split(/\s+/)[0];}
-  function stageIndex(){if(grown)return 4;if(P.lvl===0&&(P.found[0]||[]).length<5)return 0;return (P.lvl===0?1:P.lvl===1?2:3);}
+  function stageIndex(){var last=STAGE_NAMES.length-1;if(grown)return last;return P.lvl===0?0:Math.min(P.lvl,last);}
 
   function buildTasks(ls){
     if(!ls)return [];
@@ -838,7 +796,7 @@
     if((P.found[2]||[]).length>=5)grown=true;
     startLesson();
     if(P.found[P.lvl]&&curLevel()&&P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('Read the glowing word on the left and type it in!');}
-    pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');
+    pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');if(CONTENT_ERRORS&&CONTENT_ERRORS.length)pr('<span class="er">Content check: '+CONTENT_ERRORS.join('; ')+'</span>');
     if(!P.seenIntro && P.lvl===0 && P.lesson===0 && (P.found[0]||[]).length===0){P.seenIntro=true;save();showBook(function(){inp.focus();});}
     else inp.focus();
   }
