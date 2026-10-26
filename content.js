@@ -1433,7 +1433,7 @@ window.GREPPO = {
             },
             {
               "id": "make.write.2",
-              "ask": "Add the word <span class=\"kw\">yummy</span> to the end of den/bowl.txt. Use >> to keep the old text",
+              "ask": "Add the word yummy to the end of den/bowl.txt. Use >> to keep the old text",
               "cmd": "echo yummy >> den/bowl.txt",
               "check": {
                 "fileHas": [
@@ -1444,7 +1444,7 @@ window.GREPPO = {
             },
             {
               "id": "make.write.3",
-              "ask": "Create a new file hello.txt with the word <span class=\"kw\">hi</span> inside. Use echo with > to make the file",
+              "ask": "Create a new file hello.txt with the word hi inside. Use echo with > to make the file",
               "cmd": "echo hi > hello.txt",
               "check": {
                 "fileHas": [
@@ -1520,7 +1520,7 @@ window.GREPPO = {
             },
             {
               "id": "make.remove.3",
-              "ask": "Now delete the folder <span class=\"kw\">toys</span> in your home, using the same -r flag",
+              "ask": "Now delete the folder toys in your home, using the same -r flag",
               "cmd": "rm -r ~/toys",
               "check": {
                 "gone": "~/toys"

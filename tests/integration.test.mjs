@@ -106,6 +106,14 @@ try {
     ok(/Hint 2 of 2[\s\S]*cp den\/bowl\.txt den\/bowl2\.txt/.test(await hint()), 'hint 2 gives the full command');
     await ctx.close();
   }
+  {
+    // the "variables" (file names and words to type) are highlighted as kw
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 1, lesson: 1 })); // make.write: echo food > den/bowl.txt
+    const html = await page.evaluate(() => document.getElementById('check').innerHTML);
+    ok(/<span class="kw">food<\/span>/.test(html), 'the word to write (food) is highlighted');
+    ok(/<span class="kw">den\/bowl\.txt<\/span>/.test(html), 'the file name (den/bowl.txt) is highlighted');
+    await ctx.close();
+  }
 
   // ---- a lesson plays and awards letters; checkpoint -> word -> level up ----
   section('gameplay: checkpoint, word, level up');

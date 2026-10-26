@@ -776,7 +776,28 @@
     out=out.split(cmd).join(repl);
     return out;
   }
-  function taskLabel(t){return t.q?('<span class="q">?</span> '+maskText(t.q,t.cmd)):maskText(t.d,t.cmd);}
+  var CMDSET={};(function(){CMDS.forEach(function(c){CMDSET[c]=1;});})();
+  /* Highlight the "variables" of a task — the file names, folder names and words
+     the child must actually type (the command's arguments) — like the kw words. */
+  function hiData(text,cmd){
+    if(!text||!cmd)return text;
+    var toks=cmd.trim().split(/\s+/),hasPipe=cmd.indexOf('|')>=0,data=[];
+    if(toks[0].indexOf('=')>0){var kv=toks[0].split('=');if(kv[0].length>=2)data.push(kv[0]);if(kv[1]&&kv[1].length>=2)data.push(kv[1]);}
+    toks.slice(1).forEach(function(tk){
+      if(tk==='>'||tk==='>>'||tk==='|')return;
+      if(tk.charAt(0)==='-')return;          /* flags */
+      if(tk.length<2)return;                  /* skip single chars like o, 0 */
+      if(hasPipe&&CMDSET[tk])return;          /* a piped command stage, not data */
+      if(data.indexOf(tk)<0)data.push(tk);
+    });
+    data.sort(function(a,b){return b.length-a.length;});
+    data.forEach(function(tk){
+      var re=new RegExp('(^|[^\\w/.-])('+tk.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')(?![\\w/-])','g');
+      text=text.replace(re,function(m,pre,g){return pre+'<span class="kw">'+g+'</span>';});
+    });
+    return text;
+  }
+  function taskLabel(t){var base=t.q?('<span class="q">?</span> '+maskText(t.q,t.cmd)):maskText(t.d,t.cmd);return hiData(base,t.cmd);}
   function renderChecklist(){
     var el=document.getElementById('check');if(!curTasks.length){el.innerHTML='';return;}
     var h='';
