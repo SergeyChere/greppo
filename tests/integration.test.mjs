@@ -1,0 +1,183 @@
+/*
+ * Integration tests for Greppo (headless Chromium via Playwright).
+ *
+ * Drives the real page the way a child would — typing commands, pressing the
+ * buttons — and asserts the engine behaves. Run with: npm test
+ * (requires: npm ci && npx playwright install chromium)
+ */
+import { chromium } from 'playwright';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const URL = 'file://' + resolve(here, '..', 'index.html');
+
+const WORDS = ['ROBOT','LINUX','PILOT','SCOUT','ORDER','MAGIC','LASER','RIVER','CLOUD','POWER','BADGE','DEPTH','MOTOR','PANEL','RADIO','SPELL'];
+
+let passed = 0;
+const failures = [];
+function ok(cond, msg) { if (cond) { passed++; } else { failures.push(msg); console.error('  ✗ ' + msg); } }
+function section(name) { console.log('\n# ' + name); }
+
+// Ignore the sandbox's font-CDN network error; fail on anything else.
+const pageErrors = [];
+
+async function freshPage(browser, save) {
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  page.on('pageerror', (e) => pageErrors.push('PAGEERROR ' + e.message));
+  page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL|Failed to load resource/.test(m.text())) pageErrors.push('CONSOLE ' + m.text()); });
+  await page.addInitScript((s) => { try { if (s) localStorage.setItem('greppo_web_v4', JSON.stringify(s)); else localStorage.clear(); } catch (e) {} }, save || null);
+  await page.goto(URL);
+  await page.waitForTimeout(400);
+  return { ctx, page };
+}
+function seed(extra) {
+  const found = []; for (let i = 0; i < 16; i++) found.push([]);
+  return Object.assign({ name: 'Robert', user: 'robert', lvl: 0, lesson: 0, task: 0, found, mastery: {}, review: {}, muted: true, seenIntro: true, mode: 'quest', words: WORDS }, extra || {});
+}
+const run = (page) => async (cmd) => { await page.fill('#in', cmd); await page.press('#in', 'Enter'); await page.waitForTimeout(40); return page.evaluate(() => document.getElementById('term').innerText); };
+const term = (page) => page.evaluate(() => document.getElementById('term').innerText);
+
+const browser = await chromium.launch();
+try {
+  // ---- content loads clean ----
+  section('content & boot');
+  {
+    const { ctx, page } = await freshPage(browser, null);
+    await page.fill('#nameIn', 'Robert'); await page.click('#startBtn'); await page.waitForTimeout(250);
+    const banner = await term(page);
+    ok(!/Content check/.test(banner), 'no content-validation errors on load');
+    await ctx.close();
+  }
+
+  // ---- new region commands ----
+  section('region commands');
+  {
+    const { ctx, page } = await freshPage(browser, seed());
+    const r = run(page);
+    await r('sandbox');                       // sandbox at level 1: only early commands are free
+    // level-1 commands work
+    ok(/library|welcome\.txt/.test(await r('ls')), 'ls lists files');
+    // later commands are gated in sandbox until reached
+    ok(/haven't earned/i.test(await r('tr a-z A-Z library/poem.txt')), 'un-earned command (tr) is locked in sandbox');
+    ok(/haven't earned/i.test(await r('ps')), 'un-earned command (ps) is locked in sandbox');
+    await ctx.close();
+  }
+  {
+    // a save at the last level has everything unlocked — exercise the new commands
+    const found = []; for (let i = 0; i < 16; i++) found.push(i < 15 ? [0,1,2,3,4] : []);
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 15, lesson: 0, found }));
+    const r = run(page);
+    await r('sandbox');
+    await r('echo gold > vault.txt'); await r('chmod -w vault.txt');
+    ok(/locked/i.test(await r('rm vault.txt')), 'chmod -w locks a file against rm');
+    await r('chmod +w vault.txt');
+    ok(/cat|dog|bird/.test(await r('cat library/animals.txt | sort | uniq')), 'pipe cat|sort|uniq works');
+    ok(/3 3 12|\b3 \b/.test(await r('cat library/animals.txt | sort | uniq | wc')), 'pipe into wc works');
+    await r('pet=dragon');
+    ok(/my pet is dragon/.test(await r('echo my pet is $pet')), 'variables expand ($pet)');
+    ok(/greppo-pet|games/.test(await r('ps')), 'ps lists processes');
+    ok(/Stopped/.test(await r('kill 77')), 'kill stops a process');
+    ok(/awake/i.test(await r('ping greppo.world')), 'ping replies');
+    ok(/network|page/i.test(await r('curl greppo.world')), 'curl fetches a page');
+    await r('echo whoami > s.sh');
+    ok(/robert/.test(await r('run s.sh')), 'run executes a script file');
+    ok(/hooray/.test(await r('repeat 3 echo hooray')), 'repeat runs a command N times');
+    await ctx.close();
+  }
+
+  // ---- masking + progressive hints ----
+  section('masking & hints');
+  {
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 1, lesson: 2 })); // make.copy (cp teach)
+    const label = (await page.evaluate(() => document.getElementById('check').innerText.split('\n')[0]));
+    ok(/which command\?/.test(label), 'command verb is hidden in the task text');
+    ok(/den\/bowl\.txt/.test(label), 'the data (file names) stays visible in the task text');
+    const hint = async () => { await page.click('#bHint'); await page.waitForTimeout(160); return page.evaluate(() => document.getElementById('say').innerText); };
+    ok(/Hint 1 of 3[\s\S]*\bcp\b/.test(await hint()), 'hint 1 names the command');
+    ok(/Hint 2 of 3/.test(await hint()), 'hint 2 shows the shape');
+    ok(/Hint 3 of 3[\s\S]*cp den\/bowl\.txt den\/bowl2\.txt/.test(await hint()), 'hint 3 reveals the full command');
+    await ctx.close();
+  }
+
+  // ---- a lesson plays and awards letters; checkpoint -> word -> level up ----
+  section('gameplay: checkpoint, word, level up');
+  {
+    const found = []; for (let i = 0; i < 16; i++) found.push(i < 6 ? [0,1,2,3,4] : []);
+    found[6] = [0,1,2,3];                     // slice: last letter comes from its checkpoint
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 6, lesson: 4, found }));
+    const r = run(page);
+    await r('cut -c1-3 library/colors.txt'); await r('cut -f1 library/scores.txt'); await r('nl library/poem.txt'); await r('cal');
+    const lock = await page.evaluate(() => document.getElementById('lock').textContent);
+    ok(lock.replace(/\s/g, '') === 'LASER', 'checkpoint awards the final letter (word complete)');
+    await r('LASER');
+    await page.waitForTimeout(250);
+    ok(await page.evaluate(() => !document.getElementById('mx').hidden), 'typing the word starts the evolution animation');
+    await page.evaluate(() => document.getElementById('mxGo').click());
+    await page.waitForTimeout(250);
+    ok(/Level 8 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'level-up advances to the next level');
+    await ctx.close();
+  }
+
+  // ---- practice mode leaves real progress untouched ----
+  section('practice mode');
+  {
+    const found = []; for (let i = 0; i < 16; i++) found.push(i < 3 ? [0,1,2,3,4] : []);
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 3, lesson: 0, found }));
+    await page.evaluate(() => document.getElementById('bMap').click());
+    await page.waitForTimeout(80);
+    ok((await page.evaluate(() => document.querySelectorAll('#mapgrid .region').length)) === 12, 'map shows 12 regions');
+    ok((await page.evaluate(() => document.querySelectorAll('#mapgrid .pbtn').length)) >= 1, 'completed levels offer a Practice button');
+    await page.evaluate(() => document.querySelector('#mapgrid .pbtn').click());
+    await page.waitForTimeout(150);
+    ok(/Level 1 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'practice enters the chosen (earlier) level');
+    await page.evaluate(() => document.getElementById('bMap').click());   // reopen map
+    await page.waitForTimeout(80);
+    await page.evaluate(() => document.getElementById('mapResume').click());
+    await page.waitForTimeout(120);
+    ok(/Level 4 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'resume returns to the real current level');
+    await ctx.close();
+  }
+
+  // ---- random variants ----
+  section('random task variants');
+  {
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 2, lesson: 0 })); // seek.find has variants
+    const seen = new Set();
+    for (let i = 0; i < 25; i++) {
+      // the seeded save is re-applied on every navigation (addInitScript),
+      // and startLesson randomizes which variant it shows each load
+      const labels = await page.evaluate(() => document.getElementById('check').innerText.split('\n'));
+      const m = (labels[1] || '').match(/[a-z0-9\-]+\.txt/);
+      if (m) seen.add(m[0]);
+      await page.evaluate(() => location.reload());
+      await page.waitForTimeout(160);
+    }
+    ok(seen.size >= 2, `recall task shows more than one target over replays (saw ${seen.size}: ${[...seen].join(', ')})`);
+    await ctx.close();
+  }
+
+  // ---- hot keys ----
+  section('hot keys');
+  {
+    const { ctx, page } = await freshPage(browser, seed());
+    await page.click('#bKeys'); await page.waitForTimeout(80);
+    ok(await page.evaluate(() => !document.getElementById('keysov').hidden), 'Hot keys panel opens');
+    await page.click('#keysClose'); await page.waitForTimeout(60);
+    const r = run(page);
+    await r('pwd'); await r('ls');
+    await page.focus('#in'); await page.keyboard.press('Control+l'); await page.waitForTimeout(60);
+    ok(/screen cleared/.test((await term(page)).trim()), 'Ctrl+L clears the screen');
+    await page.fill('#in', 'junk'); await page.keyboard.press('Escape'); await page.waitForTimeout(40);
+    ok((await page.evaluate(() => document.getElementById('in').value)) === '', 'Esc erases the line');
+    await ctx.close();
+  }
+
+  ok(pageErrors.length === 0, 'no uncaught page errors (' + pageErrors.join(' | ') + ')');
+} finally {
+  await browser.close();
+}
+
+console.log(`\n${failures.length ? '❌' : '✅'} integration: ${passed} passed, ${failures.length} failed`);
+if (failures.length) process.exit(1);
