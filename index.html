@@ -90,12 +90,30 @@
   .confirm .row{display:flex;gap:10px;justify-content:center;}
   .confirm button{font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid var(--edge);background:var(--panel2);color:var(--fg);}
   .confirm #cfYes{background:var(--pink);color:#3a0d13;border:none;}
+  .mapov{position:absolute;inset:0;background:rgba(4,8,6,.92);border-radius:14px;z-index:40;display:flex;flex-direction:column;padding:18px;overflow:auto;}
+  .mapov h2{margin:0 0 4px;color:var(--amber);font-size:20px;}
+  .mapov .maphint{margin:0 0 14px;color:#8fd6a6;font-size:13px;}
+  .mapgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+  .region{border:1px solid var(--edge);border-radius:12px;padding:12px 14px;background:var(--panel2);position:relative;}
+  .region.ready{border-color:#2f7d4e;}
+  .region.done{border-color:var(--amber);background:#13220f;}
+  .region.cur{box-shadow:0 0 0 2px var(--amber) inset;}
+  .region .rnum{font-size:12px;color:#5f8f73;font-weight:700;}
+  .region .rtitle{font-size:15px;font-weight:700;color:var(--fg);margin:2px 0 6px;}
+  .region .rteach{font-size:12px;color:#a7d9b8;line-height:1.45;min-height:34px;}
+  .region .rbadge{display:inline-block;margin-top:9px;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;}
+  .region .rbadge.play{background:#1d4d30;color:#9df0b6;}
+  .region .rbadge.soon{background:#2a2033;color:#c8a6e0;}
+  .region .rbadge.done{background:var(--amber);color:#2a1a04;}
+  .region .word{margin-top:9px;font-family:var(--mono);font-size:16px;letter-spacing:4px;color:#6ee787;}
+  .region .word .blank{color:#2f4a39;}
+  .mapov .mapclose{align-self:center;margin-top:16px;font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 22px;cursor:pointer;border:none;background:#6ee787;color:#06240f;}
   @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);}.term{height:250px;}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
 
 <div class="wrap">
-  <div class="title"><h1>Greppo</h1><span class="sub">learn the Linux terminal — 3 levels, one evolving pet</span></div>
+  <div class="title"><h1>Greppo</h1><span class="sub" id="sub">learn the Linux terminal — 5 levels, more coming — one evolving pet</span></div>
 
   <div class="intro" id="intro" hidden>
     <div class="card">
@@ -133,6 +151,7 @@
   <div class="btns" id="btns" hidden>
     <button id="bSound">Sound: on</button>
     <button id="bHint">Hint</button>
+    <button id="bMap">Map</button>
     <button id="bMode">Sandbox</button>
     <button id="bStory">Story</button>
     <button id="bHome">Back to start</button>
@@ -156,6 +175,13 @@
       <button id="bookSkip">Skip</button>
       <button id="bookNext">Next ▶</button>
     </div>
+  </div>
+
+  <div class="mapov" id="mapov" hidden>
+    <h2>World Map</h2>
+    <p class="maphint">Every region teaches new commands and reuses the ones before. Green = you can play it now. Collect the glowing letters in each region to spell its secret word.</p>
+    <div class="mapgrid" id="mapgrid"></div>
+    <button class="mapclose" id="mapClose">Close map</button>
   </div>
 
   <div class="confirm" id="confirm" hidden>
@@ -550,6 +576,7 @@
   if(!P.mode)P.mode='quest';
   while(P.found.length<LEVELS.length)P.found.push([]);
   if(P.words){while(P.words.length<LEVELS.length)P.words.push(WORDPOOL[Math.floor(Math.random()*WORDPOOL.length)]);}
+  while(P.lvl<LEVELS.length-1 && (P.found[P.lvl]||[]).length>=wordFor(P.lvl).length){P.lvl++;P.lesson=0;P.task=0;}
   function save(){try{localStorage.setItem('greppo_web_v4',JSON.stringify(P));}catch(e){}}
   var pendingWord=null,grown=false,curTasks=[],hintUsed=false;
 
@@ -577,7 +604,7 @@
     }
     el.innerHTML=h;
   }
-  function renderHead(){var lv=curLevel();document.getElementById('lvl').textContent=lv?('Level '+(P.lvl+1)+' of 3   ·   lesson '+(P.lesson+1)+' of 5'):'All done!';}
+  function renderHead(){var lv=curLevel();document.getElementById('lvl').textContent=grown?'Graduated! ⭐':(lv?('Level '+(P.lvl+1)+' of '+LEVELS.length+'   ·   lesson '+(P.lesson+1)+' of '+lv.lessons.length):'All done!');}
   function renderStage(){document.getElementById('stage').textContent='Stage: '+STAGE_NAMES[stageIndex()];}
   function renderMastery(){
     var el=document.getElementById('mastery');var any=false,h='learned: ';
@@ -769,13 +796,56 @@
   document.getElementById('bHome').addEventListener('click',function(){cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();clearTerm();flashPet('happy');sfx('ding');pr('<span class="ok">Back at the start.</span> You are home now (~). Nothing was lost \u2014 keep going!');var t=curTasks[P.task];if(t)say('You are back home. Next \u2192 '+(t.q?t.q:t.d));else say('You are back home.');inp.focus();});
   document.getElementById('bReset').addEventListener('click',function(){document.getElementById('confirm').hidden=false;});
   document.getElementById('cfCancel').addEventListener('click',function(){document.getElementById('confirm').hidden=true;});
-  document.getElementById('cfYes').addEventListener('click',function(){document.getElementById('confirm').hidden=true;P={name:'',user:'',lvl:0,lesson:0,task:0,found:[[],[],[]],mastery:{},review:{},muted:P.muted,seenIntro:false};pendingWord=null;grown=false;hist=[];save();showIntro();});
+  document.getElementById('cfYes').addEventListener('click',function(){document.getElementById('confirm').hidden=true;var fr=[];for(var fi=0;fi<LEVELS.length;fi++)fr.push([]);P={name:'',user:'',lvl:0,lesson:0,task:0,found:fr,mastery:{},review:{},muted:P.muted,seenIntro:false};pendingWord=null;grown=false;hist=[];save();showIntro();});
   document.getElementById('mxGo').addEventListener('click',function(){if(mxDone)mxDone();});
   document.getElementById('bookNext').addEventListener('click',bookNext);
   document.getElementById('bookBack').addEventListener('click',bookBack);
   document.getElementById('bookSkip').addEventListener('click',bookFinish);
   document.getElementById('bStory').addEventListener('click',function(){showBook(function(){inp.focus();});});
   document.getElementById('bMode').addEventListener('click',function(){setMode(P.mode==='sandbox'?'quest':'sandbox');});
+
+  function lvlIdxById(id){for(var i=0;i<LEVELS.length;i++)if(LEVELS[i].id===id)return i;return -1;}
+  function wordProgressHTML(idx){
+    var w=wordFor(idx),found=(P.found[idx]||[]),out='';
+    for(var i=0;i<w.length;i++){
+      if(found.indexOf(i)>=0)out+='<span>'+esc(w.charAt(i))+'</span>';
+      else out+='<span class="blank">_</span>';
+    }
+    return out;
+  }
+  function renderMap(){
+    var G=window.GREPPO,road=(G&&G.roadmap)||[],grid=document.getElementById('mapgrid'),html='';
+    for(var r=0;r<road.length;r++){
+      var reg=road[r],ready=(reg.status==='ready'),cls='region'+(ready?' ready':''),badge='',word='',done=false,cur=false;
+      if(ready&&reg.levelIds&&reg.levelIds.length){
+        var allDone=true,anyCur=false,wstr='';
+        for(var k=0;k<reg.levelIds.length;k++){
+          var li=lvlIdxById(reg.levelIds[k]);
+          if(li<0)continue;
+          var lf=(P.found[li]||[]).length,ln=wordFor(li).length;
+          if(lf<ln)allDone=false;
+          if(li===P.lvl)anyCur=true;
+          wstr+='<div class="word">'+wordProgressHTML(li)+'</div>';
+        }
+        done=allDone;cur=anyCur&&!allDone;word=wstr;
+        if(done){cls+=' done';badge='<span class="rbadge done">Completed ★</span>';}
+        else{cls+=(cur?' cur':'');badge='<span class="rbadge play">Play now</span>';}
+      } else {
+        badge='<span class="rbadge soon">Coming soon</span>';
+      }
+      html+='<div class="'+cls+'">'
+        +'<div class="rnum">Region '+reg.n+'</div>'
+        +'<div class="rtitle">'+esc(reg.title)+'</div>'
+        +'<div class="rteach">'+esc(reg.teach)+'</div>'
+        +word
+        +badge
+        +'</div>';
+    }
+    grid.innerHTML=html;
+    document.getElementById('mapov').hidden=false;
+  }
+  document.getElementById('bMap').addEventListener('click',renderMap);
+  document.getElementById('mapClose').addEventListener('click',function(){document.getElementById('mapov').hidden=true;inp.focus();});
 
   function showIntro(){
     document.getElementById('win').hidden=true;
@@ -793,7 +863,7 @@
     document.getElementById('bSound').textContent='Sound: '+(P.muted?'off':'on');
     document.getElementById('barName').textContent=USER+'@greppo';
     document.getElementById('ps').textContent=prompt();
-    if((P.found[2]||[]).length>=5)grown=true;
+    grown=((P.found[LEVELS.length-1]||[]).length>=wordFor(LEVELS.length-1).length);
     startLesson();
     if(P.found[P.lvl]&&curLevel()&&P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('Read the glowing word on the left and type it in!');}
     pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');if(CONTENT_ERRORS&&CONTENT_ERRORS.length)pr('<span class="er">Content check: '+CONTENT_ERRORS.join('; ')+'</span>');

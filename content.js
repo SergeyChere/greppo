@@ -60,6 +60,24 @@ window.GREPPO = {
     {cmd:"help",  sum:"show this list of commands"}
   ],
 
+  /* The 12-region world map (course roadmap). Regions marked "ready" are
+   * playable now and point to the level ids that implement them; "soon"
+   * regions are planned and shown under fog on the map. */
+  roadmap: [
+    {n:1,  title:"Valley of Files",            teach:"pwd, ls, cd, paths, viewing files",        status:"ready", levelIds:["nav"]},
+    {n:2,  title:"Workshop",                   teach:"make, copy, move, delete, wildcards",      status:"ready", levelIds:["make"]},
+    {n:3,  title:"Lands of Seekers",           teach:"find, grep, head, tail, wc, sort, uniq",   status:"ready", levelIds:["seek","view","order"]},
+    {n:4,  title:"Archive of Transformations", teach:"cut, tr, sed, awk, paste, join, diff",     status:"soon"},
+    {n:5,  title:"Crossroads of Streams",      teach:"pipes |, redirections, errors",            status:"soon"},
+    {n:6,  title:"Tower of Bash",              teach:"variables, quoting, substitution, arrays", status:"soon"},
+    {n:7,  title:"Citadel of Access",          teach:"users, groups, chmod, chown, sudo",        status:"soon"},
+    {n:8,  title:"Underground Paths",          teach:"links, /dev /proc /sys, df, du",           status:"soon"},
+    {n:9,  title:"Machine Yard",               teach:"processes, PID, signals, background jobs", status:"soon"},
+    {n:10, title:"Control Center",             teach:"system, logs, PATH, services, packages",   status:"soon"},
+    {n:11, title:"Network Frontier",           teach:"network, DNS, HTTP, SSH, Git",             status:"soon"},
+    {n:12, title:"Automation Lab",             teach:"bash scripts, args, loops, functions",     status:"soon"}
+  ],
+
   /* Spaced-repetition review questions, one canonical per command. */
   review: {
     pwd:  {ask:"Review: show where you are.", cmd:"pwd", check:{ran:"pwd"}},
