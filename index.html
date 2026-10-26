@@ -40,7 +40,18 @@
   .bar .name{margin-left:8px;font-size:12.5px;color:var(--dim);}
   .body{display:flex;flex-wrap:wrap;align-items:stretch;}
   .rail{flex:1 1 240px;min-width:0;padding:14px 16px;border-right:1px solid var(--edge);display:flex;flex-direction:column;gap:10px;}
-  .pet{white-space:pre;line-height:1.12;font-size:15px;color:var(--fg);min-height:120px;}
+  .pet{white-space:pre;line-height:1.12;font-size:15px;color:#d7e8de;min-height:132px;animation:petbob 2.8s ease-in-out infinite;transform-origin:50% 90%;filter:drop-shadow(0 2px 6px rgba(110,231,135,.18));will-change:transform;}
+  .pet.mega{filter:drop-shadow(0 0 10px rgba(255,216,107,.5));}
+  @keyframes petbob{0%{transform:translate(-2px,0) rotate(-1deg);}25%{transform:translate(0,-3px) rotate(0deg);}50%{transform:translate(2px,0) rotate(1deg);}75%{transform:translate(0,-3px) rotate(0deg);}100%{transform:translate(-2px,0) rotate(-1deg);}}
+  .pet .ey{color:#bfefff;text-shadow:0 0 6px rgba(143,208,255,.6);}
+  .pet .mo{color:#ffd86b;}
+  .pet .sp{color:#fff2a8;text-shadow:0 0 6px rgba(255,216,107,.7);}
+  .pet .au{color:#7fe0a0;}
+  .pet .bl{color:#ff9fb0;}
+  .pet .dec{color:#9be8ff;}
+  .pet .hp{color:#ff9fb0;text-shadow:0 0 6px rgba(255,159,176,.7);}
+  .petbig{animation:petbob 2.8s ease-in-out infinite;transform-origin:50% 90%;}
+  @media (prefers-reduced-motion:reduce){.pet,.petbig{animation:none;}}
   .stage{font-size:11.5px;color:var(--amber);}
   .lvl{font-size:12.5px;color:var(--dim);}
   .lock{font-size:24px;letter-spacing:6px;font-weight:700;color:var(--lock);transition:transform .18s ease;}
@@ -939,41 +950,100 @@
   function musicStop(){if(music){music.on=false;if(music.timer)clearInterval(music.timer);music=null;}}
 
   var frame=0,mood='idle',moodUntil=0,blinkUntil=0,nextBlink=30,spark=0,act=0,actUntil=0,nextAct=50;
-  function flashPet(m,dur){mood=m;moodUntil=frame+(dur||28);if(m==='happy')spark=frame+24;}
+  function flashPet(m,dur){mood=m;moodUntil=frame+(dur||28);if(m==='happy')spark=frame+28;}
   function petMood(m,d){flashPet(m,d);}
   function flashLock(){var el=document.getElementById('lock');el.style.transform='scale(1.4)';setTimeout(function(){el.style.transform='scale(1)';},200);}
-  function sway(){return ['',' ','  ',' '][(frame>>2)%4];}
+  function S(c,t){return '<span class="'+c+'">'+t+'</span>';}
+
   function eggStr(big){
     var fnd=(P.found[0]||[]).length;
     var z=['','z','z z','z z z'][(frame>>3)%4];
-    var s=big?'':sway();
     var e1=fnd>1?'/\\':'--', e2=fnd>3?'\\/':'~~';
-    return s+'   .--.   '+z+'\n'+s+'  / '+e1+' \\\n'+s+' |  '+e2+'  |\n'+s+' |      |\n'+s+'  \\    /\n'+s+"   '--'";
+    var tw=['  \u00b7  ','  \u2727  ',' \u2726 \u00b7',' \u00b7 \u2727'][(frame>>2)%4];
+    return S('sp',tw)+'   '+S('dec',z)+'\n'
+      +'   .--.\n'
+      +'  / '+S('sp',e1)+' \\\n'
+      +' |  '+S('sp',e2)+'  |\n'
+      +' |      |\n'
+      +'  \\    /\n'
+      +"   '--'";
   }
+
+  /* 3-wide eye slot keeps the body aligned whatever the expression. */
+  function eyeSlot(){
+    if(mood==='happy')return S('ey','^ ^');
+    if(mood==='think')return S('ey','\u00b7 \u00b7');
+    if(frame<blinkUntil)return S('ey','- -');
+    if(act==='look')return S('ey',(frame>>1)%2?'o o':'\u00b4 \u00b4');
+    if(act==='wink')return S('ey',(frame>>1)%2?'^ o':'o o');
+    return S('ey','o o');
+  }
+  function mouthTok(){ /* 1-wide */
+    if(mood==='happy')return S('mo','u');
+    if(mood==='think')return S('mo','o');
+    return (frame>>3)%4===0?S('mo','-'):S('mo','\u203f');
+  }
+  function auraLine(){ /* width ~7, over the head */
+    if(spark>frame){var a=[' \u2726 \u00b7 \u2726 ',' \u00b7 \u2727 \u00b7 ',' \u2727 \u2726 \u2727 ',' \u2726 \u00b7 \u2726 '][(frame>>1)%4];return S('sp',a);}
+    if(mood==='happy')return S('hp',(frame>>1)%2?'  \u2665 \u2665  ':'   \u2665   ');
+    return S('sp',['       ','    \u00b7  ','       ','  \u00b7  \u00b7 '][(frame>>2)%4]);
+  }
+  function antenna(){ return ' '+S('dec',(frame>>1)%2?'  \\ /  ':'  / \\  '); }
+  function hands(side){ /* side -1 left, +1 right */
+    if(act==='dance')return (frame>>1)%2?(side<0?'\\':'/'):(side<0?'/':'\\');
+    if(act==='wave'&&side>0)return (frame>>1)%2?'/':'\\';
+    return '';
+  }
+
   function petStr(big){
     var stage=stageIndex();
     if(stage===0)return eggStr(big);
-    var blink=frame<blinkUntil,wave=(act==='wave'),wag=(act==='wag'),look=(act==='look'),spin=(act==='spin');
-    var eyes=mood==='happy'?'^  ^':mood==='think'?'o  o':blink?'-  -':look?((frame>>1)%2?'o o ':' o o'):'o  o';
-    var mo=mood==='happy'?'\\oo/':mood==='think'?' -- ':' \\/ ';
-    var sp=(spark>frame)?'  \u2727 \u00b7 \u2727':(mood==='happy'?'   \u2665':'');
-    var s=big?'':sway();
-    var hop=(act==='hop')?'':' ';
-    var feet=wag?((frame>>1)%2?'  v    ^':'  ^    v'):'  ^    ^';
-    if(spin)return s+'\n'+s+'   .oo.\n'+s+'  ( ~~ )  *spin*\n'+s+"   '--'";
-    if(stage===1)return s+sp+'\n'+s+hop+'.-""-.\n'+s+hop+'( '+eyes+' )\n'+s+hop+'(  '+mo+' )\n'+s+hop+" '-..-'";
-    if(stage===2)return s+sp+'\n'+s+'  .-""-.\n'+s+'  ( '+eyes+' )\n'+s+'  (  '+mo+' )\n'+s+"   '-..-'\n"+s+(wave?'  \\    /':feet);
-    if(stage===3)return s+sp+'\n'+s+(wave?'  \\.^./':'   .^.')+'\n'+s+' .-""""-.\n'+s+'( '+eyes+'  )\n'+s+'(   '+mo+'  )\n'+s+" '-....-'\n"+s+(wave?' \\      /':feet);
-    return s+sp+'\n'+s+'  \\.^./\n'+s+' .-""""-.\n'+s+'( '+eyes+'  )\n'+s+'(  '+mo+'  )\n'+s+" '-....-'\n"+s+feet+'  \u2691';
+    var ey=eyeSlot(),mo=mouthTok(),au=auraLine();
+    var hop=(act==='hop'),spin=(act==='spin'),wag=(act==='wag');
+
+    if(spin){ /* dizzy twirl with stars */
+      var st=(frame>>1)%2?S('sp','\u2726'):S('sp','\u2727');
+      return ' '+st+'   '+st+'\n'
+        +'  .oOo.\n'
+        +'  ('+S('ey','@ @')+')   '+S('sp','*whirl*')+'\n'
+        +'   )'+S('mo','o')+'(\n'
+        +"  '----'";
+    }
+
+    var lH=hands(-1),rH=hands(1);
+    var puff = hop?S('sp','   \u00b7   \u00b7')+'\n':'';
+    var feet = hop?'  \u02d8   \u02d8':(wag?((frame>>1)%2?'  ^   v':'  v   ^'):'  ^   ^');
+    /* core box lines \u2014 1 leading space + 7-wide core, so everything lines up */
+    var top  = ' .-----.';
+    var eyes = (lH||' ')+'( '+ey+' )'+rH;
+    var mouth= ' (  '+mo+'  )';
+    var belly= ' (     )';
+    var base = " '-----'";
+
+    if(stage===1) /* Hatchling */
+      return au+'\n'+top+'\n'+eyes+'\n'+mouth+'\n'+base;
+    if(stage===2) /* Junior - + feet */
+      return au+'\n'+top+'\n'+eyes+'\n'+mouth+'\n'+base+'\n'+feet;
+    if(stage===3) /* + antenna */
+      return au+'\n'+antenna()+'\n'+top+'\n'+eyes+'\n'+mouth+'\n'+base+'\n'+feet;
+    if(stage<STAGE_NAMES.length-1) /* big - + belly row */
+      return puff+au+'\n'+antenna()+'\n'+top+'\n'+eyes+'\n'+mouth+'\n'+belly+'\n'+base+'\n'+feet;
+    /* MEGA - crown + flag + big aura */
+    return S('sp',' \u2727 \u2726 \u2727')+'\n'
+      +S('dec','  \\_^_/')+'\n'
+      +top+'\n'
+      +eyes+'  '+S('dec','\u2691')+'\n'
+      +mouth+'\n'+belly+'\n'+base+'\n'
+      +feet+'  '+S('hp',(frame>>1)%2?'\u2665':' ');
   }
   function tick(){
     frame++;
     if(moodUntil&&frame>=moodUntil){mood='idle';moodUntil=0;}
     if(frame>=nextBlink){blinkUntil=frame+2;nextBlink=frame+25+Math.floor(Math.random()*55);}
     if(act&&frame>=actUntil)act=0;
-    if(!act&&frame>=nextAct){var A=['wave','hop','look','wag','look','wag'];act=(Math.random()<0.08?'spin':A[Math.floor(Math.random()*A.length)]);actUntil=frame+(act==='spin'?8:12);nextAct=frame+40+Math.floor(Math.random()*60);}
-    var pe=document.getElementById('pet');if(pe)pe.textContent=petStr(false);
-    var ip=document.getElementById('introPet');if(ip&&!document.getElementById('intro').hidden)ip.textContent=eggStr(true);
+    if(!act&&frame>=nextAct){var A=['wave','hop','look','wag','look','dance','wink'];act=(Math.random()<0.1?'spin':A[Math.floor(Math.random()*A.length)]);actUntil=frame+(act==='spin'?10:14);nextAct=frame+38+Math.floor(Math.random()*55);}
+    var pe=document.getElementById('pet');if(pe){pe.innerHTML=petStr(false);pe.classList.toggle('mega',grown);}
+    var ip=document.getElementById('introPet');if(ip&&!document.getElementById('intro').hidden)ip.innerHTML=eggStr(true);
   }
 
   var hist=[],histIdx=-1,sbActions=0;
