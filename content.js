@@ -30,6 +30,11 @@
  *
  * A lesson with letters:[] teaches but awards no secret-word letter (an
  * interlude). Every lesson starts from home (~) so relative paths always work.
+ *
+ * A task may carry alts:[{...},{...}] — alternative versions (same shape:
+ * ask/show + cmd + check). Each time the lesson is played (quest or practice)
+ * the engine randomly shows the base task or one of its alts, so repeats and
+ * practice runs feel different. The id stays the same across variants.
  */
 window.GREPPO = {
   version: 1,
@@ -174,9 +179,17 @@ window.GREPPO = {
       {id:"nav.check", title:"Checkpoint — answer from memory", checkpoint:true, letters:[4], tasks:[
         {id:"nav.check.1", ask:"Show where you are.", cmd:"pwd", check:{ran:"pwd"}},
         {id:"nav.check.2", ask:"List everything here.", cmd:"ls", check:{ran:"ls"}},
-        {id:"nav.check.3", ask:"Go into the folder games.", cmd:"cd games", check:{cd:"~/games"}},
+        {id:"nav.check.3", ask:"Go into the folder games.", cmd:"cd games", check:{cd:"~/games"}, alts:[
+          {ask:"Go into the folder pictures.", cmd:"cd pictures", check:{cd:"~/pictures"}},
+          {ask:"Go into the folder box.", cmd:"cd box", check:{cd:"~/box"}},
+          {ask:"Go into the folder notes.", cmd:"cd notes", check:{cd:"~/notes"}}
+        ]},
         {id:"nav.check.4", ask:"Now go back to your home folder.", cmd:"cd ~", check:{cdHome:true}},
-        {id:"nav.check.5", ask:"Read the file welcome.txt", cmd:"cat welcome.txt", check:{cat:"~/welcome.txt"}},
+        {id:"nav.check.5", ask:"Read the file welcome.txt", cmd:"cat welcome.txt", check:{cat:"~/welcome.txt"}, alts:[
+          {ask:"Read the file notes/diary.txt", cmd:"cat notes/diary.txt", check:{cat:"~/notes/diary.txt"}},
+          {ask:"Read the file box/clue.txt", cmd:"cat box/clue.txt", check:{cat:"~/box/clue.txt"}},
+          {ask:"Read the file library/poem.txt", cmd:"cat library/poem.txt", check:{cat:"~/library/poem.txt"}}
+        ]},
         {id:"nav.check.6", ask:"Show all folders as a tree.", cmd:"tree", check:{ran:"tree"}}
       ]}
     ]},
@@ -218,13 +231,29 @@ window.GREPPO = {
     {id:"seek", word:"PILOT", title:"Lands of Seekers", lessons:[
       {id:"seek.find", title:"find — search by name", letters:[0], tasks:[
         {id:"seek.find.1", show:"Search for a file by name. Use <b>find ball.txt</b>", cmd:"find ball.txt", check:{out:["find","ball.txt"]}},
-        {id:"seek.find.2", ask:"Find the file named robot-toy.txt", cmd:"find robot-toy.txt", check:{out:["find","robot-toy.txt"]}},
-        {id:"seek.find.3", ask:"Which command finds a file by its name? Use it to find beach.txt", cmd:"find beach.txt", check:{out:["find","beach.txt"]}}
+        {id:"seek.find.2", ask:"Find the file named robot-toy.txt", cmd:"find robot-toy.txt", check:{out:["find","robot-toy.txt"]}, alts:[
+          {ask:"Find the file named ball.txt", cmd:"find ball.txt", check:{out:["find","ball.txt"]}},
+          {ask:"Find the file named beach.txt", cmd:"find beach.txt", check:{out:["find","beach.txt"]}},
+          {ask:"Find the file named clue.txt", cmd:"find clue.txt", check:{out:["find","clue.txt"]}}
+        ]},
+        {id:"seek.find.3", ask:"Which command finds a file by its name? Use it to find beach.txt", cmd:"find beach.txt", check:{out:["find","beach.txt"]}, alts:[
+          {ask:"Which command finds a file by its name? Use it to find robot-toy.txt", cmd:"find robot-toy.txt", check:{out:["find","robot-toy.txt"]}},
+          {ask:"Which command finds a file by its name? Use it to find diary.txt", cmd:"find diary.txt", check:{out:["find","diary.txt"]}},
+          {ask:"Which command finds a file by its name? Use it to find ball.txt", cmd:"find ball.txt", check:{out:["find","ball.txt"]}}
+        ]}
       ]},
       {id:"seek.grep", title:"grep — search inside files", letters:[1], tasks:[
         {id:"seek.grep.1", show:"Search for a word inside files. Use <b>grep greppo notes/diary.txt</b>", cmd:"grep greppo notes/diary.txt", check:{out:["grep","greppo"]}},
-        {id:"seek.grep.2", ask:"Search everywhere for the word treasure.", cmd:"grep treasure", check:{out:["grep","treasure"]}},
-        {id:"seek.grep.3", ask:"Which command searches inside files? Search for the word pet.", cmd:"grep pet", check:{out:["grep","pet"]}}
+        {id:"seek.grep.2", ask:"Search everywhere for the word treasure.", cmd:"grep treasure", check:{out:["grep","treasure"]}, alts:[
+          {ask:"Search everywhere for the word greppo.", cmd:"grep greppo", check:{out:["grep","greppo"]}},
+          {ask:"Search everywhere for the word robot.", cmd:"grep robot", check:{out:["grep","robot"]}},
+          {ask:"Search everywhere for the word secret.", cmd:"grep secret", check:{out:["grep","secret"]}}
+        ]},
+        {id:"seek.grep.3", ask:"Which command searches inside files? Search for the word pet.", cmd:"grep pet", check:{out:["grep","pet"]}, alts:[
+          {ask:"Which command searches inside files? Search for the word clue.", cmd:"grep clue", check:{out:["grep","clue"]}},
+          {ask:"Which command searches inside files? Search for the word fun.", cmd:"grep fun", check:{out:["grep","fun"]}},
+          {ask:"Which command searches inside files? Search for the word diary.", cmd:"grep diary", check:{out:["grep","diary"]}}
+        ]}
       ]},
       {id:"seek.star", title:"* the star (wildcards)", letters:[2], tasks:[
         {id:"seek.star.1", show:"List only text files. Type <b>ls *.txt</b> — the star means \"anything\"", cmd:"ls *.txt", check:{argHas:["ls","*"]}},
@@ -238,7 +267,10 @@ window.GREPPO = {
       ]},
       {id:"seek.check", title:"Checkpoint — the quest", checkpoint:true, letters:[4], tasks:[
         {id:"seek.check.1", ask:"Show where you are.", cmd:"pwd", check:{ran:"pwd"}},
-        {id:"seek.check.2", ask:"Find the file robot-toy.txt", cmd:"find robot-toy.txt", check:{out:["find","robot-toy.txt"]}},
+        {id:"seek.check.2", ask:"Find the file robot-toy.txt", cmd:"find robot-toy.txt", check:{out:["find","robot-toy.txt"]}, alts:[
+          {ask:"Find the file ball.txt", cmd:"find ball.txt", check:{out:["find","ball.txt"]}},
+          {ask:"Find the file beach.txt", cmd:"find beach.txt", check:{out:["find","beach.txt"]}}
+        ]},
         {id:"seek.check.3", ask:"From home, go into box then toys: cd box/toys", cmd:"cd box/toys", check:{cd:"~/box/toys"}},
         {id:"seek.check.4", ask:"Read the file robot-toy.txt", cmd:"cat robot-toy.txt", check:{cat:"~/box/toys/robot-toy.txt"}},
         {id:"seek.check.5", ask:"Go back to your home folder.", cmd:"cd ~", check:{cdHome:true}},
@@ -270,9 +302,18 @@ window.GREPPO = {
       ]},
       {id:"view.check", title:"Checkpoint — answer from memory", checkpoint:true, letters:[4], tasks:[
         {id:"view.check.1", ask:"Show where you are.", cmd:"pwd", check:{ran:"pwd"}},
-        {id:"view.check.2", ask:"Show the first lines of library/poem.txt", cmd:"head library/poem.txt", check:{argHas:["head","poem.txt"]}},
-        {id:"view.check.3", ask:"Show the last lines of library/poem.txt", cmd:"tail library/poem.txt", check:{argHas:["tail","poem.txt"]}},
-        {id:"view.check.4", ask:"Count library/animals.txt", cmd:"wc library/animals.txt", check:{argHas:["wc","animals.txt"]}},
+        {id:"view.check.2", ask:"Show the first lines of library/poem.txt", cmd:"head library/poem.txt", check:{argHas:["head","poem.txt"]}, alts:[
+          {ask:"Show the first lines of library/colors.txt", cmd:"head library/colors.txt", check:{argHas:["head","colors.txt"]}},
+          {ask:"Show the first lines of library/numbers.txt", cmd:"head library/numbers.txt", check:{argHas:["head","numbers.txt"]}}
+        ]},
+        {id:"view.check.3", ask:"Show the last lines of library/poem.txt", cmd:"tail library/poem.txt", check:{argHas:["tail","poem.txt"]}, alts:[
+          {ask:"Show the last lines of library/colors.txt", cmd:"tail library/colors.txt", check:{argHas:["tail","colors.txt"]}},
+          {ask:"Show the last lines of library/scores.txt", cmd:"tail library/scores.txt", check:{argHas:["tail","scores.txt"]}}
+        ]},
+        {id:"view.check.4", ask:"Count library/animals.txt", cmd:"wc library/animals.txt", check:{argHas:["wc","animals.txt"]}, alts:[
+          {ask:"Count library/poem.txt", cmd:"wc library/poem.txt", check:{argHas:["wc","poem.txt"]}},
+          {ask:"Count library/colors.txt", cmd:"wc library/colors.txt", check:{argHas:["wc","colors.txt"]}}
+        ]},
         {id:"view.check.5", ask:"Read library/animals.txt with cat.", cmd:"cat library/animals.txt", check:{cat:"~/library/animals.txt"}}
       ]}
     ]},
@@ -301,9 +342,18 @@ window.GREPPO = {
       ]},
       {id:"order.check", title:"Final checkpoint", checkpoint:true, letters:[4], tasks:[
         {id:"order.check.1", ask:"Show where you are.", cmd:"pwd", check:{ran:"pwd"}},
-        {id:"order.check.2", ask:"Sort library/animals.txt", cmd:"sort library/animals.txt", check:{argHas:["sort","animals.txt"]}},
-        {id:"order.check.3", ask:"Remove repeats in library/animals.txt", cmd:"uniq library/animals.txt", check:{argHas:["uniq","animals.txt"]}},
-        {id:"order.check.4", ask:"Count library/poem.txt", cmd:"wc library/poem.txt", check:{argHas:["wc","poem.txt"]}},
+        {id:"order.check.2", ask:"Sort library/animals.txt", cmd:"sort library/animals.txt", check:{argHas:["sort","animals.txt"]}, alts:[
+          {ask:"Sort library/colors.txt", cmd:"sort library/colors.txt", check:{argHas:["sort","colors.txt"]}},
+          {ask:"Sort library/numbers.txt", cmd:"sort library/numbers.txt", check:{argHas:["sort","numbers.txt"]}}
+        ]},
+        {id:"order.check.3", ask:"Remove repeats in library/animals.txt", cmd:"uniq library/animals.txt", check:{argHas:["uniq","animals.txt"]}, alts:[
+          {ask:"Remove repeats in library/numbers.txt", cmd:"uniq library/numbers.txt", check:{argHas:["uniq","numbers.txt"]}},
+          {ask:"Remove repeats in library/scores.txt", cmd:"uniq library/scores.txt", check:{argHas:["uniq","scores.txt"]}}
+        ]},
+        {id:"order.check.4", ask:"Count library/poem.txt", cmd:"wc library/poem.txt", check:{argHas:["wc","poem.txt"]}, alts:[
+          {ask:"Count library/colors.txt", cmd:"wc library/colors.txt", check:{argHas:["wc","colors.txt"]}},
+          {ask:"Count library/animals.txt", cmd:"wc library/animals.txt", check:{argHas:["wc","animals.txt"]}}
+        ]},
         {id:"order.check.5", ask:"Read the treasure: ~/treasure.txt", cmd:"cat ~/treasure.txt", check:{cat:"~/treasure.txt"}}
       ]}
     ]},

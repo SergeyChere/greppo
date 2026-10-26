@@ -113,6 +113,8 @@
   .region .word .here{letter-spacing:0;font-size:11px;color:var(--amber);}
   .region .word .soonmini{letter-spacing:0;font-size:11px;color:#6a7f72;}
   .mapov .mapclose{align-self:center;margin-top:16px;font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 22px;cursor:pointer;border:none;background:#6ee787;color:#06240f;}
+  .mapov .mapresume{align-self:center;margin:0 0 14px;font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 22px;cursor:pointer;border:1px solid var(--amber);background:#2a1f08;color:var(--amber);}
+  .mapov .mapresume:hover{background:#3a2b0c;}
   .rail{flex:1 1 280px;max-width:420px;}
   @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);max-width:none;}.term{height:clamp(230px,40vh,340px);}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
@@ -186,6 +188,7 @@
   <div class="mapov" id="mapov" hidden>
     <h2>World Map</h2>
     <p class="maphint">Every region teaches new commands and reuses the ones before. Green = you can play it now. Collect the glowing letters in each region to spell its secret word.</p>
+    <button class="mapresume" id="mapResume">▶ Back to my quest</button>
     <div class="mapgrid" id="mapgrid"></div>
     <button class="mapclose" id="mapClose">Close map</button>
   </div>
@@ -248,7 +251,7 @@
 
   function buildHelp(){
     var G=window.GREPPO,lines='<span class="hi">What each command does</span> (don\'t type the ( ) brackets):\n';
-    (G&&G.knowledge?G.knowledge:[]).forEach(function(k){var name=k.cmd;while(name.length<6)name+=' ';lines+='  '+name+' '+k.sum+'\n';});
+    (G&&G.knowledge?G.knowledge:[]).forEach(function(k){var name=k.cmd;while(name.length<6)name+=' ';var lock=!cmdLearned(k.cmd);lines+=(lock?'  <span class="mask">🔒 '+name+' '+k.sum+'  (unlock in the quest)</span>':'  '+name+' '+k.sum)+'\n';});
     lines+='<span class="dim">A name like welcome.txt has a name (welcome) and an extension (.txt) that means a text file.\n'+
       'Pipes: cmd | cmd sends one command INTO another, e.g. cat library/animals.txt | sort | uniq\n'+
       'Variables: pet=dragon saves a word; show it with echo $pet. Your name is in $USER.\n'+
@@ -332,7 +335,11 @@
       pr('<span class="er">Not quite! Read the glowing letters on the left and type that word.</span>');sfx('error');return;
     }
     function O(h){st.out+=(h+'\n');pr(h);}
-    if(cmd==='help'){O(HELP);return done();}
+    if(P.mode==='sandbox'&&(cmd in CMD_LEVEL)&&!cmdLearned(cmd)){
+      O('<span class="hi">🔒 You haven\'t earned <b>'+esc(cmd)+'</b> yet!</span> You\'ll learn it in the quest — region "'+esc(LEVELS[CMD_LEVEL[cmd]].title)+'". Type <b>quest</b> to keep leveling up and unlock it.');
+      sfx('error');return done();
+    }
+    if(cmd==='help'){O(buildHelp());return done();}
     if(cmd==='clear'){clearTerm();return done();}
     if(cmd==='pwd'){O(abspath(cwd));return done();}
     if(cmd==='ls'){
@@ -572,7 +579,8 @@
     if('setVar' in c)return function(s){return (c.setVar in vars);};
     return function(){return false;};
   }
-  function buildTask(t){var o={id:t.id,cmd:t.cmd,c:compileCheck(t.check)};if(t.ask)o.q=t.ask;else o.d=t.show;return o;}
+  function buildOne(id,v){var o={id:id,cmd:v.cmd,c:compileCheck(v.check)};if(v.ask)o.q=v.ask;else o.d=v.show;return o;}
+  function buildTask(t){var o=buildOne(t.id,t);if(t.alts&&t.alts.length)o.alts=t.alts.map(function(v){return buildOne(t.id,v);});return o;}
   function buildLevels(){var G=window.GREPPO;if(!G||!G.levels)return [];return G.levels.map(function(lv){return {id:lv.id,word:lv.word,title:lv.title,lessons:lv.lessons.map(function(ls){return {id:ls.id,teach:ls.title,checkpoint:!!ls.checkpoint,slots:ls.letters||[0],tasks:ls.tasks.map(buildTask)};})};});}
   function validateContent(){
     var G=window.GREPPO,errs=[],ids={};
@@ -585,7 +593,7 @@
         if(ids[ls.id])errs.push('dup lesson '+ls.id);ids[ls.id]=1;
         if(!ls.tasks||!ls.tasks.length)errs.push('lesson '+ls.id+' has no tasks');
         (ls.letters||[]).forEach(function(n){if(n<0||n>=lv.word.length)errs.push('lesson '+ls.id+' slot out of range');slots[n]=1;});
-        (ls.tasks||[]).forEach(function(t){if(ids[t.id])errs.push('dup task '+t.id);ids[t.id]=1;if(!t.check)errs.push('task '+t.id+' missing check');if(t.ask&&!t.cmd)errs.push('recall '+t.id+' missing cmd');});
+        (ls.tasks||[]).forEach(function(t){if(ids[t.id])errs.push('dup task '+t.id);ids[t.id]=1;if(!t.check)errs.push('task '+t.id+' missing check');if(t.ask&&!t.cmd)errs.push('recall '+t.id+' missing cmd');(t.alts||[]).forEach(function(v,vi){if(!v.check)errs.push('alt '+t.id+'#'+vi+' missing check');if(v.ask&&!v.cmd)errs.push('alt '+t.id+'#'+vi+' missing cmd');});});
       });
       for(var i=0;i<lv.word.length;i++)if(!slots[i])errs.push('level '+lv.id+' no lesson gives letter '+i);
     });
@@ -593,6 +601,11 @@
   }
   var CONTENT_ERRORS=validateContent();
   var LEVELS=buildLevels();
+  /* Which level first teaches each command — used to gate sandbox so kids can
+     only use commands they have reached ("earn" them in the quest). */
+  var CMD_LEVEL={};
+  (function(){for(var li=0;li<LEVELS.length;li++){LEVELS[li].lessons.forEach(function(ls){ls.tasks.forEach(function(t){function add(c){var base=(c||'').trim().split(/\s+/)[0];if(base&&base.indexOf('=')<0&&!(base in CMD_LEVEL))CMD_LEVEL[base]=li;}add(t.cmd);if(t.alts)t.alts.forEach(function(v){add(v.cmd);});});});}})();
+  function cmdLearned(cmd){if(typeof CMD_LEVEL==='undefined'||!CMD_LEVEL||!(cmd in CMD_LEVEL))return true;var mx=grown?LEVELS.length-1:P.lvl;return CMD_LEVEL[cmd]<=mx;}
 
   function buildReview(){var G=window.GREPPO,R={};if(G&&G.review){for(var k in G.review){var r=G.review[k];R[k]={q:r.ask,cmd:r.cmd,c:compileCheck(r.check)};}}return R;}
   var REVIEWQ=buildReview();
@@ -689,7 +702,9 @@
 
   function buildTasks(ls){
     if(!ls)return [];
-    var t=ls.tasks.slice();
+    /* Pick a random variant for any task that has alternatives, so repeats and
+       practice runs feel different each time. */
+    var t=ls.tasks.map(function(tk){if(tk.alts&&tk.alts.length){var pool=[tk].concat(tk.alts);return pool[Math.floor(Math.random()*pool.length)];}return tk;});
     if(ls.checkpoint){var added=0;for(var i=0;i<MORDER.length;i++){var b=MORDER[i];if(P.review[b]&&REVIEWQ[b]&&added<3){t.push(REVIEWQ[b]);added++;}}}
     return t;
   }
@@ -701,10 +716,13 @@
   function maskText(text,cmd){
     if(!text||!cmd)return text;
     var toks=cmd.trim().split(/\s+/);
-    if(toks.length<2)return text;               /* single word: nothing to build */
-    var mask='<b>'+toks[0]+'</b> <span class="mask">(build it — press Hint)</span>';
-    var out=text.split('<b>'+cmd+'</b>').join(mask);
-    out=out.split(cmd).join(mask);
+    if(toks.length<2)return text;               /* bare command (no data): leave visible */
+    var args=toks.slice(1).join(' ');
+    /* Hide only the command word — keep the data (file names etc.) visible,
+       so the child knows WHAT to act on but must recall WHICH command. */
+    var repl='<span class="mask">[which command?]</span> <b>'+esc(args)+'</b>';
+    var out=text.split('<b>'+cmd+'</b>').join(repl);
+    out=out.split(cmd).join(repl);
     return out;
   }
   function taskLabel(t){return t.q?('<span class="q">?</span> '+maskText(t.q,t.cmd)):maskText(t.d,t.cmd);}
@@ -1008,9 +1026,13 @@
         +'</div>';
     }
     grid.innerHTML=html;
+    var rb=document.getElementById('mapResume');
+    if(rb){var cl=curLevel();rb.textContent=practice?'▶ Leave practice — back to my quest':(grown?'▶ Back to free play':('▶ Back to my quest (Level '+(P.lvl+1)+': '+(cl?cl.title:'')+')'));}
     document.getElementById('mapov').hidden=false;
   }
-  document.getElementById('bMap').addEventListener('click',function(){if(practice){exitPractice(false);return;}renderMap();});
+  function resumeQuest(){if(practice){exitPractice(false);}document.getElementById('mapov').hidden=true;inp.focus();}
+  document.getElementById('bMap').addEventListener('click',function(){renderMap();});
+  document.getElementById('mapResume').addEventListener('click',resumeQuest);
   document.getElementById('mapClose').addEventListener('click',function(){document.getElementById('mapov').hidden=true;inp.focus();});
   document.getElementById('mapgrid').addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pbtn');if(b){var idx=parseInt(b.getAttribute('data-idx'),10);enterPractice(idx);}});
 
