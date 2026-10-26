@@ -18,7 +18,7 @@
     padding-left:max(16px, env(safe-area-inset-left,0px));
     padding-right:max(16px, env(safe-area-inset-right,0px));
   }
-  .wrap{max-width:900px;margin:0 auto;position:relative;}
+  .wrap{width:100%;max-width:1400px;margin:0 auto;position:relative;}
   .title{display:flex;align-items:baseline;gap:12px;margin:0 2px 14px;flex-wrap:wrap;}
   .title h1{font-size:26px;font-weight:700;letter-spacing:.5px;margin:0;}
   .title .sub{font-size:13px;color:var(--dim);}
@@ -54,7 +54,7 @@
   .mast{font-size:11.5px;color:var(--dim);line-height:1.5;border-top:1px solid var(--edge);padding-top:8px;}
   .mast .s{color:var(--amber);}
   .main{flex:2 1 360px;min-width:0;display:flex;flex-direction:column;}
-  .term{background:var(--panel2);padding:14px 16px;font-size:14px;line-height:1.55;height:300px;flex:none;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
+  .term{background:var(--panel2);padding:14px 16px;font-size:14px;line-height:1.55;height:clamp(280px,52vh,680px);flex:none;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
   .term .ps{color:var(--green);} .term .er{color:var(--pink);} .term .ok{color:var(--amber);} .term .hi{color:var(--blue);} .term .spk{color:var(--amber);} .term .dim{color:var(--dim);} .term .pipe{color:#bde6ff;}
   .inrow{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--edge);background:var(--panel);}
   .inrow .ps{color:var(--green);font-size:13px;white-space:nowrap;}
@@ -105,10 +105,15 @@
   .region .rbadge.play{background:#1d4d30;color:#9df0b6;}
   .region .rbadge.soon{background:#2a2033;color:#c8a6e0;}
   .region .rbadge.done{background:var(--amber);color:#2a1a04;}
-  .region .word{margin-top:9px;font-family:var(--mono);font-size:16px;letter-spacing:4px;color:#6ee787;}
+  .region .word{margin-top:9px;font-family:var(--mono);font-size:14px;letter-spacing:2px;color:#6ee787;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .region .word .blank{color:#2f4a39;}
+  .region .word .pbtn{letter-spacing:0;font-family:var(--mono);font-size:11px;font-weight:700;border:1px solid #2f7d4e;background:#123;color:#9df0b6;border-radius:8px;padding:3px 8px;cursor:pointer;}
+  .region .word .pbtn:hover{background:#1d4d30;}
+  .region .word .here{letter-spacing:0;font-size:11px;color:var(--amber);}
+  .region .word .soonmini{letter-spacing:0;font-size:11px;color:#6a7f72;}
   .mapov .mapclose{align-self:center;margin-top:16px;font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 22px;cursor:pointer;border:none;background:#6ee787;color:#06240f;}
-  @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);}.term{height:250px;}}
+  .rail{flex:1 1 280px;max-width:420px;}
+  @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);max-width:none;}.term{height:clamp(230px,40vh,340px);}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
 
@@ -253,6 +258,8 @@
   var HELP=buildHelp();
 
   var vars={};
+  var procs=[{pid:1,name:'system'},{pid:42,name:'greppo-pet'},{pid:77,name:'music-box'},{pid:88,name:'games'}];
+  var PAGES_WEB={'greppo.world':'Welcome to Greppo World!\nYou reached a page across the network.\nEvery website is really just a file on another computer.','pet.greppo.world':'Pet status: happy and hungry for letters!','help.greppo.world':'Tip: cat reads files, ls lists them, cd moves you around.'};
   function expandVars(s){return s.replace(/\$\{([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)/g,function(m,a,b){var k=a||b;if(k==='USER')return USER;return (k in vars)?vars[k]:'';});}
   var CAL=['    GREPPO 2099','Su Mo Tu We Th Fr Sa','          1  2  3  4',' 5  6  7  8  9 10 11','12 13 14 15 16 17 18','19 20 21 22 23 24 25','26 27 28 29 30 31'].join('\n');
   function trApply(input,args){
@@ -328,12 +335,13 @@
     if(cmd==='clear'){clearTerm();return done();}
     if(cmd==='pwd'){O(abspath(cwd));return done();}
     if(cmd==='ls'){
-      var tgt=null,glob=null,showAll=false;for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('a')>=0)showAll=true;}else{if(a[i].indexOf('*')>=0)glob=a[i];else tgt=a[i];}}
+      var tgt=null,glob=null,showAll=false,lng=false;for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('a')>=0)showAll=true;if(a[i].indexOf('l')>=0)lng=true;}else{if(a[i].indexOf('*')>=0)glob=a[i];else tgt=a[i];}}
       function vis(k){return showAll||k[0]!=='.';}
       var d=tgt?resolve(tgt):cwd;
       if(glob){var dd=cwd,g=glob;if(glob.indexOf('/')>=0){var nb={};dd=parentOf(glob,nb);g=nb.n;}if(!dd){O('<span class="er">ls: no such folder</span>');return done();}O(keys(dd).filter(function(k){return vis(k)&&matchGlob(k,g);}).map(function(k){return dd.ch[k].t==='d'?k+'/':k;}).join('  ')||'(nothing matches)');return done();}
       if(!d){O('<span class="er">ls: '+esc(tgt)+': no such file or folder</span>');return done();}
       if(d.t==='f'){O(d.name);return done();}
+      if(lng){var rows=keys(d).filter(vis).map(function(k){var ch=d.ch[k];var isd=ch.t==='d';var perm=(isd?'d':'-')+(ch.locked?'r-':'rw')+(isd?'x':'-');var sz=isd?'-':String((ch.content||'').length);while(sz.length<4)sz=' '+sz;return perm+'  '+sz+'  '+k+(isd?'/':'')+(ch.locked?'  🔒':'');});O(esc(rows.join('\n'))||'(empty)');return done();}
       O(keys(d).filter(vis).map(function(k){return d.ch[k].t==='d'?k+'/':k;}).join('  ')||'(empty)');return done();
     }
     if(cmd==='cd'){var t=a[0]||'~',d=resolve(t);if(!d){O('<span class="er">cd: '+esc(t)+': no such folder</span>');return done();}if(d.t!=='d'){O('<span class="er">cd: '+esc(t)+' is a file</span>');return done();}cwd=d;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();return done();}
@@ -341,10 +349,10 @@
     if(cmd==='tree'){var o=['.'];(function rec(d,pre){var ks=keys(d);ks.forEach(function(k,i){var last=i+1===ks.length;o.push(pre+(last?'`-- ':'|-- ')+k+(d.ch[k].t==='d'?'/':''));if(d.ch[k].t==='d')rec(d.ch[k],pre+(last?'    ':'|   '));});})(cwd,'');O(esc(o.join('\n')));return done();}
     if(cmd==='mkdir'){if(!a.length){O('mkdir: name? e.g. mkdir den');return done();}var nb={},par=parentOf(a[0],nb);if(!par){O('<span class="er">mkdir: bad path</span>');return done();}if(par.ch[nb.n]){O('<span class="er">mkdir: '+esc(nb.n)+' already exists</span>');return done();}par.ch[nb.n]=D(nb.n,{});par.ch[nb.n].parent=par;return done();}
     if(cmd==='touch'){if(!a.length){O('touch: name? e.g. touch bowl.txt');return done();}var nb={},par=parentOf(a[0],nb);if(!par){O('<span class="er">touch: bad path</span>');return done();}if(!par.ch[nb.n]){par.ch[nb.n]=F(nb.n,'');par.ch[nb.n].parent=par;}return done();}
-    if(cmd==='echo'){var gt=a.indexOf('>'),ap=a.indexOf('>>');var r=gt<0?ap:gt,append=gt<0&&ap>=0;if(r<0){O(a.join(' '));return done();}var txt=a.slice(0,r).join(' '),fn=a[r+1];if(!fn){O('echo: file after >?');return done();}var nb={},par=parentOf(fn,nb);if(!par){O('<span class="er">echo: bad path</span>');return done();}if(!par.ch[nb.n]){par.ch[nb.n]=F(nb.n,'');par.ch[nb.n].parent=par;}var f=par.ch[nb.n];f.content=append?(f.content+txt+'\n'):(txt+'\n');return done();}
+    if(cmd==='echo'){var gt=a.indexOf('>'),ap=a.indexOf('>>');var r=gt<0?ap:gt,append=gt<0&&ap>=0;if(r<0){O(a.join(' '));return done();}var txt=a.slice(0,r).join(' '),fn=a[r+1];if(!fn){O('echo: file after >?');return done();}var nb={},par=parentOf(fn,nb);if(!par){O('<span class="er">echo: bad path</span>');return done();}if(par.ch[nb.n]&&par.ch[nb.n].locked){O('<span class="er">echo: '+esc(nb.n)+' is locked 🔒. Unlock it first with chmod +w '+esc(fn)+'</span>');return done();}if(!par.ch[nb.n]){par.ch[nb.n]=F(nb.n,'');par.ch[nb.n].parent=par;}var f=par.ch[nb.n];f.content=append?(f.content+txt+'\n'):(txt+'\n');return done();}
     if(cmd==='cp'){if(a.length<2){O('cp: cp <from> <to>');return done();}var s=resolve(a[0]);if(!s||s.t!=='f'){O('<span class="er">cp: can only copy a file</span>');return done();}var dd=resolve(a[1]),nm;if(dd&&dd.t==='d'){nm=s.name;}else{var nb={};dd=parentOf(a[1],nb);nm=nb.n;}if(!dd){O('<span class="er">cp: bad path</span>');return done();}dd.ch[nm]=F(nm,s.content);dd.ch[nm].parent=dd;return done();}
     if(cmd==='mv'){if(a.length<2){O('mv: mv <from> <to>');return done();}var s=resolve(a[0]);if(!s||!s.parent){O('<span class="er">mv: '+esc(a[0])+': not found</span>');return done();}var dd=resolve(a[1]),nm;if(dd&&dd.t==='d'){nm=s.name;}else{var nb={};dd=parentOf(a[1],nb);nm=nb.n;}if(!dd){O('<span class="er">mv: bad path</span>');return done();}if(dd.ch[nm]){O('<span class="er">mv: '+esc(nm)+' already exists</span>');return done();}delete s.parent.ch[s.name];s.name=nm;s.parent=dd;dd.ch[nm]=s;return done();}
-    if(cmd==='rm'){var rec=false,ts=[];for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('r')>=0)rec=true;}else ts.push(a[i]);}if(!ts.length){O('rm: what to remove?');return done();}for(var j=0;j<ts.length;j++){var n=resolve(ts[j]);if(!n){O('<span class="er">rm: '+esc(ts[j])+': not found</span>');continue;}if(n===cwd||!n.parent){O('<span class="er">rm: step out first</span>');continue;}if(n.t==='d'&&keys(n).length&&!rec){O('<span class="er">rm: '+esc(n.name)+' is a full folder. Use rm -r '+esc(ts[j])+'</span>');continue;}delete n.parent.ch[n.name];}return done();}
+    if(cmd==='rm'){var rec=false,ts=[];for(var i=0;i<a.length;i++){if(a[i][0]==='-'){if(a[i].indexOf('r')>=0)rec=true;}else ts.push(a[i]);}if(!ts.length){O('rm: what to remove?');return done();}for(var j=0;j<ts.length;j++){var n=resolve(ts[j]);if(!n){O('<span class="er">rm: '+esc(ts[j])+': not found</span>');continue;}if(n===cwd||!n.parent){O('<span class="er">rm: step out first</span>');continue;}if(n.locked){O('<span class="er">rm: '+esc(n.name)+' is locked 🔒. Unlock it first with chmod +w '+esc(ts[j])+'</span>');continue;}if(n.t==='d'&&keys(n).length&&!rec){O('<span class="er">rm: '+esc(n.name)+' is a full folder. Use rm -r '+esc(ts[j])+'</span>');continue;}delete n.parent.ch[n.name];}return done();}
     if(cmd==='find'){if(!a.length){O('find: find <name>');return done();}var all=listAll(cwd,abspath(cwd),[]),hits=all.filter(function(e){return a[0].indexOf('*')>=0?matchGlob(e.node.name,a[0]):e.node.name===a[0];});if(!hits.length){O('(not found)');}else hits.forEach(function(e){O(e.path);});return done();}
     if(cmd==='grep'){if(a.length<1){O('grep: grep <word> [file]');return done();}var word=a[0];var files=[];if(a[1]){var f=resolve(a[1]);if(f&&f.t==='f')files.push({node:f,path:abspath(f)});}else{files=listAll(cwd,abspath(cwd),[]).filter(function(e){return e.node.t==='f';});}var any=false;files.forEach(function(e){e.node.content.split('\n').forEach(function(ln){if(ln.toLowerCase().indexOf(word.toLowerCase())>=0){any=true;O('<span class="hi">'+esc(e.path)+'</span>: '+esc(ln));}});});if(!any)O('(no matches)');return done();}
     if(cmd==='head'||cmd==='tail'){
@@ -375,6 +383,27 @@
     if(cmd==='nl'){if(!a.length){O('nl: which file? e.g. nl library/poem.txt');return done();}var nf=resolve(a[0]);if(!nf||nf.t!=='f'){O('<span class="er">nl: '+esc(a[0])+': no such file</span>');return done();}O(esc((nf.content||'').replace(/\n$/,'').split('\n').map(function(x,i){return '     '+(i+1)+'  '+x;}).join('\n')));return done();}
     if(cmd==='tr'){if(a.length<3){O('tr: tr <from> <to> <file> e.g. tr a-z A-Z library/poem.txt');return done();}var tf=resolve(a[2]);if(!tf||tf.t!=='f'){O('<span class="er">tr: '+esc(a[2])+': no such file</span>');return done();}O(esc(trApply((tf.content||'').replace(/\n$/,''),[a[0],a[1]])));return done();}
     if(cmd==='cut'){if(!a.length){O('cut: e.g. cut -c1-3 library/colors.txt');return done();}var cfa=a[a.length-1],cf=resolve(cfa);if(!cf||cf.t!=='f'){O('<span class="er">cut: '+esc(cfa)+': no such file. e.g. cut -c1-3 library/colors.txt</span>');return done();}O(esc(cutApply((cf.content||'').replace(/\n$/,'').split('\n'),a.slice(0,-1))));return done();}
+    if(cmd==='chmod'){if(a.length<2){O('chmod: lock a file so it can\'t change: chmod -w file  (unlock: chmod +w file)');return done();}var cf2=resolve(a[1]);if(!cf2){O('<span class="er">chmod: '+esc(a[1])+': no such file</span>');return done();}if(a[0]==='-w'){cf2.locked=true;O('<span class="ok">Locked \ud83d\udd12 '+esc(cf2.name)+'</span> \u2014 now it cannot be changed or deleted.');}else if(a[0]==='+w'){cf2.locked=false;O('<span class="ok">Unlocked \ud83d\udd13 '+esc(cf2.name)+'</span> \u2014 you can change it again.');}else{O('chmod: use -w to lock or +w to unlock');}return done();}
+    if(cmd==='id'){O('uid=1000('+USER+') gid=1000(explorers) groups=explorers,players');return done();}
+    if(cmd==='du'){if(!a.length){O('du: how big is a file? e.g. du library/poem.txt');return done();}var dn=resolve(a[0]);if(!dn){O('<span class="er">du: '+esc(a[0])+': not found</span>');return done();}function sz(n){if(n.t==='f')return (n.content||'').length;var s=0;for(var k in n.ch)s+=sz(n.ch[k]);return s;}O(sz(dn)+'  '+a[0]);return done();}
+    if(cmd==='df'){O('Disk        Size   Used   Free\ngreppo-disk  100M    12M    88M  \ud83d\udfe2 plenty of room');return done();}
+    if(cmd==='stat'){if(!a.length){O('stat: info about a file: stat library/poem.txt');return done();}var sn=resolve(a[0]);if(!sn){O('<span class="er">stat: '+esc(a[0])+': not found</span>');return done();}O('  File: '+a[0]+'\n  Type: '+(sn.t==='d'?'folder':'file')+'\n  Size: '+(sn.t==='f'?(sn.content||'').length+' letters':'-')+'\n  Lock: '+(sn.locked?'locked \ud83d\udd12':'open'));return done();}
+    if(cmd==='ps'){var o=['  PID  NAME'];procs.forEach(function(p){var pid=String(p.pid);while(pid.length<4)pid=' '+pid;o.push(' '+pid+'  '+p.name);});O(esc(o.join('\n'))+'\n<span class="dim">Stop one with: kill &lt;PID&gt;</span>');return done();}
+    if(cmd==='kill'){var pid=parseInt(a[0],10);if(!pid){O('kill: which one? type a PID from ps, e.g. kill 77');return done();}if(pid===1){O('<span class="er">kill: you cannot stop the system (PID 1)!</span>');return done();}var before=procs.length;procs=procs.filter(function(p){return p.pid!==pid;});if(procs.length<before)O('<span class="ok">Stopped program '+pid+'.</span> Type ps to see what is left.');else O('<span class="er">kill: no program with PID '+pid+'. Type ps to see them.</span>');return done();}
+    if(cmd==='top'){O('Programs running now:\n'+procs.map(function(p){return '  '+p.pid+'  '+p.name;}).join('\n'));return done();}
+    if(cmd==='env'){O('USER='+USER+'\nHOME=/home/'+USER+'\nPATH=/bin:/games:/home/'+USER+(Object.keys(vars).length?('\n'+Object.keys(vars).map(function(k){return k+'='+vars[k];}).join('\n')):''));return done();}
+    if(cmd==='which'){if(!a.length){O('which: which command? e.g. which grep');return done();}O(CMDS.indexOf(a[0])>=0?('/bin/'+a[0]):(a[0]+': not found'));return done();}
+    if(cmd==='ping'){var host=a[0]||'greppo.world';O('Pinging '+host+' ...\n  reply from '+host+': time=12ms\n  reply from '+host+': time=9ms\n  reply from '+host+': time=10ms\n<span class="ok">'+host+' is awake! \ud83d\udce1</span>');return done();}
+    if(cmd==='curl'){if(!a.length){O('curl: fetch a page: curl greppo.world');return done();}var pg=PAGES_WEB[a[0].replace(/^https?:\/\//,'').replace(/\/$/,'')];O(pg?esc(pg):'<span class="er">curl: could not reach '+esc(a[0])+'. Try: curl greppo.world</span>');return done();}
+    if(cmd==='run'||cmd==='bash'||(cmd.length>2&&cmd.slice(0,2)==='./')){
+      var sp=(cmd==='run'||cmd==='bash')?a[0]:cmd.slice(2);
+      var sf=resolve(sp);if(!sf||sf.t!=='f'){O('<span class="er">run: '+esc(sp||'')+': no such file. Make one with echo lines into a .sh file.</span>');return done();}
+      var prog=(sf.content||'').replace(/\n$/,'').split('\n').filter(function(x){return x.trim().length;}).slice(0,30);
+      pr('<span class="hi">\u25b6 Running '+esc(sf.name)+'...</span>');
+      inScript=true;prog.forEach(function(ln){pr('<span class="dim">'+esc(prompt())+' '+esc(ln)+'</span>');exec(ln);});inScript=false;
+      st={cmd:'run',args:[sp],cwdAbs:abspath(cwd),catAbs:null,out:'',raw:rawLine};return done();
+    }
+    if(cmd==='repeat'){var rn=parseInt(a[0],10),rest=a.slice(1).join(' ');if(!rn||!rest){O('repeat: do something many times: repeat 3 echo hi');return done();}inScript=true;for(var ri=0;ri<Math.min(rn,20);ri++)exec(rest);inScript=false;st={cmd:'repeat',args:a,cwdAbs:abspath(cwd),catAbs:null,out:'',raw:rawLine};return done();}
     if(funCmd(cmd,a,O))return done();
     O('<span class="er">'+esc(cmd)+': command not found \u2014 type help. Tip: try meow, dance, fortune or rainbow!</span>');sfx('error');
   }
@@ -466,7 +495,7 @@
   function bsDraw(){
     var e=['  GREPPO\'S SEA (fire here)','    a b c d e'],y=['  YOUR SEA','    a b c d e'];
     for(var r=0;r<5;r++){var er=(r+1)+'  ',yr=(r+1)+'  ';for(var c=0;c<5;c++){var i=r*5+c;er+=bsChar(bs.enemy,i,true)+' ';yr+=bsChar(bs.you,i,false)+' ';}e.push(er);y.push(yr);}
-    pr('<span class="hi">'+e.join('\n')+'</span>\n<span class="dim">'+y.join('\n')+'\nX hit   o miss   P your flag   # your ship</span>');
+    pr('<span class="hi">'+e.join('\n')+'</span>\n<span class="dim">'+y.join('\n')+'\nX hit   o miss   P your flag   # your ship</span>\n<span class="ok">Fire: type a square like b3   ·   Mark a guess: type  flag b3   ·   Quit: stop</span>');
   }
   function bsLeft(b){return b.ship.filter(function(x){return !b.fired[x];}).length;}
   function bsFlag(cell){var c=cell.toLowerCase(),col='abcde'.indexOf(c[0]),row=parseInt(c[1],10)-1,i=row*5+col;if(col<0)return;bs.enemy.flag[i]=!bs.enemy.flag[i];sfx('click');bsDraw();pr(bs.enemy.flag[i]?'Flag placed. You think there is no ship there.':'Flag removed.');}
@@ -647,8 +676,9 @@
   while(P.found.length<LEVELS.length)P.found.push([]);
   if(P.words){while(P.words.length<LEVELS.length)P.words.push(WORDPOOL[Math.floor(Math.random()*WORDPOOL.length)]);}
   while(P.lvl<LEVELS.length-1 && (P.found[P.lvl]||[]).length>=wordFor(P.lvl).length){P.lvl++;P.lesson=0;P.task=0;}
-  function save(){try{localStorage.setItem('greppo_web_v4',JSON.stringify(P));}catch(e){}}
+  function save(){if(practice)return;try{localStorage.setItem('greppo_web_v4',JSON.stringify(P));}catch(e){}}
   var pendingWord=null,grown=false,curTasks=[],hintUsed=false;
+  var practice=false,practiceSnap=null,inScript=false;
 
   function curLevel(){return LEVELS[P.lvl];}
   function curLesson(){return curLevel()?curLevel().lessons[P.lesson]:null;}
@@ -676,11 +706,7 @@
   }
   function renderHead(){var lv=curLevel();document.getElementById('lvl').textContent=grown?'Graduated! ⭐':(lv?('Level '+(P.lvl+1)+' of '+LEVELS.length+'   ·   lesson '+(P.lesson+1)+' of '+lv.lessons.length):'All done!');}
   function renderStage(){document.getElementById('stage').textContent='Stage: '+STAGE_NAMES[stageIndex()];}
-  function renderMastery(){
-    var el=document.getElementById('mastery');var any=false,h='learned: ';
-    for(var i=0;i<MORDER.length;i++){var b=MORDER[i];if(b in P.mastery){any=true;h+=b+' '+(P.mastery[b]>=2?'<span class="s">\u2605\u2605</span>':'<span class="s">\u2605</span>')+'   ';}}
-    if(any){el.hidden=false;el.innerHTML=h;}else el.hidden=true;
-  }
+  function renderMastery(){var el=document.getElementById('mastery');if(el)el.hidden=true;}
   var sayTO=null;
   function say(t){var el=document.getElementById('say');el.style.opacity='0';clearTimeout(sayTO);sayTO=setTimeout(function(){el.innerHTML=t;el.style.opacity='1';},120);}
 
@@ -688,16 +714,22 @@
     P.task=0;hintUsed=false;curTasks=buildTasks(curLesson());
     renderChecklist();renderHead();renderLock();renderMastery();renderStage();
     var ls=curLesson();if(!ls)return;
+    /* Always start each lesson from home (~) so every task begins from a known
+       place and relative paths like "cd games" always work. */
+    cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();
     if(ls.checkpoint){
-      cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();
       clearTerm();
-      pr('<span class="ok">Checkpoint!</span> Answer each question on the left by typing <b>one</b> command, then press Enter. Do them one at a time, top to bottom.');
+      pr('<span class="ok">Checkpoint!</span> You are back home (~). Answer each question on the left by typing <b>one</b> command, then press Enter. Do them one at a time, top to bottom.');
       say('<b>Checkpoint:</b> answer the first question by typing one command, then Enter.');
-    } else say('<b>New skill:</b> '+ls.teach+'. Follow the steps \u2192');
+    } else {
+      pr('<span class="dim">\ud83d\udccd You are home (~). New lesson: '+esc(ls.teach)+'</span>');
+      say('<b>New skill:</b> '+ls.teach+'. Follow the steps \u2192');
+    }
   }
   function done(){checkTask();save();}
   function sparkleLine(){pr('<span class="spk">   \u2728  \u00b7  \u2b50  \u00b7  \u2728  \u00b7  \u2b50  \u00b7  \u2728</span>');}
   function checkTask(){
+    if(inScript)return;
     if(P.mode==='sandbox')return;
     if(P.task>=curTasks.length)return;
     var t=curTasks[P.task];
@@ -720,9 +752,11 @@
   }
   function doLevelUp(){
     pendingWord=null;sfx('fanfare');flashPet('happy',120);
+    if(practice){exitPractice(true);return;}
     if(P.lvl<LEVELS.length-1){
       var nl=P.lvl+1;
-      showMatrix(STORY[nl],function(){P.lvl=nl;P.lesson=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();inp.focus();});
+      var story=STORY[nl]||{t:'REGION '+(nl+1),l:['Greppo grows stronger!','A new region of the system opens up.','Keep exploring, {name}!']};
+      showMatrix(story,function(){P.lvl=nl;P.lesson=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();inp.focus();});
     }else{
       grown=true;
       showMatrix(STORY[3],function(){renderStage();document.getElementById('lvl').textContent='Graduated! \u2b50';say('\u2691 You did it, '+esc(P.name||'')+'! Greppo reached its MEGA form!');pr('<span class="ok">\u2691 DIPLOMA: '+esc(P.name||'Explorer')+' \u2014 Terminal Explorer! \u2691</span>');sparkleLine();pr('<span class="hi">Type <b>play</b> to start a brand-new quest with new secret words and beat your time! Or type <b>sandbox</b> to free-play.</span>');inp.focus();});
@@ -743,14 +777,16 @@
       say('<b>Sandbox:</b> explore freely! Nothing can go wrong. Type quest when you want to grow me more.');
     }else{
       if(b)b.textContent='Sandbox';
+      cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();
       renderChecklist();
-      pr('<span class="ok">Back to the quest!</span> Your progress is safe.');
+      pr('<span class="ok">Back to the quest!</span> You are home (~). Your progress is safe.');
       var t=curTasks[P.task];say(t?('Next → '+(t.q?t.q:t.d)):'Keep going!');
     }
     document.getElementById('in').focus();
   }
   function replay(){
-    P.lvl=0;P.lesson=0;P.task=0;P.found=[[],[],[]];grown=false;pendingWord=null;P.mode='quest';
+    var fr=[];for(var i=0;i<LEVELS.length;i++)fr.push([]);
+    P.lvl=0;P.lesson=0;P.task=0;P.found=fr;grown=false;pendingWord=null;P.mode='quest';
     P.words=pickWords();P.runs=(P.runs||0)+1;
     newWorld();clearTerm();
     document.getElementById('ps').textContent=prompt();
@@ -758,6 +794,30 @@
     startLesson();
     pr('<span class="ok">✦ New quest #'+P.runs+'!</span> New secret words are hidden. Can you do it faster this time?');
     save();document.getElementById('in').focus();
+  }
+  /* Practice a completed region again without touching real progress. */
+  function enterPractice(idx){
+    if(idx<0||idx>=LEVELS.length)return;
+    practiceSnap=JSON.parse(JSON.stringify(P));practice=true;
+    P.lvl=idx;P.lesson=0;P.task=0;P.found[idx]=[];grown=false;pendingWord=null;P.mode='quest';
+    newWorld();clearTerm();
+    document.getElementById('mapov').hidden=true;
+    document.getElementById('ps').textContent=prompt();
+    var b=document.getElementById('bMode');if(b)b.textContent='Sandbox';
+    renderStage();startLesson();
+    pr('<span class="hi">🎯 Practice run:</span> '+esc(LEVELS[idx].title)+'. Your real progress is safe — this is just for practice. Press <b>Map</b> any time to leave.');
+    inp.focus();
+  }
+  function exitPractice(won){
+    if(!practice)return;
+    P=practiceSnap;practiceSnap=null;practice=false;pendingWord=null;
+    grown=((P.found[LEVELS.length-1]||[]).length>=wordFor(LEVELS.length-1).length);
+    newWorld();clearTerm();
+    document.getElementById('ps').textContent=prompt();
+    renderStage();startLesson();
+    if(won){sfx('fanfare');flashPet('happy',120);pr('<span class="ok">⭐ Great practice! You replayed that region. Back to your own quest now.</span>');sparkleLine();}
+    else pr('<span class="ok">Left practice. Back to your own quest.</span>');
+    inp.focus();
   }
 
   var actx=null;
@@ -895,7 +955,10 @@
           var lf=(P.found[li]||[]).length,ln=wordFor(li).length;
           if(lf<ln)allDone=false;
           if(li===P.lvl)anyCur=true;
-          wstr+='<div class="word">'+wordProgressHTML(li)+'</div>';
+          var lvlDone=lf>=ln;
+          wstr+='<div class="word">'+esc(LEVELS[li].title)+': '+wordProgressHTML(li)+
+            (lvlDone?' <button class="pbtn" data-idx="'+li+'">↻ Practice</button>'
+             :(li===P.lvl?' <span class="here">▶ you are here</span>':' <span class="soonmini">locked</span>'))+'</div>';
         }
         done=allDone;cur=anyCur&&!allDone;word=wstr;
         if(done){cls+=' done';badge='<span class="rbadge done">Completed ★</span>';}
@@ -914,8 +977,9 @@
     grid.innerHTML=html;
     document.getElementById('mapov').hidden=false;
   }
-  document.getElementById('bMap').addEventListener('click',renderMap);
+  document.getElementById('bMap').addEventListener('click',function(){if(practice){exitPractice(false);return;}renderMap();});
   document.getElementById('mapClose').addEventListener('click',function(){document.getElementById('mapov').hidden=true;inp.focus();});
+  document.getElementById('mapgrid').addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pbtn');if(b){var idx=parseInt(b.getAttribute('data-idx'),10);enterPractice(idx);}});
 
   function showIntro(){
     document.getElementById('win').hidden=true;
@@ -932,7 +996,7 @@
     document.getElementById('btns').hidden=false;
     document.getElementById('bSound').textContent='Sound: '+(P.muted?'off':'on');
     document.getElementById('barName').textContent=USER+'@greppo';
-    var subEl=document.getElementById('sub');if(subEl)subEl.textContent='learn the Linux terminal — '+LEVELS.length+' levels · one evolving pet';
+    var subEl=document.getElementById('sub');if(subEl)subEl.textContent='learn the Linux terminal — '+LEVELS.length+' levels, 12 regions · one evolving pet';
     document.getElementById('ps').textContent=prompt();
     grown=((P.found[LEVELS.length-1]||[]).length>=wordFor(LEVELS.length-1).length);
     startLesson();
