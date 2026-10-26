@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "slice.cut.1",
-          "show": "Take just the first 3 letters of each line. Use <b>cut -c1-3 library/colors.txt</b>",
+          "show": "Take just the first 3 letters of each line in library/colors.txt.",
           "cmd": "cut -c1-3 library/colors.txt",
           "check": {
             "argHas": [
@@ -65,7 +65,7 @@
       "tasks": [
         {
           "id": "slice.field.1",
-          "show": "Each line of scores has a name and a number. Take the names: <b>cut -f1 library/scores.txt</b>",
+          "show": "Take just the names (the first word) from library/scores.txt.",
           "cmd": "cut -f1 library/scores.txt",
           "check": {
             "argHas": [
@@ -96,7 +96,7 @@
       "tasks": [
         {
           "id": "slice.nl.1",
-          "show": "Number every line of a file. Use <b>nl library/poem.txt</b>",
+          "show": "Number every line of library/poem.txt.",
           "cmd": "nl library/poem.txt",
           "check": {
             "argHas": [

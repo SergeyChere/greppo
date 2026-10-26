@@ -56,10 +56,14 @@ try {
   {
     const { ctx, page } = await freshPage(browser, seed());
     const r = run(page);
+    // in QUEST, help shows no locks and a not-yet-reached command still runs
+    ok(!/🔒/.test(await r('help')), 'help shows no locks in quest mode');
+    ok(/robert/.test(await r('whoami')), 'a not-yet-reached command (whoami) still runs in quest');
     await r('sandbox');                       // sandbox at level 1: only early commands are free
     // level-1 commands work
     ok(/library|welcome\.txt/.test(await r('ls')), 'ls lists files');
-    // later commands are gated in sandbox until reached
+    // in SANDBOX help marks locks and later commands are gated until reached
+    ok(/🔒/.test(await r('help')), 'help marks locked commands in sandbox');
     ok(/haven't earned/i.test(await r('tr a-z A-Z library/poem.txt')), 'un-earned command (tr) is locked in sandbox');
     ok(/haven't earned/i.test(await r('ps')), 'un-earned command (ps) is locked in sandbox');
     await ctx.close();
@@ -87,17 +91,16 @@ try {
     await ctx.close();
   }
 
-  // ---- masking + progressive hints ----
-  section('masking & hints');
+  // ---- task text is goal-only; two-level hints ----
+  section('task text & hints');
   {
     const { ctx, page } = await freshPage(browser, seed({ lvl: 1, lesson: 2 })); // make.copy (cp teach)
     const label = (await page.evaluate(() => document.getElementById('check').innerText.split('\n')[0]));
-    ok(/which command\?/.test(label), 'command verb is hidden in the task text');
     ok(/den\/bowl\.txt/.test(label), 'the data (file names) stays visible in the task text');
+    ok(!/\bcp\b/.test(label) && !/which command\?/.test(label), 'the ready command is not in the task text');
     const hint = async () => { await page.click('#bHint'); await page.waitForTimeout(160); return page.evaluate(() => document.getElementById('say').innerText); };
-    ok(/Hint 1 of 3[\s\S]*\bcp\b/.test(await hint()), 'hint 1 names the command');
-    ok(/Hint 2 of 3/.test(await hint()), 'hint 2 shows the shape');
-    ok(/Hint 3 of 3[\s\S]*cp den\/bowl\.txt den\/bowl2\.txt/.test(await hint()), 'hint 3 reveals the full command');
+    ok(/Hint 1 of 2[\s\S]*\bcp\b/.test(await hint()), 'hint 1 reminds the command');
+    ok(/Hint 2 of 2[\s\S]*cp den\/bowl\.txt den\/bowl2\.txt/.test(await hint()), 'hint 2 gives the full command');
     await ctx.close();
   }
 
@@ -112,14 +115,14 @@ try {
     // ladder (which is deterministic) and type that.
     async function solveCurrent() {
       let say = '';
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 2; i++) {
         await page.click('#bHint'); await page.waitForTimeout(150);
         say = await page.evaluate(() => document.getElementById('say').innerText);
         // single-word commands reveal the answer on the first press ("Hint: use
-        // the X command"); multi-word ones only at "Hint 3 of 3: type …".
-        if (/Hint 3 of 3: type /.test(say) || /^Hint: use the \S+ command/.test(say)) break;
+        // the X command"); multi-word ones at "Hint 2 of 2: type …".
+        if (/Hint 2 of 2: type /.test(say) || /^Hint: use the \S+ command/.test(say)) break;
       }
-      const m = say.match(/Hint 3 of 3: type\s+(.+)$/) || say.match(/^Hint: use the (\S+) command/);
+      const m = say.match(/Hint 2 of 2: type\s+(.+)$/) || say.match(/^Hint: use the (\S+) command/);
       if (m) await r(m[1].trim());
     }
     for (let i = 0; i < 4; i++) await solveCurrent();   // slice checkpoint has 4 tasks

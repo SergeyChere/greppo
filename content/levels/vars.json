@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "vars.set.1",
-          "show": "Save a word in a box called a variable. Type <b>pet=dragon</b> (no spaces around =)",
+          "show": "Save the word dragon in a variable called pet. (write name=value, no spaces)",
           "cmd": "pet=dragon",
           "check": {
             "setVar": "pet"
@@ -20,7 +20,7 @@
         },
         {
           "id": "vars.set.2",
-          "show": "Show what is inside the box. Type <b>echo $pet</b> — the $ means \"what's inside\"",
+          "show": "Show what is inside the variable pet. ($ means “what's inside”)",
           "cmd": "echo $pet",
           "check": {
             "typed": [
@@ -64,7 +64,7 @@
       "tasks": [
         {
           "id": "vars.use.1",
-          "show": "Variables work anywhere. Type <b>echo my pet is $pet</b>",
+          "show": "Print the sentence: my pet is $pet.",
           "cmd": "echo my pet is $pet",
           "check": {
             "typed": [
@@ -93,7 +93,7 @@
       "tasks": [
         {
           "id": "vars.who.1",
-          "show": "The computer already knows you. Type <b>whoami</b>",
+          "show": "Ask the computer who you are.",
           "cmd": "whoami",
           "check": {
             "ran": "whoami"
@@ -101,7 +101,7 @@
         },
         {
           "id": "vars.who.2",
-          "show": "Your name is in a ready-made variable. Type <b>echo $USER</b>",
+          "show": "Show your name from the ready-made variable $USER.",
           "cmd": "echo $USER",
           "check": {
             "typed": [

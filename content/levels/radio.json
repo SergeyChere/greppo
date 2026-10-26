@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "radio.ping.1",
-          "show": "Is another computer awake? Use <b>ping greppo.world</b>",
+          "show": "Check if the computer greppo.world is awake.",
           "cmd": "ping greppo.world",
           "check": {
             "argHas": [
@@ -55,7 +55,7 @@
       "tasks": [
         {
           "id": "radio.curl.1",
-          "show": "Fetch a page from another computer. Use <b>curl greppo.world</b>",
+          "show": "Fetch the page from greppo.world.",
           "cmd": "curl greppo.world",
           "check": {
             "argHas": [

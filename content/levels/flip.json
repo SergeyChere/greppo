@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "flip.rev.1",
-          "show": "Flip a file's text backwards. Use <b>rev library/poem.txt</b>",
+          "show": "Flip the text of library/poem.txt backwards.",
           "cmd": "rev library/poem.txt",
           "check": {
             "argHas": [
@@ -76,7 +76,7 @@
       "tasks": [
         {
           "id": "flip.shout.1",
-          "show": "Turn small letters into BIG letters. Use <b>tr a-z A-Z library/poem.txt</b> — tr swaps letters",
+          "show": "Turn library/poem.txt into BIG capital letters.",
           "cmd": "tr a-z A-Z library/poem.txt",
           "check": {
             "argHas": [
@@ -129,7 +129,7 @@
       "tasks": [
         {
           "id": "flip.swap.1",
-          "show": "Swap every o for 0. Use <b>tr o 0 library/poem.txt</b>",
+          "show": "In library/poem.txt, change every o into 0.",
           "cmd": "tr o 0 library/poem.txt",
           "check": {
             "argHas": [

@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "panel.env.1",
-          "show": "See the computer's settings (its variables). Type <b>env</b>",
+          "show": "Show the computer's settings (its variables).",
           "cmd": "env",
           "check": {
             "ran": "env"
@@ -20,7 +20,7 @@
         },
         {
           "id": "panel.env.2",
-          "show": "PATH is the list of places commands live. Type <b>echo $PATH</b>",
+          "show": "Show the PATH setting (where commands live).",
           "cmd": "echo $PATH",
           "check": {
             "typed": [
@@ -39,7 +39,7 @@
       "tasks": [
         {
           "id": "panel.which.1",
-          "show": "Where does a command live? Use <b>which grep</b>",
+          "show": "Find out where the grep command lives.",
           "cmd": "which grep",
           "check": {
             "argHas": [

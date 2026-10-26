@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "guard.look.1",
-          "show": "See the details of files, including who can change them. Type <b>ls -l</b>",
+          "show": "Show the details of the files here (who is allowed to change them).",
           "cmd": "ls -l",
           "check": {
             "argHas": [
@@ -23,7 +23,7 @@
         },
         {
           "id": "guard.look.2",
-          "show": "Who are you to the computer? Type <b>id</b>",
+          "show": "Ask the computer who you are (your id).",
           "cmd": "id",
           "check": {
             "ran": "id"
@@ -40,7 +40,7 @@
       "tasks": [
         {
           "id": "guard.lock.1",
-          "show": "First make a treasure file: <b>echo gold > vault.txt</b>",
+          "show": "Make a treasure file vault.txt with the word gold inside.",
           "cmd": "echo gold > vault.txt",
           "check": {
             "fileHas": [
@@ -51,7 +51,7 @@
         },
         {
           "id": "guard.lock.2",
-          "show": "Now lock it so nobody can change it: <b>chmod -w vault.txt</b>",
+          "show": "Lock vault.txt so nobody can change it.",
           "cmd": "chmod -w vault.txt",
           "check": {
             "argHas": [
@@ -71,7 +71,7 @@
       "tasks": [
         {
           "id": "guard.try.1",
-          "show": "Try to delete the locked file: <b>rm vault.txt</b> — Greppo will refuse. That's the lock working!",
+          "show": "Try to delete the locked vault.txt — it will refuse. That's the lock working!",
           "cmd": "rm vault.txt",
           "check": {
             "ran": "rm"
@@ -79,7 +79,7 @@
         },
         {
           "id": "guard.try.2",
-          "show": "Unlock it again when YOU want to: <b>chmod +w vault.txt</b>",
+          "show": "Unlock vault.txt again.",
           "cmd": "chmod +w vault.txt",
           "check": {
             "argHas": [

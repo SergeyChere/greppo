@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "order.sort.1",
-          "show": "Put a file's lines in A-Z order. Use <b>sort library/animals.txt</b>",
+          "show": "Put the lines of library/animals.txt in A-Z order.",
           "cmd": "sort library/animals.txt",
           "check": {
             "argHas": [
@@ -54,7 +54,7 @@
       "tasks": [
         {
           "id": "order.uniq.1",
-          "show": "Remove repeated lines that are next to each other. Use <b>uniq library/animals.txt</b>",
+          "show": "Remove repeated lines in library/animals.txt.",
           "cmd": "uniq library/animals.txt",
           "check": {
             "argHas": [

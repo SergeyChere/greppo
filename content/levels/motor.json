@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "motor.ps.1",
-          "show": "See the little programs running right now. Type <b>ps</b>",
+          "show": "Show the programs running right now.",
           "cmd": "ps",
           "check": {
             "ran": "ps"
@@ -37,7 +37,7 @@
       "tasks": [
         {
           "id": "motor.kill.1",
-          "show": "Each program has a number (PID). Stop the music-box (PID 77): <b>kill 77</b>",
+          "show": "Stop the music-box program (PID 77).",
           "cmd": "kill 77",
           "check": {
             "argHas": [
@@ -80,7 +80,7 @@
       "tasks": [
         {
           "id": "motor.top.1",
-          "show": "Another way to watch the programs: type <b>top</b>",
+          "show": "Watch the running programs another way.",
           "cmd": "top",
           "check": {
             "ran": "top"

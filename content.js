@@ -594,7 +594,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "nav.look.1",
-              "show": "Where am I? Type <b>pwd</b> — print working directory",
+              "show": "Where are you right now? Find out.",
               "cmd": "pwd",
               "check": {
                 "ran": "pwd"
@@ -602,7 +602,7 @@ window.GREPPO = {
             },
             {
               "id": "nav.look.2",
-              "show": "What is here? Type <b>ls</b> — list files and folders",
+              "show": "What is in this folder? List it.",
               "cmd": "ls",
               "check": {
                 "ran": "ls"
@@ -627,7 +627,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "nav.move.1",
-              "show": "Go into the folder games. Type <b>cd games</b> — change directory",
+              "show": "Go into the folder games.",
               "cmd": "cd games",
               "check": {
                 "cd": "~/games"
@@ -635,7 +635,7 @@ window.GREPPO = {
             },
             {
               "id": "nav.move.2",
-              "show": "Go up one folder, back toward home. Type <b>cd ..</b> (.. means \"the folder above\")",
+              "show": "Go up one folder, back toward home. (.. means the folder above)",
               "cmd": "cd ..",
               "check": {
                 "ranArg": [
@@ -669,7 +669,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "nav.paths.1",
-              "show": "A <b>relative</b> path starts from where you are now. From home, type <b>cd games</b> to go into games",
+              "show": "A relative path starts from where you are now. From home, go into games.",
               "cmd": "cd games",
               "check": {
                 "cd": "~/games"
@@ -677,7 +677,7 @@ window.GREPPO = {
             },
             {
               "id": "nav.paths.2",
-              "show": "An <b>absolute</b> path starts with <b>~</b> (your home) and works from anywhere. Type <b>cd ~/box</b>",
+              "show": "An absolute path starts with ~ (your home) and works from anywhere. Go into ~/box.",
               "cmd": "cd ~/box",
               "check": {
                 "cd": "~/box"
@@ -710,7 +710,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "nav.read.1",
-              "show": "Read the file welcome.txt. Type <b>cat welcome.txt</b>. The .txt means it is a text file",
+              "show": "Read the file welcome.txt.",
               "cmd": "cat welcome.txt",
               "check": {
                 "cat": "~/welcome.txt"
@@ -743,7 +743,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "nav.map.1",
-              "show": "See all folders as a tree. Use the command <b>tree</b>",
+              "show": "Show all the folders as a tree.",
               "cmd": "tree",
               "check": {
                 "ran": "tree"
@@ -887,7 +887,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "make.create.1",
-              "show": "Make a new folder called den. Type <b>mkdir den</b> — make directory",
+              "show": "Create a new folder called den.",
               "cmd": "mkdir den",
               "check": {
                 "exists": "~/den"
@@ -895,7 +895,7 @@ window.GREPPO = {
             },
             {
               "id": "make.create.2",
-              "show": "Make an empty file inside it. Use <b>touch den/bowl.txt</b> — touch makes an empty file",
+              "show": "Create a new empty file den/bowl.txt.",
               "cmd": "touch den/bowl.txt",
               "check": {
                 "exists": "~/den/bowl.txt"
@@ -920,7 +920,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "make.write.1",
-              "show": "Write a word into a file. Use <b>echo food > den/bowl.txt</b> — the > sends the word into the file",
+              "show": "Write the word food into den/bowl.txt. (> puts text into a file)",
               "cmd": "echo food > den/bowl.txt",
               "check": {
                 "fileHas": [
@@ -962,7 +962,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "make.copy.1",
-              "show": "Copy the bowl. Type <b>cp den/bowl.txt den/bowl2.txt</b> — copy",
+              "show": "Copy den/bowl.txt to a new file den/bowl2.txt.",
               "cmd": "cp den/bowl.txt den/bowl2.txt",
               "check": {
                 "exists": "~/den/bowl2.txt"
@@ -1002,7 +1002,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "make.remove.1",
-              "show": "Delete the spare file. Use <b>rm ~/den/spare.txt</b> — rm removes a file",
+              "show": "Delete the file ~/den/spare.txt.",
               "cmd": "rm ~/den/spare.txt",
               "check": {
                 "gone": "~/den/spare.txt"
@@ -1010,7 +1010,7 @@ window.GREPPO = {
             },
             {
               "id": "make.remove.2",
-              "show": "A flag is an extra option that starts with a dash -. To delete a whole folder, add the flag -r. Use <b>rm -r ~/den/toys</b>",
+              "show": "Delete the whole folder ~/den/toys. (a folder needs the -r flag)",
               "cmd": "rm -r ~/den/toys",
               "check": {
                 "gone": "~/den/toys"
@@ -1118,7 +1118,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "seek.find.1",
-              "show": "Search for a file by name. Use <b>find ball.txt</b>",
+              "show": "Find the file named ball.txt.",
               "cmd": "find ball.txt",
               "check": {
                 "out": [
@@ -1224,7 +1224,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "seek.grep.1",
-              "show": "Search for a word inside files. Use <b>grep greppo notes/diary.txt</b>",
+              "show": "Search for the word greppo inside notes/diary.txt.",
               "cmd": "grep greppo notes/diary.txt",
               "check": {
                 "out": [
@@ -1330,7 +1330,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "seek.star.1",
-              "show": "List only text files. Type <b>ls *.txt</b> — the star means \"anything\"",
+              "show": "List only the text files here. (* means anything)",
               "cmd": "ls *.txt",
               "check": {
                 "argHas": [
@@ -1505,7 +1505,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "view.peek.1",
-              "show": "Peek at the first lines of a file. Use <b>head library/poem.txt</b> — head shows the top",
+              "show": "Show the first lines of library/poem.txt.",
               "cmd": "head library/poem.txt",
               "check": {
                 "argHas": [
@@ -1516,7 +1516,7 @@ window.GREPPO = {
             },
             {
               "id": "view.peek.2",
-              "show": "See the last lines. Use <b>tail library/poem.txt</b> — tail shows the bottom",
+              "show": "Show the last lines of library/poem.txt.",
               "cmd": "tail library/poem.txt",
               "check": {
                 "argHas": [
@@ -1547,7 +1547,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "view.count.1",
-              "show": "Count the lines and words in a file. Use <b>wc library/poem.txt</b> — word count",
+              "show": "Count the lines and words in library/poem.txt.",
               "cmd": "wc library/poem.txt",
               "check": {
                 "argHas": [
@@ -1793,7 +1793,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "order.sort.1",
-              "show": "Put a file's lines in A-Z order. Use <b>sort library/animals.txt</b>",
+              "show": "Put the lines of library/animals.txt in A-Z order.",
               "cmd": "sort library/animals.txt",
               "check": {
                 "argHas": [
@@ -1835,7 +1835,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "order.uniq.1",
-              "show": "Remove repeated lines that are next to each other. Use <b>uniq library/animals.txt</b>",
+              "show": "Remove repeated lines in library/animals.txt.",
               "cmd": "uniq library/animals.txt",
               "check": {
                 "argHas": [
@@ -2090,7 +2090,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "flip.rev.1",
-              "show": "Flip a file's text backwards. Use <b>rev library/poem.txt</b>",
+              "show": "Flip the text of library/poem.txt backwards.",
               "cmd": "rev library/poem.txt",
               "check": {
                 "argHas": [
@@ -2154,7 +2154,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "flip.shout.1",
-              "show": "Turn small letters into BIG letters. Use <b>tr a-z A-Z library/poem.txt</b> — tr swaps letters",
+              "show": "Turn library/poem.txt into BIG capital letters.",
               "cmd": "tr a-z A-Z library/poem.txt",
               "check": {
                 "argHas": [
@@ -2207,7 +2207,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "flip.swap.1",
-              "show": "Swap every o for 0. Use <b>tr o 0 library/poem.txt</b>",
+              "show": "In library/poem.txt, change every o into 0.",
               "cmd": "tr o 0 library/poem.txt",
               "check": {
                 "argHas": [
@@ -2373,7 +2373,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "slice.cut.1",
-              "show": "Take just the first 3 letters of each line. Use <b>cut -c1-3 library/colors.txt</b>",
+              "show": "Take just the first 3 letters of each line in library/colors.txt.",
               "cmd": "cut -c1-3 library/colors.txt",
               "check": {
                 "argHas": [
@@ -2426,7 +2426,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "slice.field.1",
-              "show": "Each line of scores has a name and a number. Take the names: <b>cut -f1 library/scores.txt</b>",
+              "show": "Take just the names (the first word) from library/scores.txt.",
               "cmd": "cut -f1 library/scores.txt",
               "check": {
                 "argHas": [
@@ -2457,7 +2457,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "slice.nl.1",
-              "show": "Number every line of a file. Use <b>nl library/poem.txt</b>",
+              "show": "Number every line of library/poem.txt.",
               "cmd": "nl library/poem.txt",
               "check": {
                 "argHas": [
@@ -2663,7 +2663,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "pipe.first.1",
-              "show": "A pipe | sends one command's output into the next. Sort the animals: <b>cat library/animals.txt | sort</b>",
+              "show": "Send library/animals.txt into sort, joined with a pipe. (a pipe | feeds one command into the next)",
               "cmd": "cat library/animals.txt | sort",
               "check": {
                 "typed": [
@@ -2720,7 +2720,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "pipe.uniq.1",
-              "show": "Sort, then remove repeats. Type <b>cat library/animals.txt | sort | uniq</b>",
+              "show": "Sort library/animals.txt and then remove repeats, in one pipe.",
               "cmd": "cat library/animals.txt | sort | uniq",
               "check": {
                 "typed": [
@@ -2753,7 +2753,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "pipe.count.1",
-              "show": "Count the lines that come through a pipe. Type <b>cat library/animals.txt | wc</b>",
+              "show": "Count library/animals.txt by piping it into wc.",
               "cmd": "cat library/animals.txt | wc",
               "check": {
                 "typed": [
@@ -2786,7 +2786,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "pipe.grep.1",
-              "show": "Keep only lines with a word. Type <b>cat library/scores.txt | grep max</b>",
+              "show": "From library/scores.txt keep only the lines with max, using a pipe into grep.",
               "cmd": "cat library/scores.txt | grep max",
               "check": {
                 "typed": [
@@ -2937,7 +2937,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "flow.rev.1",
-              "show": "Send a file through rev with a pipe. Type <b>cat library/colors.txt | rev</b>",
+              "show": "Send library/colors.txt through rev using a pipe.",
               "cmd": "cat library/colors.txt | rev",
               "check": {
                 "typed": [
@@ -2994,7 +2994,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "flow.tr.1",
-              "show": "SHOUT through a pipe. Type <b>cat library/colors.txt | tr a-z A-Z</b>",
+              "show": "Send library/colors.txt through tr a-z A-Z (make it SHOUT) using a pipe.",
               "cmd": "cat library/colors.txt | tr a-z A-Z",
               "check": {
                 "typed": [
@@ -3050,7 +3050,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "flow.big.1",
-              "show": "A long pipe! Sort, remove repeats, then count: <b>cat library/scores.txt | sort | uniq | wc</b>",
+              "show": "In one long pipe, sort library/scores.txt, remove repeats, then count.",
               "cmd": "cat library/scores.txt | sort | uniq | wc",
               "check": {
                 "typed": [
@@ -3221,7 +3221,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "vars.set.1",
-              "show": "Save a word in a box called a variable. Type <b>pet=dragon</b> (no spaces around =)",
+              "show": "Save the word dragon in a variable called pet. (write name=value, no spaces)",
               "cmd": "pet=dragon",
               "check": {
                 "setVar": "pet"
@@ -3229,7 +3229,7 @@ window.GREPPO = {
             },
             {
               "id": "vars.set.2",
-              "show": "Show what is inside the box. Type <b>echo $pet</b> — the $ means \"what's inside\"",
+              "show": "Show what is inside the variable pet. ($ means “what's inside”)",
               "cmd": "echo $pet",
               "check": {
                 "typed": [
@@ -3273,7 +3273,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "vars.use.1",
-              "show": "Variables work anywhere. Type <b>echo my pet is $pet</b>",
+              "show": "Print the sentence: my pet is $pet.",
               "cmd": "echo my pet is $pet",
               "check": {
                 "typed": [
@@ -3302,7 +3302,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "vars.who.1",
-              "show": "The computer already knows you. Type <b>whoami</b>",
+              "show": "Ask the computer who you are.",
               "cmd": "whoami",
               "check": {
                 "ran": "whoami"
@@ -3310,7 +3310,7 @@ window.GREPPO = {
             },
             {
               "id": "vars.who.2",
-              "show": "Your name is in a ready-made variable. Type <b>echo $USER</b>",
+              "show": "Show your name from the ready-made variable $USER.",
               "cmd": "echo $USER",
               "check": {
                 "typed": [
@@ -3465,7 +3465,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "guard.look.1",
-              "show": "See the details of files, including who can change them. Type <b>ls -l</b>",
+              "show": "Show the details of the files here (who is allowed to change them).",
               "cmd": "ls -l",
               "check": {
                 "argHas": [
@@ -3476,7 +3476,7 @@ window.GREPPO = {
             },
             {
               "id": "guard.look.2",
-              "show": "Who are you to the computer? Type <b>id</b>",
+              "show": "Ask the computer who you are (your id).",
               "cmd": "id",
               "check": {
                 "ran": "id"
@@ -3493,7 +3493,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "guard.lock.1",
-              "show": "First make a treasure file: <b>echo gold > vault.txt</b>",
+              "show": "Make a treasure file vault.txt with the word gold inside.",
               "cmd": "echo gold > vault.txt",
               "check": {
                 "fileHas": [
@@ -3504,7 +3504,7 @@ window.GREPPO = {
             },
             {
               "id": "guard.lock.2",
-              "show": "Now lock it so nobody can change it: <b>chmod -w vault.txt</b>",
+              "show": "Lock vault.txt so nobody can change it.",
               "cmd": "chmod -w vault.txt",
               "check": {
                 "argHas": [
@@ -3524,7 +3524,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "guard.try.1",
-              "show": "Try to delete the locked file: <b>rm vault.txt</b> — Greppo will refuse. That's the lock working!",
+              "show": "Try to delete the locked vault.txt — it will refuse. That's the lock working!",
               "cmd": "rm vault.txt",
               "check": {
                 "ran": "rm"
@@ -3532,7 +3532,7 @@ window.GREPPO = {
             },
             {
               "id": "guard.try.2",
-              "show": "Unlock it again when YOU want to: <b>chmod +w vault.txt</b>",
+              "show": "Unlock vault.txt again.",
               "cmd": "chmod +w vault.txt",
               "check": {
                 "argHas": [
@@ -3673,7 +3673,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "depth.du.1",
-              "show": "How big is a file? Use <b>du library/poem.txt</b> — it counts the letters inside",
+              "show": "Find out how big library/poem.txt is.",
               "cmd": "du library/poem.txt",
               "check": {
                 "argHas": [
@@ -3726,7 +3726,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "depth.df.1",
-              "show": "How much room is left on the whole disk? Type <b>df</b>",
+              "show": "Check how much room is left on the disk.",
               "cmd": "df",
               "check": {
                 "ran": "df"
@@ -3751,7 +3751,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "depth.stat.1",
-              "show": "Get full info about a file. Use <b>stat library/poem.txt</b>",
+              "show": "Get the full info about library/poem.txt.",
               "cmd": "stat library/poem.txt",
               "check": {
                 "argHas": [
@@ -3937,7 +3937,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "motor.ps.1",
-              "show": "See the little programs running right now. Type <b>ps</b>",
+              "show": "Show the programs running right now.",
               "cmd": "ps",
               "check": {
                 "ran": "ps"
@@ -3962,7 +3962,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "motor.kill.1",
-              "show": "Each program has a number (PID). Stop the music-box (PID 77): <b>kill 77</b>",
+              "show": "Stop the music-box program (PID 77).",
               "cmd": "kill 77",
               "check": {
                 "argHas": [
@@ -4005,7 +4005,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "motor.top.1",
-              "show": "Another way to watch the programs: type <b>top</b>",
+              "show": "Watch the running programs another way.",
               "cmd": "top",
               "check": {
                 "ran": "top"
@@ -4122,7 +4122,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "panel.env.1",
-              "show": "See the computer's settings (its variables). Type <b>env</b>",
+              "show": "Show the computer's settings (its variables).",
               "cmd": "env",
               "check": {
                 "ran": "env"
@@ -4130,7 +4130,7 @@ window.GREPPO = {
             },
             {
               "id": "panel.env.2",
-              "show": "PATH is the list of places commands live. Type <b>echo $PATH</b>",
+              "show": "Show the PATH setting (where commands live).",
               "cmd": "echo $PATH",
               "check": {
                 "typed": [
@@ -4149,7 +4149,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "panel.which.1",
-              "show": "Where does a command live? Use <b>which grep</b>",
+              "show": "Find out where the grep command lives.",
               "cmd": "which grep",
               "check": {
                 "argHas": [
@@ -4335,7 +4335,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "radio.ping.1",
-              "show": "Is another computer awake? Use <b>ping greppo.world</b>",
+              "show": "Check if the computer greppo.world is awake.",
               "cmd": "ping greppo.world",
               "check": {
                 "argHas": [
@@ -4378,7 +4378,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "radio.curl.1",
-              "show": "Fetch a page from another computer. Use <b>curl greppo.world</b>",
+              "show": "Fetch the page from greppo.world.",
               "cmd": "curl greppo.world",
               "check": {
                 "argHas": [
@@ -4575,7 +4575,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "spell.make.1",
-              "show": "A script is a file full of commands. Start one: <b>echo whoami > spell.sh</b>",
+              "show": "Start a script file spell.sh whose first line is whoami.",
               "cmd": "echo whoami > spell.sh",
               "check": {
                 "fileHas": [
@@ -4586,7 +4586,7 @@ window.GREPPO = {
             },
             {
               "id": "spell.make.2",
-              "show": "Add another command to the end: <b>echo ls >> spell.sh</b>",
+              "show": "Add a second line, ls, to the end of spell.sh.",
               "cmd": "echo ls >> spell.sh",
               "check": {
                 "fileHas": [
@@ -4606,7 +4606,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "spell.run.1",
-              "show": "Now run your script — it does every line for you! Type <b>run spell.sh</b>",
+              "show": "Run your script spell.sh — it does every line for you.",
               "cmd": "run spell.sh",
               "check": {
                 "argHas": [
@@ -4637,7 +4637,7 @@ window.GREPPO = {
           "tasks": [
             {
               "id": "spell.repeat.1",
-              "show": "Do something many times at once. Type <b>repeat 3 echo hooray</b>",
+              "show": "Say hooray 3 times at once.",
               "cmd": "repeat 3 echo hooray",
               "check": {
                 "argHas": [

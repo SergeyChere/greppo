@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "spell.make.1",
-          "show": "A script is a file full of commands. Start one: <b>echo whoami > spell.sh</b>",
+          "show": "Start a script file spell.sh whose first line is whoami.",
           "cmd": "echo whoami > spell.sh",
           "check": {
             "fileHas": [
@@ -23,7 +23,7 @@
         },
         {
           "id": "spell.make.2",
-          "show": "Add another command to the end: <b>echo ls >> spell.sh</b>",
+          "show": "Add a second line, ls, to the end of spell.sh.",
           "cmd": "echo ls >> spell.sh",
           "check": {
             "fileHas": [
@@ -43,7 +43,7 @@
       "tasks": [
         {
           "id": "spell.run.1",
-          "show": "Now run your script — it does every line for you! Type <b>run spell.sh</b>",
+          "show": "Run your script spell.sh — it does every line for you.",
           "cmd": "run spell.sh",
           "check": {
             "argHas": [
@@ -74,7 +74,7 @@
       "tasks": [
         {
           "id": "spell.repeat.1",
-          "show": "Do something many times at once. Type <b>repeat 3 echo hooray</b>",
+          "show": "Say hooray 3 times at once.",
           "cmd": "repeat 3 echo hooray",
           "check": {
             "argHas": [

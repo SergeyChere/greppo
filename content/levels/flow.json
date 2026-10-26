@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "flow.rev.1",
-          "show": "Send a file through rev with a pipe. Type <b>cat library/colors.txt | rev</b>",
+          "show": "Send library/colors.txt through rev using a pipe.",
           "cmd": "cat library/colors.txt | rev",
           "check": {
             "typed": [
@@ -69,7 +69,7 @@
       "tasks": [
         {
           "id": "flow.tr.1",
-          "show": "SHOUT through a pipe. Type <b>cat library/colors.txt | tr a-z A-Z</b>",
+          "show": "Send library/colors.txt through tr a-z A-Z (make it SHOUT) using a pipe.",
           "cmd": "cat library/colors.txt | tr a-z A-Z",
           "check": {
             "typed": [
@@ -125,7 +125,7 @@
       "tasks": [
         {
           "id": "flow.big.1",
-          "show": "A long pipe! Sort, remove repeats, then count: <b>cat library/scores.txt | sort | uniq | wc</b>",
+          "show": "In one long pipe, sort library/scores.txt, remove repeats, then count.",
           "cmd": "cat library/scores.txt | sort | uniq | wc",
           "check": {
             "typed": [

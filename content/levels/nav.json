@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "nav.look.1",
-          "show": "Where am I? Type <b>pwd</b> — print working directory",
+          "show": "Where are you right now? Find out.",
           "cmd": "pwd",
           "check": {
             "ran": "pwd"
@@ -20,7 +20,7 @@
         },
         {
           "id": "nav.look.2",
-          "show": "What is here? Type <b>ls</b> — list files and folders",
+          "show": "What is in this folder? List it.",
           "cmd": "ls",
           "check": {
             "ran": "ls"
@@ -45,7 +45,7 @@
       "tasks": [
         {
           "id": "nav.move.1",
-          "show": "Go into the folder games. Type <b>cd games</b> — change directory",
+          "show": "Go into the folder games.",
           "cmd": "cd games",
           "check": {
             "cd": "~/games"
@@ -53,7 +53,7 @@
         },
         {
           "id": "nav.move.2",
-          "show": "Go up one folder, back toward home. Type <b>cd ..</b> (.. means \"the folder above\")",
+          "show": "Go up one folder, back toward home. (.. means the folder above)",
           "cmd": "cd ..",
           "check": {
             "ranArg": [
@@ -87,7 +87,7 @@
       "tasks": [
         {
           "id": "nav.paths.1",
-          "show": "A <b>relative</b> path starts from where you are now. From home, type <b>cd games</b> to go into games",
+          "show": "A relative path starts from where you are now. From home, go into games.",
           "cmd": "cd games",
           "check": {
             "cd": "~/games"
@@ -95,7 +95,7 @@
         },
         {
           "id": "nav.paths.2",
-          "show": "An <b>absolute</b> path starts with <b>~</b> (your home) and works from anywhere. Type <b>cd ~/box</b>",
+          "show": "An absolute path starts with ~ (your home) and works from anywhere. Go into ~/box.",
           "cmd": "cd ~/box",
           "check": {
             "cd": "~/box"
@@ -128,7 +128,7 @@
       "tasks": [
         {
           "id": "nav.read.1",
-          "show": "Read the file welcome.txt. Type <b>cat welcome.txt</b>. The .txt means it is a text file",
+          "show": "Read the file welcome.txt.",
           "cmd": "cat welcome.txt",
           "check": {
             "cat": "~/welcome.txt"
@@ -161,7 +161,7 @@
       "tasks": [
         {
           "id": "nav.map.1",
-          "show": "See all folders as a tree. Use the command <b>tree</b>",
+          "show": "Show all the folders as a tree.",
           "cmd": "tree",
           "check": {
             "ran": "tree"

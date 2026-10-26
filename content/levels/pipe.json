@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "pipe.first.1",
-          "show": "A pipe | sends one command's output into the next. Sort the animals: <b>cat library/animals.txt | sort</b>",
+          "show": "Send library/animals.txt into sort, joined with a pipe. (a pipe | feeds one command into the next)",
           "cmd": "cat library/animals.txt | sort",
           "check": {
             "typed": [
@@ -69,7 +69,7 @@
       "tasks": [
         {
           "id": "pipe.uniq.1",
-          "show": "Sort, then remove repeats. Type <b>cat library/animals.txt | sort | uniq</b>",
+          "show": "Sort library/animals.txt and then remove repeats, in one pipe.",
           "cmd": "cat library/animals.txt | sort | uniq",
           "check": {
             "typed": [
@@ -102,7 +102,7 @@
       "tasks": [
         {
           "id": "pipe.count.1",
-          "show": "Count the lines that come through a pipe. Type <b>cat library/animals.txt | wc</b>",
+          "show": "Count library/animals.txt by piping it into wc.",
           "cmd": "cat library/animals.txt | wc",
           "check": {
             "typed": [
@@ -135,7 +135,7 @@
       "tasks": [
         {
           "id": "pipe.grep.1",
-          "show": "Keep only lines with a word. Type <b>cat library/scores.txt | grep max</b>",
+          "show": "From library/scores.txt keep only the lines with max, using a pipe into grep.",
           "cmd": "cat library/scores.txt | grep max",
           "check": {
             "typed": [

@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "depth.du.1",
-          "show": "How big is a file? Use <b>du library/poem.txt</b> — it counts the letters inside",
+          "show": "Find out how big library/poem.txt is.",
           "cmd": "du library/poem.txt",
           "check": {
             "argHas": [
@@ -65,7 +65,7 @@
       "tasks": [
         {
           "id": "depth.df.1",
-          "show": "How much room is left on the whole disk? Type <b>df</b>",
+          "show": "Check how much room is left on the disk.",
           "cmd": "df",
           "check": {
             "ran": "df"
@@ -90,7 +90,7 @@
       "tasks": [
         {
           "id": "depth.stat.1",
-          "show": "Get full info about a file. Use <b>stat library/poem.txt</b>",
+          "show": "Get the full info about library/poem.txt.",
           "cmd": "stat library/poem.txt",
           "check": {
             "argHas": [

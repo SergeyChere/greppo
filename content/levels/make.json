@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "make.create.1",
-          "show": "Make a new folder called den. Type <b>mkdir den</b> — make directory",
+          "show": "Create a new folder called den.",
           "cmd": "mkdir den",
           "check": {
             "exists": "~/den"
@@ -20,7 +20,7 @@
         },
         {
           "id": "make.create.2",
-          "show": "Make an empty file inside it. Use <b>touch den/bowl.txt</b> — touch makes an empty file",
+          "show": "Create a new empty file den/bowl.txt.",
           "cmd": "touch den/bowl.txt",
           "check": {
             "exists": "~/den/bowl.txt"
@@ -45,7 +45,7 @@
       "tasks": [
         {
           "id": "make.write.1",
-          "show": "Write a word into a file. Use <b>echo food > den/bowl.txt</b> — the > sends the word into the file",
+          "show": "Write the word food into den/bowl.txt. (> puts text into a file)",
           "cmd": "echo food > den/bowl.txt",
           "check": {
             "fileHas": [
@@ -87,7 +87,7 @@
       "tasks": [
         {
           "id": "make.copy.1",
-          "show": "Copy the bowl. Type <b>cp den/bowl.txt den/bowl2.txt</b> — copy",
+          "show": "Copy den/bowl.txt to a new file den/bowl2.txt.",
           "cmd": "cp den/bowl.txt den/bowl2.txt",
           "check": {
             "exists": "~/den/bowl2.txt"
@@ -127,7 +127,7 @@
       "tasks": [
         {
           "id": "make.remove.1",
-          "show": "Delete the spare file. Use <b>rm ~/den/spare.txt</b> — rm removes a file",
+          "show": "Delete the file ~/den/spare.txt.",
           "cmd": "rm ~/den/spare.txt",
           "check": {
             "gone": "~/den/spare.txt"
@@ -135,7 +135,7 @@
         },
         {
           "id": "make.remove.2",
-          "show": "A flag is an extra option that starts with a dash -. To delete a whole folder, add the flag -r. Use <b>rm -r ~/den/toys</b>",
+          "show": "Delete the whole folder ~/den/toys. (a folder needs the -r flag)",
           "cmd": "rm -r ~/den/toys",
           "check": {
             "gone": "~/den/toys"

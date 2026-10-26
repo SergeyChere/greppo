@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "view.peek.1",
-          "show": "Peek at the first lines of a file. Use <b>head library/poem.txt</b> — head shows the top",
+          "show": "Show the first lines of library/poem.txt.",
           "cmd": "head library/poem.txt",
           "check": {
             "argHas": [
@@ -23,7 +23,7 @@
         },
         {
           "id": "view.peek.2",
-          "show": "See the last lines. Use <b>tail library/poem.txt</b> — tail shows the bottom",
+          "show": "Show the last lines of library/poem.txt.",
           "cmd": "tail library/poem.txt",
           "check": {
             "argHas": [
@@ -54,7 +54,7 @@
       "tasks": [
         {
           "id": "view.count.1",
-          "show": "Count the lines and words in a file. Use <b>wc library/poem.txt</b> — word count",
+          "show": "Count the lines and words in library/poem.txt.",
           "cmd": "wc library/poem.txt",
           "check": {
             "argHas": [

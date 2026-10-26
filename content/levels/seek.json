@@ -12,7 +12,7 @@
       "tasks": [
         {
           "id": "seek.find.1",
-          "show": "Search for a file by name. Use <b>find ball.txt</b>",
+          "show": "Find the file named ball.txt.",
           "cmd": "find ball.txt",
           "check": {
             "out": [
@@ -118,7 +118,7 @@
       "tasks": [
         {
           "id": "seek.grep.1",
-          "show": "Search for a word inside files. Use <b>grep greppo notes/diary.txt</b>",
+          "show": "Search for the word greppo inside notes/diary.txt.",
           "cmd": "grep greppo notes/diary.txt",
           "check": {
             "out": [
@@ -224,7 +224,7 @@
       "tasks": [
         {
           "id": "seek.star.1",
-          "show": "List only text files. Type <b>ls *.txt</b> — the star means \"anything\"",
+          "show": "List only the text files here. (* means anything)",
           "cmd": "ls *.txt",
           "check": {
             "argHas": [
