@@ -29,7 +29,8 @@ window.GREPPO = {
 
   /* Pet evolution stages: egg, one per level completed, then MEGA.
    * Length should be levels.length + 1. */
-  stageNames: ["Egg", "Hatchling", "Junior", "Champion", "Scout", "MEGA"],
+  stageNames: ["Egg", "Hatchling", "Junior", "Fighter", "Champion", "Scout",
+               "Ranger", "Pilot", "Captain", "Hero", "MEGA"],
 
   /* 5-letter default/fallback words (actual word per run is random, see wordPool). */
   wordPool: ["ROBOT","LINUX","PILOT","SCOUT","ORDER","SPACE","LASER","MAGIC",
@@ -56,6 +57,14 @@ window.GREPPO = {
     {cmd:"wc",    sum:"count the lines, words and letters in a file"},
     {cmd:"sort",  sum:"show a file's lines in A-Z order"},
     {cmd:"uniq",  sum:"remove repeated lines that are next to each other"},
+    {cmd:"rev",   sum:"flip a file's text backwards"},
+    {cmd:"tr",    sum:"swap letters: tr a-z A-Z makes it SHOUT in capitals"},
+    {cmd:"cut",   sum:"take parts of each line: cut -c1-3 file"},
+    {cmd:"nl",    sum:"number every line of a file"},
+    {cmd:"whoami",sum:"print your name"},
+    {cmd:"date",  sum:"show the date and time"},
+    {cmd:"cal",   sum:"show a calendar"},
+    {cmd:"history",sum:"show the commands you typed"},
     {cmd:"clear", sum:"clear the screen"},
     {cmd:"help",  sum:"show this list of commands"}
   ],
@@ -67,9 +76,9 @@ window.GREPPO = {
     {n:1,  title:"Valley of Files",            teach:"pwd, ls, cd, paths, viewing files",        status:"ready", levelIds:["nav"]},
     {n:2,  title:"Workshop",                   teach:"make, copy, move, delete, wildcards",      status:"ready", levelIds:["make"]},
     {n:3,  title:"Lands of Seekers",           teach:"find, grep, head, tail, wc, sort, uniq",   status:"ready", levelIds:["seek","view","order"]},
-    {n:4,  title:"Archive of Transformations", teach:"cut, tr, sed, awk, paste, join, diff",     status:"soon"},
-    {n:5,  title:"Crossroads of Streams",      teach:"pipes |, redirections, errors",            status:"soon"},
-    {n:6,  title:"Tower of Bash",              teach:"variables, quoting, substitution, arrays", status:"soon"},
+    {n:4,  title:"Mirror & Cutting Rooms",     teach:"rev, tr (SHOUT), cut, nl",                 status:"ready", levelIds:["flip","slice"]},
+    {n:5,  title:"Crossroads of Streams",      teach:"pipes | — join commands together",        status:"ready", levelIds:["pipe","flow"]},
+    {n:6,  title:"Tower of Names",             teach:"variables, $USER, whoami, date, cal",      status:"ready", levelIds:["vars"]},
     {n:7,  title:"Citadel of Access",          teach:"users, groups, chmod, chown, sudo",        status:"soon"},
     {n:8,  title:"Underground Paths",          teach:"links, /dev /proc /sys, df, du",           status:"soon"},
     {n:9,  title:"Machine Yard",               teach:"processes, PID, signals, background jobs", status:"soon"},
@@ -258,6 +267,142 @@ window.GREPPO = {
         {id:"order.check.3", ask:"Remove repeats in library/animals.txt.", cmd:"uniq library/animals.txt", check:{argHas:["uniq","animals.txt"]}},
         {id:"order.check.4", ask:"Count library/poem.txt.", cmd:"wc library/poem.txt", check:{argHas:["wc","poem.txt"]}},
         {id:"order.check.5", ask:"Read the treasure: ~/treasure.txt.", cmd:"cat ~/treasure.txt", check:{cat:"~/treasure.txt"}}
+      ]}
+    ]},
+
+    /* ---------------- Level 6 — rev + tr ---------------- */
+    {id:"flip", word:"MAGIC", title:"Mirror Hall", lessons:[
+      {id:"flip.rev", title:"rev — flip text backwards", letters:[0], tasks:[
+        {id:"flip.rev.1", show:"Flip a file's text backwards. Use <b>rev library/poem.txt</b>", cmd:"rev library/poem.txt", check:{argHas:["rev","poem.txt"]}},
+        {id:"flip.rev.2", ask:"Flip library/colors.txt backwards.", cmd:"rev library/colors.txt", check:{argHas:["rev","colors.txt"]}},
+        {id:"flip.rev.3", ask:"Which command flips text backwards? Use it on library/poem.txt.", cmd:"rev library/poem.txt", check:{argHas:["rev","poem.txt"]}}
+      ]},
+      {id:"flip.shout", title:"tr — SHOUT in capitals", letters:[1], tasks:[
+        {id:"flip.shout.1", show:"Turn small letters into BIG letters. Use <b>tr a-z A-Z library/poem.txt</b> — tr swaps letters", cmd:"tr a-z A-Z library/poem.txt", check:{argHas:["tr","poem.txt"]}},
+        {id:"flip.shout.2", ask:"Make library/colors.txt SHOUT in capitals.", cmd:"tr a-z A-Z library/colors.txt", check:{argHas:["tr","colors.txt"]}}
+      ]},
+      {id:"flip.swap", title:"tr — swap one letter", letters:[2], tasks:[
+        {id:"flip.swap.1", show:"Swap every o for 0. Use <b>tr o 0 library/poem.txt</b>", cmd:"tr o 0 library/poem.txt", check:{argHas:["tr","poem.txt"]}},
+        {id:"flip.swap.2", ask:"In library/colors.txt, swap every e for 3. (tr e 3 ...)", cmd:"tr e 3 library/colors.txt", check:{argHas:["tr","colors.txt"]}}
+      ]},
+      {id:"flip.mix", title:"Mix — old and new", letters:[3], tasks:[
+        {id:"flip.mix.1", ask:"Read library/poem.txt with cat.", cmd:"cat library/poem.txt", check:{cat:"~/library/poem.txt"}},
+        {id:"flip.mix.2", ask:"Flip library/poem.txt backwards.", cmd:"rev library/poem.txt", check:{argHas:["rev","poem.txt"]}},
+        {id:"flip.mix.3", ask:"Print your own name. Type the command that does it.", cmd:"whoami", check:{ran:"whoami"}}
+      ]},
+      {id:"flip.check", title:"Checkpoint — from memory", checkpoint:true, letters:[4], tasks:[
+        {id:"flip.check.1", ask:"Flip library/colors.txt backwards.", cmd:"rev library/colors.txt", check:{argHas:["rev","colors.txt"]}},
+        {id:"flip.check.2", ask:"Make library/poem.txt SHOUT in capitals.", cmd:"tr a-z A-Z library/poem.txt", check:{argHas:["tr","poem.txt"]}},
+        {id:"flip.check.3", ask:"Print your name.", cmd:"whoami", check:{ran:"whoami"}},
+        {id:"flip.check.4", ask:"Read library/colors.txt with cat.", cmd:"cat library/colors.txt", check:{cat:"~/library/colors.txt"}}
+      ]}
+    ]},
+
+    /* ---------------- Level 7 — cut + nl ---------------- */
+    {id:"slice", word:"LASER", title:"Cutting Room", lessons:[
+      {id:"slice.cut", title:"cut -c — take some letters", letters:[0], tasks:[
+        {id:"slice.cut.1", show:"Take just the first 3 letters of each line. Use <b>cut -c1-3 library/colors.txt</b>", cmd:"cut -c1-3 library/colors.txt", check:{argHas:["cut","colors.txt"]}},
+        {id:"slice.cut.2", ask:"Take just the first letter of each color. (cut -c1 ...)", cmd:"cut -c1 library/colors.txt", check:{argHas:["cut","colors.txt"]}}
+      ]},
+      {id:"slice.field", title:"cut -f — take a word column", letters:[1], tasks:[
+        {id:"slice.field.1", show:"Each line of scores has a name and a number. Take the names: <b>cut -f1 library/scores.txt</b>", cmd:"cut -f1 library/scores.txt", check:{argHas:["cut","scores.txt"]}},
+        {id:"slice.field.2", ask:"Now take just the scores (the second word): cut -f2 library/scores.txt", cmd:"cut -f2 library/scores.txt", check:{argHas:["cut","scores.txt"]}}
+      ]},
+      {id:"slice.nl", title:"nl — number the lines", letters:[2], tasks:[
+        {id:"slice.nl.1", show:"Number every line of a file. Use <b>nl library/poem.txt</b>", cmd:"nl library/poem.txt", check:{argHas:["nl","poem.txt"]}},
+        {id:"slice.nl.2", ask:"Number the lines of library/colors.txt.", cmd:"nl library/colors.txt", check:{argHas:["nl","colors.txt"]}}
+      ]},
+      {id:"slice.mix", title:"Mix — order and number", letters:[3], tasks:[
+        {id:"slice.mix.1", ask:"Sort library/colors.txt (an old skill).", cmd:"sort library/colors.txt", check:{argHas:["sort","colors.txt"]}},
+        {id:"slice.mix.2", ask:"Number the lines of library/colors.txt.", cmd:"nl library/colors.txt", check:{argHas:["nl","colors.txt"]}},
+        {id:"slice.mix.3", ask:"What day is it? Type the command that shows the date.", cmd:"date", check:{ran:"date"}}
+      ]},
+      {id:"slice.check", title:"Checkpoint — from memory", checkpoint:true, letters:[4], tasks:[
+        {id:"slice.check.1", ask:"Take the first 3 letters of each line in library/colors.txt.", cmd:"cut -c1-3 library/colors.txt", check:{argHas:["cut","colors.txt"]}},
+        {id:"slice.check.2", ask:"Take the names from library/scores.txt (first word).", cmd:"cut -f1 library/scores.txt", check:{argHas:["cut","scores.txt"]}},
+        {id:"slice.check.3", ask:"Number the lines of library/poem.txt.", cmd:"nl library/poem.txt", check:{argHas:["nl","poem.txt"]}},
+        {id:"slice.check.4", ask:"Show a calendar.", cmd:"cal", check:{ran:"cal"}}
+      ]}
+    ]},
+
+    /* ---------------- Level 8 — pipes (basics) ---------------- */
+    {id:"pipe", word:"RIVER", title:"River of Streams", lessons:[
+      {id:"pipe.first", title:"| — send one command into another", letters:[0], tasks:[
+        {id:"pipe.first.1", show:"A pipe | sends one command's output into the next. Sort the animals: <b>cat library/animals.txt | sort</b>", cmd:"cat library/animals.txt | sort", check:{typed:["cat","|","sort"]}},
+        {id:"pipe.first.2", ask:"Send the colors file into sort: cat library/colors.txt | sort", cmd:"cat library/colors.txt | sort", check:{typed:["colors.txt","|","sort"]}}
+      ]},
+      {id:"pipe.uniq", title:"| sort | uniq — remove repeats", letters:[1], tasks:[
+        {id:"pipe.uniq.1", show:"Sort, then remove repeats. Type <b>cat library/animals.txt | sort | uniq</b>", cmd:"cat library/animals.txt | sort | uniq", check:{typed:["|","sort","uniq"]}},
+        {id:"pipe.uniq.2", ask:"Do the same for library/scores.txt: sort then uniq.", cmd:"cat library/scores.txt | sort | uniq", check:{typed:["scores.txt","sort","uniq"]}}
+      ]},
+      {id:"pipe.count", title:"| wc — count what flows through", letters:[2], tasks:[
+        {id:"pipe.count.1", show:"Count the lines that come through a pipe. Type <b>cat library/animals.txt | wc</b>", cmd:"cat library/animals.txt | wc", check:{typed:["animals.txt","|","wc"]}},
+        {id:"pipe.count.2", ask:"Sort the animals and count them: cat library/animals.txt | sort | wc", cmd:"cat library/animals.txt | sort | wc", check:{typed:["sort","wc","|"]}}
+      ]},
+      {id:"pipe.grep", title:"| grep — keep only some lines", letters:[3], tasks:[
+        {id:"pipe.grep.1", show:"Keep only lines with a word. Type <b>cat library/scores.txt | grep max</b>", cmd:"cat library/scores.txt | grep max", check:{typed:["scores.txt","|","grep"]}},
+        {id:"pipe.grep.2", ask:"From library/scores.txt keep only robert's lines. (| grep robert)", cmd:"cat library/scores.txt | grep robert", check:{typed:["grep","robert"]}}
+      ]},
+      {id:"pipe.check", title:"Checkpoint — from memory", checkpoint:true, letters:[4], tasks:[
+        {id:"pipe.check.1", ask:"Sort library/colors.txt with a pipe: cat ... | sort", cmd:"cat library/colors.txt | sort", check:{typed:["colors.txt","|","sort"]}},
+        {id:"pipe.check.2", ask:"Sort and remove repeats in library/animals.txt.", cmd:"cat library/animals.txt | sort | uniq", check:{typed:["sort","uniq"]}},
+        {id:"pipe.check.3", ask:"Count library/animals.txt through a pipe.", cmd:"cat library/animals.txt | wc", check:{typed:["|","wc"]}}
+      ]}
+    ]},
+
+    /* ---------------- Level 9 — longer pipes ---------------- */
+    {id:"flow", word:"CLOUD", title:"The Great Current", lessons:[
+      {id:"flow.rev", title:"| rev — flip through a pipe", letters:[0], tasks:[
+        {id:"flow.rev.1", show:"Send a file through rev with a pipe. Type <b>cat library/colors.txt | rev</b>", cmd:"cat library/colors.txt | rev", check:{typed:["colors.txt","|","rev"]}},
+        {id:"flow.rev.2", ask:"Send library/poem.txt through rev.", cmd:"cat library/poem.txt | rev", check:{typed:["poem.txt","|","rev"]}}
+      ]},
+      {id:"flow.tr", title:"| tr — SHOUT through a pipe", letters:[1], tasks:[
+        {id:"flow.tr.1", show:"SHOUT through a pipe. Type <b>cat library/colors.txt | tr a-z A-Z</b>", cmd:"cat library/colors.txt | tr a-z A-Z", check:{typed:["|","tr"]}},
+        {id:"flow.tr.2", ask:"Send library/animals.txt through tr a-z A-Z.", cmd:"cat library/animals.txt | tr a-z A-Z", check:{typed:["animals.txt","|","tr"]}}
+      ]},
+      {id:"flow.big", title:"Long pipes — 3 steps", letters:[2], tasks:[
+        {id:"flow.big.1", show:"A long pipe! Sort, remove repeats, then count: <b>cat library/scores.txt | sort | uniq | wc</b>", cmd:"cat library/scores.txt | sort | uniq | wc", check:{typed:["sort","uniq","wc"]}},
+        {id:"flow.big.2", ask:"Do a 3-step pipe on library/animals.txt: sort then uniq then wc.", cmd:"cat library/animals.txt | sort | uniq | wc", check:{typed:["animals.txt","sort","uniq","wc"]}}
+      ]},
+      {id:"flow.mix", title:"Mix — pipes and old skills", letters:[3], tasks:[
+        {id:"flow.mix.1", ask:"Show the commands you have typed. Type the command for that.", cmd:"history", check:{ran:"history"}},
+        {id:"flow.mix.2", ask:"From library/colors.txt keep only the line with blue. (| grep blue)", cmd:"cat library/colors.txt | grep blue", check:{typed:["grep","blue"]}},
+        {id:"flow.mix.3", ask:"Print your name.", cmd:"whoami", check:{ran:"whoami"}}
+      ]},
+      {id:"flow.check", title:"Checkpoint — from memory", checkpoint:true, letters:[4], tasks:[
+        {id:"flow.check.1", ask:"Send library/colors.txt through rev with a pipe.", cmd:"cat library/colors.txt | rev", check:{typed:["colors.txt","|","rev"]}},
+        {id:"flow.check.2", ask:"SHOUT library/animals.txt through a pipe (| tr a-z A-Z).", cmd:"cat library/animals.txt | tr a-z A-Z", check:{typed:["animals.txt","|","tr"]}},
+        {id:"flow.check.3", ask:"Sort, uniq and count library/scores.txt in one long pipe.", cmd:"cat library/scores.txt | sort | uniq | wc", check:{typed:["sort","uniq","wc"]}}
+      ]}
+    ]},
+
+    /* ---------------- Level 10 — variables ---------------- */
+    {id:"vars", word:"POWER", title:"Tower of Names", lessons:[
+      {id:"vars.set", title:"make a variable", letters:[0], tasks:[
+        {id:"vars.set.1", show:"Save a word in a box called a variable. Type <b>pet=dragon</b> (no spaces around =)", cmd:"pet=dragon", check:{setVar:"pet"}},
+        {id:"vars.set.2", show:"Show what is inside the box. Type <b>echo $pet</b> — the $ means \"what's inside\"", cmd:"echo $pet", check:{typed:["echo","$pet"]}},
+        {id:"vars.set.3", ask:"Make a variable called hero with any name: hero=...", cmd:"hero=greppo", check:{setVar:"hero"}}
+      ]},
+      {id:"vars.use", title:"use a variable in a sentence", letters:[1], tasks:[
+        {id:"vars.use.1", show:"Variables work anywhere. Type <b>echo my pet is $pet</b>", cmd:"echo my pet is $pet", check:{typed:["$pet"]}},
+        {id:"vars.use.2", ask:"Show your hero variable: echo $hero", cmd:"echo $hero", check:{typed:["$hero"]}}
+      ]},
+      {id:"vars.who", title:"$USER, whoami, date", letters:[2], tasks:[
+        {id:"vars.who.1", show:"The computer already knows you. Type <b>whoami</b>", cmd:"whoami", check:{ran:"whoami"}},
+        {id:"vars.who.2", show:"Your name is in a ready-made variable. Type <b>echo $USER</b>", cmd:"echo $USER", check:{typed:["$USER"]}},
+        {id:"vars.who.3", ask:"What day is it? Type the date command.", cmd:"date", check:{ran:"date"}}
+      ]},
+      {id:"vars.mix", title:"Mix — your own variables", letters:[3], tasks:[
+        {id:"vars.mix.1", ask:"Make a variable color with your favorite color: color=...", cmd:"color=blue", check:{setVar:"color"}},
+        {id:"vars.mix.2", ask:"Show it: echo $color", cmd:"echo $color", check:{typed:["$color"]}},
+        {id:"vars.mix.3", ask:"Show a calendar.", cmd:"cal", check:{ran:"cal"}}
+      ]},
+      {id:"vars.check", title:"Final Checkpoint", checkpoint:true, letters:[4], tasks:[
+        {id:"vars.check.1", ask:"Print your name with whoami.", cmd:"whoami", check:{ran:"whoami"}},
+        {id:"vars.check.2", ask:"Make a variable star with any word: star=...", cmd:"star=shine", check:{setVar:"star"}},
+        {id:"vars.check.3", ask:"Show it: echo $star", cmd:"echo $star", check:{typed:["$star"]}},
+        {id:"vars.check.4", ask:"Show your name variable: echo $USER", cmd:"echo $USER", check:{typed:["$USER"]}},
+        {id:"vars.check.5", ask:"Open the treasure: read ~/treasure.txt.", cmd:"cat ~/treasure.txt", check:{cat:"~/treasure.txt"}}
       ]}
     ]}
   ]

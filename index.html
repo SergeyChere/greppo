@@ -55,7 +55,7 @@
   .mast .s{color:var(--amber);}
   .main{flex:2 1 360px;min-width:0;display:flex;flex-direction:column;}
   .term{background:var(--panel2);padding:14px 16px;font-size:14px;line-height:1.55;height:300px;flex:none;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}
-  .term .ps{color:var(--green);} .term .er{color:var(--pink);} .term .ok{color:var(--amber);} .term .hi{color:var(--blue);} .term .spk{color:var(--amber);} .term .dim{color:var(--dim);}
+  .term .ps{color:var(--green);} .term .er{color:var(--pink);} .term .ok{color:var(--amber);} .term .hi{color:var(--blue);} .term .spk{color:var(--amber);} .term .dim{color:var(--dim);} .term .pipe{color:#bde6ff;}
   .inrow{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--edge);background:var(--panel);}
   .inrow .ps{color:var(--green);font-size:13px;white-space:nowrap;}
   #in{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--fg);font-family:var(--mono);font-size:14px;}
@@ -210,7 +210,7 @@
       'games':D('games',{'secret.txt':F('secret.txt','You read a note! Clue: visit the box folder'),'arcade':D('arcade',{'highscore.txt':F('highscore.txt','Top score: 9000')})}),
       'pictures':D('pictures',{'beach.txt':F('beach.txt','A sunny beach photo')}),
       'box':D('box',{'clue.txt':F('clue.txt','Clue: the treasure is at ~/treasure.txt'),'mystery.txt':F('mystery.txt','Secret! Try these fun commands: meow  dance  fortune  rainbow\nHidden files start with a dot. Try: ls -a'),'toys':D('toys',{'ball.txt':F('ball.txt','A bouncy ball'),'robot-toy.txt':F('robot-toy.txt','A shiny robot toy')})}),
-      'library':D('library',{'poem.txt':F('poem.txt','Greppo wakes inside the screen\nFolders deep and tunnels green\nType a word and watch it glow\nThrough the data winds we go\nLetters hidden letters found\nGreppo grows with every sound'),'animals.txt':F('animals.txt','cat\ndog\ncat\nbird\ndog\ncat'),'numbers.txt':F('numbers.txt','3\n1\n2\n2\n5')}),
+      'library':D('library',{'poem.txt':F('poem.txt','Greppo wakes inside the screen\nFolders deep and tunnels green\nType a word and watch it glow\nThrough the data winds we go\nLetters hidden letters found\nGreppo grows with every sound'),'animals.txt':F('animals.txt','cat\ndog\ncat\nbird\ndog\ncat'),'numbers.txt':F('numbers.txt','3\n1\n2\n2\n5'),'colors.txt':F('colors.txt','red\norange\nyellow\ngreen\nblue\npurple'),'scores.txt':F('scores.txt','robert 90\nmax 80\nlily 95\nmax 80\nrobert 90')}),
       'notes':D('notes',{'diary.txt':F('diary.txt','Dear diary, today I met greppo the pet')}),
       '.secret':F('.secret','You found a hidden file! Names that start with a dot are hidden.\nType meow to hear something!'),
       'treasure.txt':F('treasure.txt','TREASURE FOUND! You are a real terminal explorer!')
@@ -244,21 +244,80 @@
     var G=window.GREPPO,lines='<span class="hi">What each command does</span> (don\'t type the ( ) brackets):\n';
     (G&&G.knowledge?G.knowledge:[]).forEach(function(k){var name=k.cmd;while(name.length<6)name+=' ';lines+='  '+name+' '+k.sum+'\n';});
     lines+='<span class="dim">A name like welcome.txt has a name (welcome) and an extension (.txt) that means a text file.\n'+
+      'Pipes: cmd | cmd sends one command INTO another, e.g. cat library/animals.txt | sort | uniq\n'+
+      'Variables: pet=dragon saves a word; show it with echo $pet. Your name is in $USER.\n'+
       'Keys: Enter runs a command. Up arrow shows your last command. Tab finishes a name.\n'+
       'Type symbols to learn > >> ~ .. . *   \u00b7   type games to play a mini-game.</span>';
     return lines;
   }
   var HELP=buildHelp();
 
+  var vars={};
+  function expandVars(s){return s.replace(/\$\{([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)/g,function(m,a,b){var k=a||b;if(k==='USER')return USER;return (k in vars)?vars[k]:'';});}
+  var CAL=['    GREPPO 2099','Su Mo Tu We Th Fr Sa','          1  2  3  4',' 5  6  7  8  9 10 11','12 13 14 15 16 17 18','19 20 21 22 23 24 25','26 27 28 29 30 31'].join('\n');
+  function trApply(input,args){
+    function expand(set){var o='';set=set||'';for(var i=0;i<set.length;i++){if(set[i+1]==='-'&&set[i+2]){for(var c=set.charCodeAt(i),b=set.charCodeAt(i+2);c<=b;c++)o+=String.fromCharCode(c);i+=2;}else o+=set[i];}return o;}
+    var s1=expand(args[0]),s2=expand(args[1]);
+    return input.split('').map(function(ch){var k=s1.indexOf(ch);return k>=0?(s2[k]||s2[s2.length-1]||ch):ch;}).join('');
+  }
+  function cutApply(L,args){
+    var cflag=null,delim=' ',fnum=null;
+    for(var i=0;i<args.length;i++){var a=args[i];if(a.indexOf('-c')===0)cflag=a.slice(2);else if(a.indexOf('-f')===0)fnum=parseInt(a.slice(2),10);else if(a.indexOf('-d')===0)delim=a.slice(2)||' ';}
+    return L.map(function(line){
+      if(cflag){var m=/^(\d+)(?:-(\d+))?$/.exec(cflag);if(m){var s=parseInt(m[1],10),e=m[2]?parseInt(m[2],10):s;return line.slice(s-1,e);}return line;}
+      if(fnum){var p=line.split(delim);return p[fnum-1]||'';}
+      return line;
+    }).join('\n');
+  }
+  function pipeFilter(cmd,args,input){
+    var L=input.split('\n');
+    switch(cmd){
+      case 'sort':return L.slice().sort().join('\n');
+      case 'uniq':var u=[];L.forEach(function(x){if(!u.length||u[u.length-1]!==x)u.push(x);});return u.join('\n');
+      case 'head':return L.slice(0,5).join('\n');
+      case 'tail':return L.slice(Math.max(0,L.length-5)).join('\n');
+      case 'rev':return L.map(function(x){return x.split('').reverse().join('');}).join('\n');
+      case 'nl':return L.map(function(x,i){return '     '+(i+1)+'  '+x;}).join('\n');
+      case 'grep':var w=(args[0]||'').toLowerCase();return L.filter(function(x){return x.toLowerCase().indexOf(w)>=0;}).join('\n');
+      case 'wc':var wln=input===''?0:L.length,wwd=input.split(/\s+/).filter(function(x){return x.length;}).length;return wln+' '+wwd+' '+input.length;
+      case 'tr':return trApply(input,args);
+      case 'cut':return cutApply(L,args);
+      default:return input;
+    }
+  }
+  function nodeTextByPath(p){var f=resolve(p);return (f&&f.t==='f')?f.content.replace(/\n$/,''):null;}
+  function pipeSource(cmd,args){
+    if(cmd==='cat'){if(!args[0])return '';var t=nodeTextByPath(args[0]);return t==null?'':t;}
+    if(cmd==='echo'){return args.join(' ');}
+    if(cmd==='ls'){var d=args[0]?resolve(args[0]):cwd;if(!d)return '';if(d.t==='f')return d.name;return keys(d).join('\n');}
+    if(/^(grep|sort|uniq|head|tail|rev|nl|cut|tr|wc)$/.test(cmd)){var fa=args[args.length-1],t=fa?nodeTextByPath(fa):null;return t==null?'':pipeFilter(cmd,args.slice(0,-1),t);}
+    return '';
+  }
+  function runPipe(line,raw){
+    var stages=line.split('|').map(function(s){return s.trim();}).filter(function(s){return s.length;});
+    var first=stages[0].split(/\s+/).filter(function(x){return x.length;});
+    var out=pipeSource(first[0],first.slice(1));
+    for(var i=1;i<stages.length;i++){var t=stages[i].split(/\s+/).filter(function(x){return x.length;});out=pipeFilter(t[0],t.slice(1),out);}
+    st={cmd:'pipe',args:[],cwdAbs:abspath(cwd),catAbs:null,out:out,raw:raw||line};
+    pr('<span class="pipe">'+esc(out)+'</span>');
+  }
+
   function exec(line){
     var tl=line.trim();
+    var rawLine=tl;
     if(ttt){if(/^(stop|quit|exit)$/i.test(tl)){ttt=null;pr('Game over. Back to the terminal!');return;}if(/^[a-cA-C][1-3]$/.test(tl)){tttMove(tl);return;}}
     if(bs){if(/^(stop|quit|exit)$/i.test(tl)){bs=null;pr('Game over. Back to the terminal!');return;}var bfm=/^flag\s+([a-eA-E][1-5])$/.exec(tl);if(bfm){bsFlag(bfm[1]);return;}if(/^[a-eA-E][1-5]$/.test(tl)){bsFire(tl);return;}}
     if(sud){if(/^(stop|quit|exit)$/i.test(tl)){sud=null;pr('Game over. Back to the terminal!');return;}var cl=('abcdef').slice(0,sud.N),smm=new RegExp('^(['+cl+cl.toUpperCase()+'])([1-'+sud.N+'])\\s+([1-'+sud.N+'])$').exec(tl);if(smm){sudPlace(smm[1],smm[2],smm[3]);return;}}
+    if(!pendingWord){
+      var asn=/^([A-Za-z_]\w*)=(\S*)$/.exec(tl);
+      if(asn){vars[asn[1]]=expandVars(asn[2]);st={cmd:'set',args:[asn[1],vars[asn[1]]],cwdAbs:abspath(cwd),catAbs:null,out:'',raw:rawLine};petMood('think',12);pr('<span class="hi">Saved:</span> '+esc(asn[1])+' = '+esc(vars[asn[1]])+'  <span class="dim">(see it with echo $'+esc(asn[1])+')</span>');return done();}
+      tl=expandVars(tl);
+      if(tl.indexOf('|')>=0){petMood('think',12);runPipe(tl,rawLine);return done();}
+    }
     var parts=tl.split(/\s+/).filter(function(x){return x.length;});
     if(!parts.length)return;
     var cmd=parts[0],a=parts.slice(1);
-    st={cmd:cmd,args:a,cwdAbs:abspath(cwd),catAbs:null,out:''};
+    st={cmd:cmd,args:a,cwdAbs:abspath(cwd),catAbs:null,out:'',raw:rawLine};
     petMood('think',12);
     if(pendingWord){
       if(line.trim().toUpperCase()===pendingWord){doLevelUp();return;}
@@ -308,6 +367,14 @@
       if(cmd==='sort')sar=sar.slice().sort();else{var su=[];sar.forEach(function(x){if(!su.length||su[su.length-1]!==x)su.push(x);});sar=su;}
       O(esc(sar.join('\n')));return done();
     }
+    if(cmd==='whoami'){O(USER);return done();}
+    if(cmd==='date'){O('Mon Jan  1 09:00:00 GREPPO 2099');return done();}
+    if(cmd==='cal'){O(esc(CAL));return done();}
+    if(cmd==='history'){var hh=hist.slice(-20).map(function(x,i){return '  '+(i+1)+'  '+x;}).join('\n');O(esc(hh)||'(no history yet)');return done();}
+    if(cmd==='rev'){if(!a.length){O('rev: which file? e.g. rev library/poem.txt');return done();}var rf=resolve(a[0]);if(!rf||rf.t!=='f'){O('<span class="er">rev: '+esc(a[0])+': no such file</span>');return done();}O(esc((rf.content||'').replace(/\n$/,'').split('\n').map(function(x){return x.split('').reverse().join('');}).join('\n')));return done();}
+    if(cmd==='nl'){if(!a.length){O('nl: which file? e.g. nl library/poem.txt');return done();}var nf=resolve(a[0]);if(!nf||nf.t!=='f'){O('<span class="er">nl: '+esc(a[0])+': no such file</span>');return done();}O(esc((nf.content||'').replace(/\n$/,'').split('\n').map(function(x,i){return '     '+(i+1)+'  '+x;}).join('\n')));return done();}
+    if(cmd==='tr'){if(a.length<3){O('tr: tr <from> <to> <file> e.g. tr a-z A-Z library/poem.txt');return done();}var tf=resolve(a[2]);if(!tf||tf.t!=='f'){O('<span class="er">tr: '+esc(a[2])+': no such file</span>');return done();}O(esc(trApply((tf.content||'').replace(/\n$/,''),[a[0],a[1]])));return done();}
+    if(cmd==='cut'){if(!a.length){O('cut: e.g. cut -c1-3 library/colors.txt');return done();}var cfa=a[a.length-1],cf=resolve(cfa);if(!cf||cf.t!=='f'){O('<span class="er">cut: '+esc(cfa)+': no such file. e.g. cut -c1-3 library/colors.txt</span>');return done();}O(esc(cutApply((cf.content||'').replace(/\n$/,'').split('\n'),a.slice(0,-1))));return done();}
     if(funCmd(cmd,a,O))return done();
     O('<span class="er">'+esc(cmd)+': command not found \u2014 type help. Tip: try meow, dance, fortune or rainbow!</span>');sfx('error');
   }
@@ -470,6 +537,9 @@
     if('fileHas' in c)return fileHas(c.fileHas[0],c.fileHas[1]);
     if('out' in c)return outHas(c.out[0],c.out[1]);
     if('argHas' in c)return function(s){return s.cmd===c.argHas[0]&&s.args.join(' ').indexOf(c.argHas[1])>=0;};
+    if('typed' in c)return function(s){var r=s.raw||'';return c.typed.every(function(sub){return r.indexOf(sub)>=0;});};
+    if('varHas' in c)return function(s){return (c.varHas[0] in vars)&&String(vars[c.varHas[0]]).indexOf(c.varHas[1])>=0;};
+    if('setVar' in c)return function(s){return (c.setVar in vars);};
     return function(){return false;};
   }
   function buildTask(t){var o={id:t.id,cmd:t.cmd,c:compileCheck(t.check)};if(t.ask)o.q=t.ask;else o.d=t.show;return o;}
@@ -862,6 +932,7 @@
     document.getElementById('btns').hidden=false;
     document.getElementById('bSound').textContent='Sound: '+(P.muted?'off':'on');
     document.getElementById('barName').textContent=USER+'@greppo';
+    var subEl=document.getElementById('sub');if(subEl)subEl.textContent='learn the Linux terminal — '+LEVELS.length+' levels · one evolving pet';
     document.getElementById('ps').textContent=prompt();
     grown=((P.found[LEVELS.length-1]||[]).length>=wordFor(LEVELS.length-1).length);
     startLesson();
