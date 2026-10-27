@@ -148,6 +148,38 @@ try {
     await ctx.close();
   }
 
+  // ---- after collecting every letter, wandering must not break the word ----
+  section('gameplay: word still works after wandering');
+  {
+    const found = []; for (let i = 0; i < 16; i++) found.push(i < 6 ? [0,1,2,3,4] : []);
+    found[6] = [0,1,2,3];                     // LASER's last letter comes from the checkpoint
+    const { ctx, page } = await freshPage(browser, seed({ lvl: 6, lesson: 4, found }));
+    const r = run(page);
+    async function solveCurrent() {
+      let say = '';
+      for (let i = 0; i < 2; i++) {
+        await page.click('#bHint'); await page.waitForTimeout(150);
+        say = await page.evaluate(() => document.getElementById('say').innerText);
+        if (/Hint 2 of 2: type /.test(say) || /^Hint: use the \S+ command/.test(say)) break;
+      }
+      const m = say.match(/Hint 2 of 2: type\s+(.+)$/) || say.match(/^Hint: use the (\S+) command/);
+      if (m) await r(m[1].trim());
+    }
+    for (let i = 0; i < 4; i++) await solveCurrent();   // completes the checkpoint -> word ready
+    ok((await page.evaluate(() => document.getElementById('lock').textContent)).replace(/\s/g, '') === 'LASER', 'every letter collected before wandering');
+    // Wander instead of typing the word: step back a lesson, open the map, close it.
+    await page.click('#lprev').catch(() => {}); await page.waitForTimeout(100);
+    await page.click('#bMap').catch(() => {}); await page.waitForTimeout(120);
+    await page.click('#mapResume').catch(() => {}); await page.waitForTimeout(120);
+    ok(/Level 7 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'still on the unfinished level after wandering (not auto-advanced)');
+    // The secret word must still advance the level.
+    await r('LASER'); await page.waitForTimeout(250);
+    if (await page.evaluate(() => !document.getElementById('mx').hidden)) await page.evaluate(() => document.getElementById('mxGo').click());
+    await page.waitForTimeout(250);
+    ok(/Level 8 of 16/.test(await page.evaluate(() => document.getElementById('lvl').textContent)), 'typing the secret word still levels up after wandering');
+    await ctx.close();
+  }
+
   // ---- practice mode leaves real progress untouched ----
   section('practice mode');
   {
