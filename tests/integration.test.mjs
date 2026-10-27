@@ -297,6 +297,35 @@ try {
     await ctx.close();
   }
 
+  // ---- phone: Duolingo-style tap builder (desktop is unaffected) ----
+  section('mobile tap builder');
+  {
+    const ctx = await browser.newContext({ hasTouch: true });
+    const page = await ctx.newPage();
+    page.on('pageerror', (e) => pageErrors.push('PAGEERROR ' + e.message));
+    const found = []; for (let i = 0; i < 16; i++) found.push([]); found[1] = [0];
+    await page.addInitScript((s) => { try { localStorage.setItem('greppo_web_v4', JSON.stringify(s)); } catch (e) {} },
+      { name: 'bob', user: 'bob', lvl: 1, lesson: 1, lessonMax: 1, task: 0, found, mastery: {}, review: {}, muted: true, seenIntro: true, mode: 'quest', words: WORDS, seenArt: { 'make.create': 1, 'make.write': 1 } });
+    await page.goto(URL + '?tap=1'); await page.waitForTimeout(350);
+    try { if (!(await page.evaluate(() => document.getElementById('artov').hidden))) { await page.click('#artGo'); } } catch (e) {}
+    ok(await page.evaluate(() => document.body.classList.contains('tap')), 'touch devices get the tap UI');
+    ok(await page.evaluate(() => getComputedStyle(document.getElementById('tapbar')).display === 'block'), 'the tap panel is visible on a phone');
+    const tiles = await page.evaluate(() => [...document.querySelectorAll('#tapbar .tapchips button[data-i]')].map((x) => x.textContent));
+    ok(tiles.includes('echo') && tiles.includes('den/bowl.txt'), 'tiles include the correct command pieces');
+    ok(tiles.length > 4, 'tiles include extra (distractor) pieces');
+    // prerequisite folder, then assemble the command by tapping the right tiles
+    await page.evaluate(() => { const i = document.getElementById('in'); i.readOnly = false; });
+    await page.fill('#in', 'mkdir den'); await page.press('#in', 'Enter'); await page.waitForTimeout(60);
+    const tap = async (t) => { await page.evaluate((tok) => { const el = [...document.querySelectorAll('#tapbar .tapchips button[data-i]')].find((x) => x.textContent === tok && !x.classList.contains('used')); if (el) el.click(); }, t); await page.waitForTimeout(40); };
+    for (const t of ['echo', 'food', '>', 'den/bowl.txt']) await tap(t);
+    ok((await page.evaluate(() => document.getElementById('in').value)) === 'echo food > den/bowl.txt', 'tapping tiles assembles the command');
+    const before = await page.evaluate(() => (document.getElementById('check').innerText.match(/\[x\]/g) || []).length);
+    await page.evaluate(() => { [...document.querySelectorAll('#tapbar .tapchips button')].find((x) => x.getAttribute('data-act') === 'check').click(); });
+    await page.waitForTimeout(100);
+    ok((await page.evaluate(() => (document.getElementById('check').innerText.match(/\[x\]/g) || []).length)) > before, 'Check runs the assembled command and completes the task');
+    await ctx.close();
+  }
+
   ok(pageErrors.length === 0, 'no uncaught page errors (' + pageErrors.join(' | ') + ')');
 } finally {
   await browser.close();

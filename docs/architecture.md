@@ -84,3 +84,12 @@ Modules (functions/sections inside one file):
 
 The engine reads `GREPPO`, validates it, compiles checks, and runs. It does not
 contain course content.
+
+## Mobile (touch) mode
+On touch devices (`pointer: coarse`, or `?tap=1` for testing) the engine adds
+`body.tap`: a full-height app layout (task on top, terminal in the middle) and a
+**Duolingo-style tap builder** pinned at the bottom (`#tapbar`). It offers the
+current task's command pieces as tiles mixed with a few wrong distractors
+(scaled by level); the child taps them in order and presses Check, which runs
+the assembled command through the normal engine. A ⌨ type chip falls back to the
+keyboard. Desktop (fine pointer) is completely unchanged — none of this renders.

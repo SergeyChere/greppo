@@ -77,6 +77,37 @@
   #in{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--fg);font-family:var(--mono);font-size:14px;}
   #in::placeholder{color:#546273;}
   .hintbar{font-size:11.5px;color:var(--dim);padding:6px 14px 10px;background:var(--panel);}
+  /* Tap-tile builder — only shown on touch devices (body.tap) */
+  .tapbar{display:none;}
+  body.tap .tapbar{display:block;background:#0c1119;border-top:1px solid var(--edge);padding:9px 10px 11px;}
+  body.tap .hintbar{display:none;}
+  .tapbar .taphint{font-size:11px;color:var(--dim);text-align:center;margin-bottom:8px;}
+  .tapchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .tapchips button{font-family:var(--mono);font-size:15px;font-weight:700;border-radius:10px;padding:10px 14px;border:1px solid var(--edge);background:#17202b;color:var(--fg);box-shadow:0 2px 0 #0b1119;cursor:pointer;}
+  .tapchips button.used{opacity:.3;}
+  .tapchips button.key{background:var(--panel);color:var(--dim);}
+  .tapchips button.run{background:var(--green);color:#06240f;border:none;box-shadow:0 2px 0 #2f8a4a;}
+  .tapchips.controls{margin-top:9px;}
+  .tapbar.shake{animation:tapshake .35s;}
+  @keyframes tapshake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+  /* App-like full-height layout on phones (touch only) so tiles sit at the bottom */
+  body.tap{overflow:hidden;}
+  body.tap .wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:none;width:100%;margin:0;}
+  body.tap .title{flex:0 0 auto;padding:6px 14px 2px;margin:0;}
+  body.tap .title h1{font-size:18px;}
+  body.tap .title .sub{font-size:10.5px;}
+  body.tap .win{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;border-radius:0;border-left:none;border-right:none;}
+  body.tap .win .bar{flex:0 0 auto;}
+  body.tap .win .body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;flex-wrap:nowrap;}
+  body.tap .rail{flex:0 0 auto;max-height:40vh;overflow:auto;border-right:none;border-bottom:1px solid var(--edge);max-width:none;}
+  body.tap .pet{min-height:3.6em;font-size:13px;}
+  body.tap .main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+  body.tap .term{flex:1 1 auto;min-height:56px;height:auto;}
+  body.tap .inrow{flex:0 0 auto;}
+  body.tap .tapbar{flex:0 0 auto;}
+  body.tap .btns{flex:0 0 auto;overflow-x:auto;flex-wrap:nowrap;margin:0;padding:8px 10px;}
+  body.tap .btns button{flex:0 0 auto;}
+  body.tap .foot{display:none;}
   .btns{display:flex;gap:8px;margin:12px 2px 0;flex-wrap:wrap;}
   .btns button{font-family:var(--mono);font-size:12.5px;color:var(--fg);background:var(--panel);border:1px solid var(--edge);border-radius:9px;padding:7px 12px;cursor:pointer;}
   .btns button:hover{border-color:#2d3f52;background:#132030;}
@@ -149,7 +180,11 @@
   .mapov .mapresume{align-self:center;margin:0 0 14px;font-family:var(--mono);font-size:14px;font-weight:700;border-radius:10px;padding:10px 22px;cursor:pointer;border:1px solid var(--amber);background:#2a1f08;color:var(--amber);}
   .mapov .mapresume:hover{background:#3a2b0c;}
   .rail{flex:1 1 280px;max-width:420px;}
-  @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);max-width:none;}.term{height:clamp(230px,40vh,340px);}}
+  @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);max-width:none;}.term{height:clamp(200px,32vh,320px);}}
+  body.tap .pet{font-size:12px;min-height:0;}
+  body.tap .btns{flex-wrap:nowrap;overflow-x:auto;}
+  body.tap .btns button{flex:0 0 auto;}
+  body.tap .wrap{padding-block:10px;}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
 
@@ -183,9 +218,10 @@
         <div class="term" id="term"></div>
         <div class="inrow">
           <span class="ps" id="ps">~$</span>
-          <input id="in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type a command, then press Enter" aria-label="terminal command input">
+          <input id="in" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="type a command, then press Enter" aria-label="terminal command input">
         </div>
         <div class="hintbar">Press <b>Enter</b> to run &nbsp;·&nbsp; don't type the ( ) brackets &nbsp;·&nbsp; press the <b>Hot keys</b> button for shortcuts</div>
+        <div class="tapbar" id="tapbar" hidden></div>
       </div>
     </div>
   </div>
@@ -815,6 +851,7 @@
       h+=(dn?'<span class="ok">[x] </span><span class="ok">'+label+'</span>':'[ ] '+label)+'<br>';
     }
     el.innerHTML=h;
+    updateTap();
   }
   /* Two-level hint: 1 = remind which command (+ what it does), 2 = the full command. */
   function showHint(){
@@ -918,7 +955,7 @@
       else say('\u2b50 You reviewed the whole region! Press <b>Map</b> or <b>Back to my quest</b>.');
       return;
     }
-    if(P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('\u2728 You found every letter! Read the glowing word on the left and type it in, then press Enter!');}
+    if(P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('\u2728 You found every letter! Read the glowing word on the left and type it in, then press Enter!');updateTap();}
     else{say(ls.checkpoint?'\u2b50 Checkpoint passed! You earned a letter!':'\u2b50 Lesson done! You earned a letter!');P.lesson++;P.lessonMax=Math.max(P.lessonMax||0,P.lesson);startLesson();}
     save();
   }
@@ -954,7 +991,8 @@
       pr('<span class="ok">Back to the quest!</span> You are home (~). Your progress is safe.');
       var t=curTasks[P.task];say(t?('Next → '+taskLabel(t)):'Keep going!');
     }
-    document.getElementById('in').focus();
+    updateTap();
+    if(!TOUCH)document.getElementById('in').focus();
   }
   function replay(){
     var fr=[];for(var i=0;i<LEVELS.length;i++)fr.push([]);
@@ -1117,7 +1155,43 @@
   }
 
   var hist=[],histIdx=-1,sbActions=0;
-  function runCommand(v){sfx('click');pr('<span class="ps">'+esc(prompt())+'</span> '+esc(v));if(v.trim()){hist.push(v);if(hist.length>60)hist.shift();exec(v);if(P.mode==='sandbox'&&!ttt&&!bs&&!sud){sbActions++;if(sbActions%5===0&&!grown)nudgeQuest();else sandboxTip(st.cmd);}}histIdx=-1;var i2=document.getElementById('in');i2.value='';i2.focus();}
+  function runCommand(v){sfx('click');pr('<span class="ps">'+esc(prompt())+'</span> '+esc(v));if(v.trim()){hist.push(v);if(hist.length>60)hist.shift();exec(v);if(P.mode==='sandbox'&&!ttt&&!bs&&!sud){sbActions++;if(sbActions%5===0&&!grown)nudgeQuest();else sandboxTip(st.cmd);}}histIdx=-1;var i2=document.getElementById('in');i2.value='';if(!TOUCH)i2.focus();}
+
+  /* ---- Mobile tap-tile builder (Duolingo style). Touch devices only; desktop
+     keeps the plain keyboard input exactly as before. ---- */
+  var TOUCH=(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches)||/[?&]tap=1/.test(location.search||'');
+  if(TOUCH&&document.body)document.body.classList.add('tap');
+  var FNAMES=['welcome.txt','poem.txt','animals.txt','colors.txt','numbers.txt','scores.txt','diary.txt','ball.txt','robot-toy.txt','clue.txt','hello.txt','beach.txt','library','notes','box','games','pictures','den','toys'];
+  var OPS=['>','>>','|','<','-r'];
+  var tapTiles=[],tapSelIdx=[],tapJoin=' ',tapMode='task';
+  function tapShuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function tapDistractors(tokens){
+    var n=Math.max(2,Math.min(2+Math.floor((P.lvl||0)/2),6)),out=[],used={};
+    tokens.forEach(function(t){used[t]=1;});
+    var hasOp=tokens.some(function(t){return OPS.indexOf(t)>=0;});
+    function pick(pool){for(var k=0;k<25;k++){var c=pool[Math.floor(Math.random()*pool.length)];if(c&&!used[c]){used[c]=1;return c;}}return null;}
+    var order=[CMDS,FNAMES,(hasOp?OPS:FNAMES),FNAMES,CMDS,FNAMES];
+    for(var i=0;i<n;i++){var c=pick(order[i%order.length]);if(c)out.push(c);}
+    return out;
+  }
+  function tapBuild(tokens){tapSelIdx=[];tapTiles=tapShuffle(tokens.slice().concat(tapDistractors(tokens)));tapRender();}
+  function tapRender(){
+    if(!TOUCH)return;var bar=document.getElementById('tapbar');if(!bar)return;
+    inp.value=tapSelIdx.map(function(i){return tapTiles[i];}).join(tapJoin);
+    var hint=tapMode==='word'?'tap the letters to spell the glowing word':'tap the right pieces, in order · tap again to undo';
+    var h='<div class="taphint">'+hint+'</div><div class="tapchips">';
+    for(var i=0;i<tapTiles.length;i++){var used=tapSelIdx.indexOf(i)>=0;h+='<button data-i="'+i+'"'+(used?' class="used"':'')+'>'+esc(tapTiles[i])+'</button>';}
+    h+='</div><div class="tapchips controls"><button class="key" data-act="undo">⌫ undo</button><button class="key" data-act="type">⌨ type</button><button class="run" data-act="check">Check ✓</button></div>';
+    bar.innerHTML=h;bar.hidden=false;
+  }
+  function updateTap(){
+    if(!TOUCH)return;var bar=document.getElementById('tapbar');if(!bar)return;
+    if(document.getElementById('win').hidden){bar.innerHTML='';bar.hidden=true;return;}
+    if(pendingWord){tapMode='word';tapJoin='';var w=pendingWord.split(''),extra=[],A='ABCDEFGHIJKLMNOPQRSTUVWXYZ';while(extra.length<2){var c=A[Math.floor(Math.random()*26)];if(w.indexOf(c)<0&&extra.indexOf(c)<0)extra.push(c);}tapBuild(w.concat(extra));return;}
+    if(P.mode==='sandbox'){tapMode='sandbox';tapJoin=' ';tapBuild(['ls','cd','cat','help','meow','games']);return;}
+    var t=curTasks[P.task];if(!t){bar.innerHTML='';bar.hidden=true;return;}
+    tapMode='task';tapJoin=' ';tapBuild((t.cmd||'').trim().split(/\s+/).filter(Boolean));
+  }
   function doTab(){
     var v=inp.value,sp=v.lastIndexOf(' ');
     var head=sp>=0?v.slice(0,sp+1):'',tok=sp>=0?v.slice(sp+1):v;
@@ -1131,6 +1205,26 @@
   }
 
   var inp=document.getElementById('in');
+  document.getElementById('tapbar').addEventListener('click',function(e){
+    var bar=this,b=e.target.closest('button');if(!b)return;
+    var act=b.getAttribute('data-act');
+    if(act==='undo'){tapSelIdx.pop();tapRender();return;}
+    if(act==='type'){inp.focus();return;}
+    if(act==='check'){
+      var v=tapSelIdx.map(function(i){return tapTiles[i];}).join(tapJoin);
+      if(!v.trim())return;
+      var before=P.task+'|'+P.lesson+'|'+P.lvl+'|'+(pendingWord||'');
+      runCommand(v);
+      var after=P.task+'|'+P.lesson+'|'+P.lvl+'|'+(pendingWord||'');
+      if(before===after){bar.classList.add('shake');setTimeout(function(){bar.classList.remove('shake');},360);}
+      updateTap();
+      return;
+    }
+    var i=parseInt(b.getAttribute('data-i'),10);if(isNaN(i))return;
+    var pos=tapSelIdx.indexOf(i);
+    if(pos>=0)tapSelIdx.splice(pos,1);else tapSelIdx.push(i);
+    tapRender();
+  });
   inp.addEventListener('keydown',function(e){
     if(e.ctrlKey&&(e.key==='l'||e.key==='L')){e.preventDefault();clearTerm();pr('<span class="dim">(screen cleared)</span>');return;}
     if(e.ctrlKey&&(e.key==='u'||e.key==='U')){e.preventDefault();this.value='';return;}
@@ -1240,6 +1334,7 @@
     if(willIntro)storyActive=true;
     startLesson();
     if(P.found[P.lvl]&&curLevel()&&P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('Read the glowing word on the left and type it in!');}
+    updateTap();
     pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');if(CONTENT_ERRORS&&CONTENT_ERRORS.length)pr('<span class="er">Content check: '+CONTENT_ERRORS.join('; ')+'</span>');
     if(willIntro){P.seenIntro=true;save();showBook(function(){inp.focus();});}
     else inp.focus();
