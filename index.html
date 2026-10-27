@@ -886,7 +886,7 @@
     var lmax=(typeof P.lessonMax==='number')?P.lessonMax:P.lesson;
     idx=Math.max(0,Math.min(idx,lmax,lv.lessons.length-1));
     if(idx===P.lesson)return;
-    P.lesson=idx;pendingWord=null;save();startLesson();inp.focus();
+    P.lesson=idx;pendingWord=null;save();startLesson();focusInp();
   }
   function renderStage(){document.getElementById('stage').textContent='Stage: '+STAGE_NAMES[stageIndex()];}
   function renderMastery(){var el=document.getElementById('mastery');if(el)el.hidden=true;}
@@ -917,7 +917,7 @@
     if(a.tip)h+='<p class="arttip">\ud83d\udca1 '+esc(a.tip)+'</p>';
     h+='<div class="row"><button id="artGo">Start the lesson \u25b6</button></div></div>';
     var ov=document.getElementById('artov');ov.innerHTML=h;ov.hidden=false;
-    document.getElementById('artGo').addEventListener('click',function(){ov.hidden=true;try{inp.focus();}catch(e){}});
+    document.getElementById('artGo').addEventListener('click',function(){ov.hidden=true;try{focusInp();}catch(e){}});
   }
   /* Show a mini-article (if one exists for this lesson) before the lesson,
      once per profile, and only after any story/level-up animation has closed. */
@@ -965,10 +965,10 @@
     if(P.lvl<LEVELS.length-1){
       var nl=P.lvl+1;
       var story=STORY[nl]||{t:'REGION '+(nl+1),l:['Greppo grows stronger!','A new region of the system opens up.','Keep exploring, {name}!']};
-      showMatrix(story,function(){P.lvl=nl;P.lesson=0;P.lessonMax=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();inp.focus();});
+      showMatrix(story,function(){P.lvl=nl;P.lesson=0;P.lessonMax=0;grown=false;document.getElementById('ps').textContent=prompt();startLesson();pr('<span class="ok">\u2726 Greppo evolved into '+STAGE_NAMES[stageIndex()]+'! Level '+(P.lvl+1)+' begins.</span>');sparkleLine();focusInp();});
     }else{
       grown=true;
-      showMatrix(STORY[3],function(){renderStage();document.getElementById('lvl').textContent='Graduated! \u2b50';say('\u2691 You did it, '+esc(P.name||'')+'! Greppo reached its MEGA form!');pr('<span class="ok">\u2691 DIPLOMA: '+esc(P.name||'Explorer')+' \u2014 Terminal Explorer! \u2691</span>');sparkleLine();pr('<span class="hi">Type <b>play</b> to start a brand-new quest with new secret words and beat your time! Or type <b>sandbox</b> to free-play.</span>');inp.focus();});
+      showMatrix(STORY[3],function(){renderStage();document.getElementById('lvl').textContent='Graduated! \u2b50';say('\u2691 You did it, '+esc(P.name||'')+'! Greppo reached its MEGA form!');pr('<span class="ok">\u2691 DIPLOMA: '+esc(P.name||'Explorer')+' \u2014 Terminal Explorer! \u2691</span>');sparkleLine();pr('<span class="hi">Type <b>play</b> to start a brand-new quest with new secret words and beat your time! Or type <b>sandbox</b> to free-play.</span>');focusInp();});
     }
     save();
   }
@@ -1021,7 +1021,7 @@
     var b=document.getElementById('bMode');if(b)b.textContent='Sandbox';
     renderStage();startLesson();
     pr('<span class="hi">🎮 Revisiting:</span> '+esc(LEVELS[idx].title)+' <span class="ok">(completed ★)</span>. Redo any lesson, use <b>◀ back</b> / <b>next ▶</b> to move around. Press <b>Map</b> or <b>Back to my quest</b> to return.');
-    inp.focus();
+    focusInp();
   }
   function exitPractice(won){
     if(!practice)return;
@@ -1032,7 +1032,7 @@
     renderStage();startLesson();
     if(won){sfx('fanfare');flashPet('happy',120);pr('<span class="ok">⭐ Great practice! You replayed that region. Back to your own quest now.</span>');sparkleLine();}
     else pr('<span class="ok">Left practice. Back to your own quest.</span>');
-    inp.focus();
+    focusInp();
   }
 
   var actx=null;
@@ -1205,11 +1205,12 @@
   }
 
   var inp=document.getElementById('in');
+  function focusInp(){if(TOUCH)return;try{inp.focus();}catch(e){}}
   document.getElementById('tapbar').addEventListener('click',function(e){
     var bar=this,b=e.target.closest('button');if(!b)return;
     var act=b.getAttribute('data-act');
     if(act==='undo'){tapSelIdx.pop();tapRender();return;}
-    if(act==='type'){inp.focus();return;}
+    if(act==='type'){try{inp.focus();}catch(e){}return;}
     if(act==='check'){
       var v=tapSelIdx.map(function(i){return tapTiles[i];}).join(tapJoin);
       if(!v.trim())return;
@@ -1243,8 +1244,8 @@
   document.getElementById('lprev').addEventListener('click',function(){gotoLesson(P.lesson-1);});
   document.getElementById('lnext').addEventListener('click',function(){gotoLesson(P.lesson+1);});
   document.getElementById('bKeys').addEventListener('click',function(){document.getElementById('keysov').hidden=false;});
-  document.getElementById('keysClose').addEventListener('click',function(){document.getElementById('keysov').hidden=true;inp.focus();});
-  document.getElementById('bHome').addEventListener('click',function(){cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();clearTerm();flashPet('happy');sfx('ding');pr('<span class="ok">Back at the start.</span> You are home now (~). Nothing was lost \u2014 keep going!');var t=curTasks[P.task];if(t)say('You are back home. Next \u2192 '+taskLabel(t));else say('You are back home.');inp.focus();});
+  document.getElementById('keysClose').addEventListener('click',function(){document.getElementById('keysov').hidden=true;focusInp();});
+  document.getElementById('bHome').addEventListener('click',function(){cwd=home;st.cwdAbs=abspath(cwd);document.getElementById('ps').textContent=prompt();clearTerm();flashPet('happy');sfx('ding');pr('<span class="ok">Back at the start.</span> You are home now (~). Nothing was lost \u2014 keep going!');var t=curTasks[P.task];if(t)say('You are back home. Next \u2192 '+taskLabel(t));else say('You are back home.');focusInp();});
   document.getElementById('bReset').addEventListener('click',function(){document.getElementById('confirm').hidden=false;});
   document.getElementById('cfCancel').addEventListener('click',function(){document.getElementById('confirm').hidden=true;});
   document.getElementById('cfYes').addEventListener('click',function(){document.getElementById('confirm').hidden=true;var fr=[];for(var fi=0;fi<LEVELS.length;fi++)fr.push([]);P={name:'',user:'',lvl:0,lesson:0,task:0,found:fr,mastery:{},review:{},muted:P.muted,seenIntro:false};pendingWord=null;grown=false;hist=[];save();showIntro();});
@@ -1252,7 +1253,7 @@
   document.getElementById('bookNext').addEventListener('click',bookNext);
   document.getElementById('bookBack').addEventListener('click',bookBack);
   document.getElementById('bookSkip').addEventListener('click',bookFinish);
-  document.getElementById('bStory').addEventListener('click',function(){showBook(function(){inp.focus();});});
+  document.getElementById('bStory').addEventListener('click',function(){showBook(function(){focusInp();});});
   document.getElementById('bMode').addEventListener('click',function(){setMode(P.mode==='sandbox'?'quest':'sandbox');});
 
   function lvlIdxById(id){for(var i=0;i<LEVELS.length;i++)if(LEVELS[i].id===id)return i;return -1;}
@@ -1304,10 +1305,10 @@
     if(rb){var cl=curLevel();rb.textContent=practice?'▶ Leave practice — back to my quest':(grown?'▶ Back to free play':('▶ Back to my quest (Level '+(P.lvl+1)+': '+(cl?cl.title:'')+')'));}
     document.getElementById('mapov').hidden=false;
   }
-  function resumeQuest(){if(practice){exitPractice(false);}document.getElementById('mapov').hidden=true;inp.focus();}
+  function resumeQuest(){if(practice){exitPractice(false);}document.getElementById('mapov').hidden=true;focusInp();}
   document.getElementById('bMap').addEventListener('click',function(){renderMap();});
   document.getElementById('mapResume').addEventListener('click',resumeQuest);
-  document.getElementById('mapClose').addEventListener('click',function(){document.getElementById('mapov').hidden=true;inp.focus();});
+  document.getElementById('mapClose').addEventListener('click',function(){document.getElementById('mapov').hidden=true;focusInp();});
   document.getElementById('mapgrid').addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pbtn');if(b){var idx=parseInt(b.getAttribute('data-idx'),10);enterPractice(idx);}});
 
   function showIntro(){
@@ -1336,8 +1337,8 @@
     if(P.found[P.lvl]&&curLevel()&&P.found[P.lvl].length>=wordFor(P.lvl).length){pendingWord=wordFor(P.lvl);say('Read the glowing word on the left and type it in!');}
     updateTap();
     pr('<span class="ok">Welcome'+((P.lvl||P.lesson)?' back':'')+', '+esc(P.name||'friend')+'!</span> This is a safe pretend terminal \u2014 nothing real can break.\nType a command and press <b>Enter</b> to run it. Follow the steps on the left. Type <span class="hi">help</span> to see what every command does.');if(CONTENT_ERRORS&&CONTENT_ERRORS.length)pr('<span class="er">Content check: '+CONTENT_ERRORS.join('; ')+'</span>');
-    if(willIntro){P.seenIntro=true;save();showBook(function(){inp.focus();});}
-    else inp.focus();
+    if(willIntro){P.seenIntro=true;save();showBook(function(){focusInp();});}
+    else focusInp();
   }
   function commitName(){var raw=document.getElementById('nameIn').value.trim();P.name=raw||'friend';P.user=sani(raw);P.words=pickWords();P.mode='quest';save();startGame();}
   document.getElementById('startBtn').addEventListener('click',commitName);

@@ -309,6 +309,7 @@ try {
     await page.goto(URL + '?tap=1'); await page.waitForTimeout(350);
     try { if (!(await page.evaluate(() => document.getElementById('artov').hidden))) { await page.click('#artGo'); } } catch (e) {}
     ok(await page.evaluate(() => document.body.classList.contains('tap')), 'touch devices get the tap UI');
+    ok(await page.evaluate(() => document.activeElement !== document.getElementById('in')), 'on a phone the terminal input is not auto-focused (no keyboard on load)');
     ok(await page.evaluate(() => getComputedStyle(document.getElementById('tapbar')).display === 'block'), 'the tap panel is visible on a phone');
     const tiles = await page.evaluate(() => [...document.querySelectorAll('#tapbar .tapchips button[data-i]')].map((x) => x.textContent));
     ok(tiles.includes('echo') && tiles.includes('den/bowl.txt'), 'tiles include the correct command pieces');
