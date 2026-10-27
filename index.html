@@ -1,4 +1,6 @@
 <title>Greppo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
   /* Layout: a terminal window — pet + status rail, fixed-height console, input. Committed dark "terminal" identity. */
@@ -181,7 +183,8 @@
   .mapov .mapresume:hover{background:#3a2b0c;}
   .rail{flex:1 1 280px;max-width:420px;}
   @media (max-width:620px){.rail{border-right:none;border-bottom:1px solid var(--edge);max-width:none;}.term{height:clamp(200px,32vh,320px);}}
-  body.tap .pet{font-size:12px;min-height:0;}
+  body.tap .pet{font-size:12px;min-height:0;flex:0 0 auto;margin-top:0;}
+  body.tap .rail>*{flex:0 0 auto;}
   body.tap .btns{flex-wrap:nowrap;overflow-x:auto;}
   body.tap .btns button{flex:0 0 auto;}
   body.tap .wrap{padding-block:10px;}

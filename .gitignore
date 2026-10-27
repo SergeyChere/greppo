@@ -3,3 +3,6 @@ package-lock.json
 test-results/
 playwright-report/
 .DS_Store
+
+# also the bare symlink, not just the dir
+node_modules
